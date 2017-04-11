@@ -3,26 +3,28 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "HouseBuilder.h"
+//#include "PlotBuilder.h"
 #include "BaseLibrary.h"
-#include "PlotBuilder.generated.h"
-
-
-
-struct FPolygon;
+#include "HouseBuilder.generated.h"
 
 
 
 UCLASS()
-class CITY_API APlotBuilder : public AActor
+class CITY_API AHouseBuilder : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APlotBuilder();
+	AHouseBuilder();
 
-	void BuildPlot(PlotPolygon p);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Demo, meta = (AllowPrivateAccess = "true"))
+		UStaticMesh* placeHolderHouseMesh;
+
+	UFUNCTION(BlueprintCallable, Category = "Generation")
+		void placeHouse(FHousePolygon f);
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
