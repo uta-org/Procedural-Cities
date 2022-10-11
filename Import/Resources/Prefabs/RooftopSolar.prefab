@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3973261857492565907
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4352742471118333225}
+  - component: {fileID: 848884147510094476}
+  - component: {fileID: 3180421958124461638}
+  m_Layer: 0
+  m_Name: rooftop_solar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4352742471118333225
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3973261857492565907}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9207526474868803022}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &848884147510094476
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3973261857492565907}
+  m_Mesh: {fileID: -8639782514406780865, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+--- !u!23 &3180421958124461638
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3973261857492565907}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: -3733614364482476023, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 1041322143335897632, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 5802008850417729284, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -1805758548846678341, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 2964699727648599325, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -5506337975990602135, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -7244230768795126236, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 5147791702388030725, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -4590810108693358588, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 8472823369392296217, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -6921273268331242962, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -2205635319292839926, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 3168686350395686680, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 3267183269334453439, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 3500948587322120274, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 3987906163616759434, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -1533681966015780042, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 1548991143555247538, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 1336167176736695797, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 6670695590619397207, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 6931361421353158645, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 1152563501341394733, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 3841999076656712440, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 7211124989218088178, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 1566653919475150659, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 7576780374049950770, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -6817810293312429261, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -3526724839321290988, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -6123850577941848941, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 489552050982646258, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 3715866259900665420, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 8243795250443234509, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -9132602682856931979, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: 5439853721059432435, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -3430907146029345236, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  - {fileID: -6246969865931516180, guid: f51eee3709a1cb04bb214d20d9969f69, type: 3}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6257576625814358808
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9207526474868803022}
+  m_Layer: 0
+  m_Name: RooftopSolar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9207526474868803022
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6257576625814358808}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4352742471118333225}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
