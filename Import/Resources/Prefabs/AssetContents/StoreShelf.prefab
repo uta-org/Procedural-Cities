@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2457763183595051626}
   m_Layer: 0
-  m_Name: ShelfStore
+  m_Name: StoreShelf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
