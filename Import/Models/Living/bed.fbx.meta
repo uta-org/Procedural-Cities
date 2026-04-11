@@ -3,10 +3,20 @@ guid: 59a2ed1e0491cf94d8ea902d8cdc7a5b
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 01_-_Default
+    second: {fileID: 2100000, guid: b98085a507214d54bbd8d0a10214a3f2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Wood_Floor_Walnut_Polished
+    second: {fileID: 2100000, guid: 907185d69512dd047bccf21011926b63, type: 2}
   materials:
     materialImportMode: 2
-    materialName: 0
+    materialName: 1
     materialSearch: 1
     materialLocation: 0
   animations:

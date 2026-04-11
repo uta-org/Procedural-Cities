@@ -3,10 +3,25 @@ guid: eba17b2e4ae193742b61d9775202eec8
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Metal_Chrome
+    second: {fileID: 2100000, guid: eac7c9d56aa584f4d8c77baed544fa6a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Wood_Pine
+    second: {fileID: 2100000, guid: 1ec6d851af8ea83439cf9aa4c228166c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WOOD_018_Mat
+    second: {fileID: 2100000, guid: fcb0b32e59195fd45bb3e205e8b67400, type: 2}
   materials:
     materialImportMode: 2
-    materialName: 0
+    materialName: 1
     materialSearch: 1
     materialLocation: 0
   animations:

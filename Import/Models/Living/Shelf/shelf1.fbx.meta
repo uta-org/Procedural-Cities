@@ -3,10 +3,35 @@ guid: f3e7d6ffd0e67a441bd2c1b7d0ea48cd
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 08_-_Default
+    second: {fileID: 2100000, guid: efbff0fce5192bf419505b492bfa4b29, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Metal_Chrome
+    second: {fileID: 2100000, guid: 312d3956e9d603d429d21a2132cc1728, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Metal_Gold
+    second: {fileID: 2100000, guid: 69188c397ab362d4d9ba719fc98b9ae7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WOOD_84_Mat
+    second: {fileID: 2100000, guid: 770fb0e0ca36e9d408d109c8d57f678b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wood_162_Mat
+    second: {fileID: 2100000, guid: 0589c0291c4987d488bb2acc3ba6829e, type: 2}
   materials:
     materialImportMode: 2
-    materialName: 0
+    materialName: 1
     materialSearch: 1
     materialLocation: 0
   animations:

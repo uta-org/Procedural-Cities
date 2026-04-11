@@ -3,10 +3,45 @@ guid: a3d39b7b4a2f4bf49afe43763ef96d11
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 01_-_Default
+    second: {fileID: 2100000, guid: da69b1b93de89f9419c3261dfc16242e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Black
+    second: {fileID: 2100000, guid: 47af3e9e33e199c4780c77d8d9222772, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Metal_Gold
+    second: {fileID: 2100000, guid: 6d00db50dad7af442b5ca8e93ced7067, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material__344
+    second: {fileID: 2100000, guid: 98b3a4dc51e9dd042a1c3420e991518c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material__346
+    second: {fileID: 2100000, guid: fdeaaeba65d3edd47924d4e46479a5de, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _Black_
+    second: {fileID: 2100000, guid: 53198ff00372d824cbfa2c188c2d54a4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wood_162_Mat
+    second: {fileID: 2100000, guid: fe67d654f335f2541ac3260519eae2ca, type: 2}
   materials:
     materialImportMode: 2
-    materialName: 0
+    materialName: 1
     materialSearch: 1
     materialLocation: 0
   animations:
