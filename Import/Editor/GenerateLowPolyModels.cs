@@ -39,6 +39,12 @@ public class GenerateLowPolyModels : EditorWindow
         GenerateSmallTable, GenerateSofa1, GenerateStoreShelf, GenerateToaster,
         GenerateToilet1, GenerateTrafficLight, GenerateTrashBox, GenerateTrashCan,
         GenerateVase,
+        // Modular Kitchen (1x1x1 units, 7DTD-style)
+        GenerateKM_CabinetBase, GenerateKM_CabinetDrawer, GenerateKM_Sink,
+        GenerateKM_Stove, GenerateKM_Oven, GenerateKM_CabinetWall,
+        GenerateKM_CabinetCorner, GenerateKM_Countertop, GenerateKM_Fridge,
+        GenerateKM_Dishwasher, GenerateKM_Hood, GenerateKM_Microwave,
+        GenerateKM_ShelfOpen, GenerateKM_Island,
     };
 
     [MenuItem("Procedural Cities/Generate LowPoly Models")]
@@ -93,10 +99,15 @@ public class GenerateLowPolyModels : EditorWindow
                     AssetDatabase.DeleteAsset(p);
             }
         }
-        else
-        {
+        // Ensure physical directories exist on disk (AssetDatabase.CreateFolder
+        // may not sync immediately in Unity 6).
+        var absOut = Path.Combine(Application.dataPath, "LowPoly");
+        var absMat = Path.Combine(absOut, "Materials");
+        Directory.CreateDirectory(absOut);
+        Directory.CreateDirectory(absMat);
+        AssetDatabase.Refresh();
+        if (!AssetDatabase.IsValidFolder("Assets/LowPoly"))
             AssetDatabase.CreateFolder("Assets", "LowPoly");
-        }
         if (!AssetDatabase.IsValidFolder("Assets/LowPoly/Materials"))
             AssetDatabase.CreateFolder("Assets/LowPoly", "Materials");
     }
@@ -2200,6 +2211,501 @@ public class GenerateLowPolyModels : EditorWindow
         basePart.transform.localPosition = new Vector3(0, 0.01f, 0);
         basePart.gameObject.name = "Base";
         SavePrefab(root, "LowPoly_Vase");
+        return 1;
+    }
+
+    // ========================== MODULAR KITCHEN (1x1x1) ==========================
+    // All modules are exactly 1 unit wide, 1 unit tall, 1 unit deep.
+    // Base cabinets: countertop at y=0.9, cabinet body 0..0.85, toe kick 0..0.1
+    // Wall cabinets: body at y=0..1 (mounted at any height)
+    // Naming: KM_ = Kitchen Module
+
+    static Material KM_Body => GetMat("KM_Cabinet_Body", new Color(0.88f, 0.86f, 0.82f));
+    static Material KM_Counter => GetMat("KM_Countertop", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
+    static Material KM_Handle => GetMat("KM_Handle", new Color(0.7f, 0.7f, 0.72f), 0.85f, 0.8f);
+    static Material KM_Metal => GetMat("KM_Metal", new Color(0.6f, 0.6f, 0.62f), 0.7f, 0.6f);
+    static Material KM_Dark => GetMat("KM_DarkInterior", new Color(0.2f, 0.18f, 0.16f));
+    static Material KM_Glass => GetMat("KM_Glass", new Color(0.7f, 0.75f, 0.8f, 0.5f), 0.1f, 0.85f);
+
+    // Shared: add toe kick + countertop to a root, returns the root
+    static void KM_AddBaseFrame(GameObject root)
+    {
+        // Toe kick
+        var kick = CreateBox(new Vector3(0.92f, 0.1f, 0.04f), KM_Dark);
+        kick.transform.SetParent(root.transform);
+        kick.transform.localPosition = new Vector3(0, 0.05f, 0.48f);
+        kick.gameObject.name = "ToeKick";
+        // Countertop
+        var top = CreateBox(new Vector3(1.0f, 0.05f, 1.0f), KM_Counter);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.925f, 0);
+        top.gameObject.name = "Countertop";
+    }
+
+    // 1. KM_CabinetBase: base cabinet with two doors
+    static int GenerateKM_CabinetBase()
+    {
+        var root = new GameObject("LowPoly_KM_CabinetBase");
+        KM_AddBaseFrame(root);
+        // Cabinet body
+        var body = CreateBox(new Vector3(0.96f, 0.8f, 0.96f), KM_Body);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.5f, 0);
+        body.gameObject.name = "Body";
+        // Door split line
+        var split = CreateBox(new Vector3(0.005f, 0.7f, 0.01f), KM_Dark);
+        split.transform.SetParent(root.transform);
+        split.transform.localPosition = new Vector3(0, 0.48f, 0.486f);
+        split.gameObject.name = "DoorSplit";
+        // Handles
+        for (int i = 0; i < 2; i++)
+        {
+            var h = CreateBox(new Vector3(0.02f, 0.1f, 0.02f), KM_Handle);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(i == 0 ? -0.06f : 0.06f, 0.55f, 0.5f);
+            h.gameObject.name = $"Handle{i}";
+        }
+        SavePrefab(root, "LowPoly_KM_CabinetBase");
+        return 1;
+    }
+
+    // 2. KM_CabinetDrawer: base cabinet with 3 drawers
+    static int GenerateKM_CabinetDrawer()
+    {
+        var root = new GameObject("LowPoly_KM_CabinetDrawer");
+        KM_AddBaseFrame(root);
+        var body = CreateBox(new Vector3(0.96f, 0.8f, 0.96f), KM_Body);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.5f, 0);
+        body.gameObject.name = "Body";
+        // 3 drawer lines + handles
+        float[] drawerY = { 0.28f, 0.5f, 0.72f };
+        for (int i = 0; i < 3; i++)
+        {
+            var line = CreateBox(new Vector3(0.88f, 0.005f, 0.01f), KM_Dark);
+            line.transform.SetParent(root.transform);
+            line.transform.localPosition = new Vector3(0, drawerY[i], 0.486f);
+            line.gameObject.name = $"DrawerLine{i}";
+            var h = CreateBox(new Vector3(0.15f, 0.02f, 0.02f), KM_Handle);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(0, drawerY[i] + 0.08f, 0.5f);
+            h.gameObject.name = $"DrawerHandle{i}";
+        }
+        SavePrefab(root, "LowPoly_KM_CabinetDrawer");
+        return 1;
+    }
+
+    // 3. KM_Sink: base cabinet with integrated sink basin + faucet
+    static int GenerateKM_Sink()
+    {
+        var root = new GameObject("LowPoly_KM_Sink");
+        KM_AddBaseFrame(root);
+        var body = CreateBox(new Vector3(0.96f, 0.8f, 0.96f), KM_Body);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.5f, 0);
+        body.gameObject.name = "Body";
+        // Doors
+        var split = CreateBox(new Vector3(0.005f, 0.7f, 0.01f), KM_Dark);
+        split.transform.SetParent(root.transform);
+        split.transform.localPosition = new Vector3(0, 0.48f, 0.486f);
+        split.gameObject.name = "DoorSplit";
+        for (int i = 0; i < 2; i++)
+        {
+            var h = CreateBox(new Vector3(0.02f, 0.1f, 0.02f), KM_Handle);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(i == 0 ? -0.06f : 0.06f, 0.55f, 0.5f);
+            h.gameObject.name = $"Handle{i}";
+        }
+        // Sink basin (recessed into countertop)
+        var basin = CreateBox(new Vector3(0.55f, 0.12f, 0.4f), KM_Metal);
+        basin.transform.SetParent(root.transform);
+        basin.transform.localPosition = new Vector3(0, 0.89f, 0.05f);
+        basin.gameObject.name = "Basin";
+        // Faucet base
+        var faucetBase = CreateCylinder(0.02f, 0.15f, 6, KM_Handle);
+        faucetBase.transform.SetParent(root.transform);
+        faucetBase.transform.localPosition = new Vector3(0, 1.02f, -0.25f);
+        faucetBase.gameObject.name = "FaucetBase";
+        // Faucet spout
+        var spout = CreateBox(new Vector3(0.02f, 0.02f, 0.15f), KM_Handle);
+        spout.transform.SetParent(root.transform);
+        spout.transform.localPosition = new Vector3(0, 1.08f, -0.18f);
+        spout.gameObject.name = "FaucetSpout";
+        // Handle knobs
+        for (int i = 0; i < 2; i++)
+        {
+            var knob = CreateCylinder(0.015f, 0.03f, 6, KM_Handle);
+            knob.transform.SetParent(root.transform);
+            knob.transform.localPosition = new Vector3(i == 0 ? -0.1f : 0.1f, 0.99f, -0.25f);
+            knob.gameObject.name = $"Knob{i}";
+        }
+        SavePrefab(root, "LowPoly_KM_Sink");
+        return 1;
+    }
+
+    // 4. KM_Stove: countertop with 4 burners
+    static int GenerateKM_Stove()
+    {
+        var root = new GameObject("LowPoly_KM_Stove");
+        KM_AddBaseFrame(root);
+        var body = CreateBox(new Vector3(0.96f, 0.8f, 0.96f), KM_Body);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.5f, 0);
+        body.gameObject.name = "Body";
+        // Stove surface (dark, replaces part of countertop)
+        var surface = CreateBox(new Vector3(0.9f, 0.01f, 0.9f), GetMat("KM_StoveSurface", new Color(0.08f, 0.08f, 0.08f), 0.3f, 0.7f));
+        surface.transform.SetParent(root.transform);
+        surface.transform.localPosition = new Vector3(0, 0.955f, 0);
+        surface.gameObject.name = "Surface";
+        // 4 burners (2x2 grid)
+        var matBurner = GetMat("KM_Burner", new Color(0.25f, 0.25f, 0.28f), 0.5f, 0.4f);
+        Vector2[] bPos = { new(-0.2f, -0.2f), new(0.2f, -0.2f), new(-0.2f, 0.2f), new(0.2f, 0.2f) };
+        float[] bRadius = { 0.12f, 0.12f, 0.09f, 0.09f }; // front burners larger
+        for (int i = 0; i < 4; i++)
+        {
+            var burner = CreateCylinder(bRadius[i], 0.01f, 10, matBurner);
+            burner.transform.SetParent(root.transform);
+            burner.transform.localPosition = new Vector3(bPos[i].x, 0.965f, bPos[i].y);
+            burner.gameObject.name = $"Burner{i}";
+        }
+        // Knobs on front face
+        for (int i = 0; i < 4; i++)
+        {
+            var knob = CreateCylinder(0.015f, 0.02f, 6, KM_Handle);
+            knob.transform.SetParent(root.transform);
+            knob.transform.localPosition = new Vector3(-0.3f + i * 0.2f, 0.82f, 0.49f);
+            knob.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            knob.gameObject.name = $"Knob{i}";
+        }
+        SavePrefab(root, "LowPoly_KM_Stove");
+        return 1;
+    }
+
+    // 5. KM_Oven: built-in oven with glass door
+    static int GenerateKM_Oven()
+    {
+        var root = new GameObject("LowPoly_KM_Oven");
+        KM_AddBaseFrame(root);
+        // Oven body (slightly inset)
+        var body = CreateBox(new Vector3(0.96f, 0.8f, 0.96f), KM_Body);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.5f, 0);
+        body.gameObject.name = "Body";
+        // Oven door frame
+        var doorFrame = CreateBox(new Vector3(0.86f, 0.55f, 0.03f), KM_Metal);
+        doorFrame.transform.SetParent(root.transform);
+        doorFrame.transform.localPosition = new Vector3(0, 0.42f, 0.486f);
+        doorFrame.gameObject.name = "DoorFrame";
+        // Glass window
+        var glass = CreateBox(new Vector3(0.72f, 0.35f, 0.005f), KM_Glass);
+        glass.transform.SetParent(root.transform);
+        glass.transform.localPosition = new Vector3(0, 0.44f, 0.5f);
+        glass.gameObject.name = "Glass";
+        // Door handle
+        var handle = CreateBox(new Vector3(0.35f, 0.025f, 0.025f), KM_Handle);
+        handle.transform.SetParent(root.transform);
+        handle.transform.localPosition = new Vector3(0, 0.72f, 0.5f);
+        handle.gameObject.name = "Handle";
+        // Temperature display area
+        var display = CreateBox(new Vector3(0.15f, 0.04f, 0.005f), GetMat("KM_Display", new Color(0.1f, 0.3f, 0.1f)));
+        display.transform.SetParent(root.transform);
+        display.transform.localPosition = new Vector3(0, 0.8f, 0.5f);
+        display.gameObject.name = "Display";
+        SavePrefab(root, "LowPoly_KM_Oven");
+        return 1;
+    }
+
+    // 6. KM_CabinetWall: wall-mounted upper cabinet with doors
+    static int GenerateKM_CabinetWall()
+    {
+        var root = new GameObject("LowPoly_KM_CabinetWall");
+        var body = CreateBox(new Vector3(0.96f, 0.96f, 0.36f), KM_Body);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.5f, 0);
+        body.gameObject.name = "Body";
+        // Door split
+        var split = CreateBox(new Vector3(0.005f, 0.88f, 0.01f), KM_Dark);
+        split.transform.SetParent(root.transform);
+        split.transform.localPosition = new Vector3(0, 0.5f, 0.186f);
+        split.gameObject.name = "DoorSplit";
+        // Handles
+        for (int i = 0; i < 2; i++)
+        {
+            var h = CreateBox(new Vector3(0.02f, 0.1f, 0.02f), KM_Handle);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(i == 0 ? -0.06f : 0.06f, 0.5f, 0.2f);
+            h.gameObject.name = $"Handle{i}";
+        }
+        SavePrefab(root, "LowPoly_KM_CabinetWall");
+        return 1;
+    }
+
+    // 7. KM_CabinetCorner: L-shaped corner base cabinet
+    static int GenerateKM_CabinetCorner()
+    {
+        var root = new GameObject("LowPoly_KM_CabinetCorner");
+        // Countertop (L-shape = 2 overlapping boxes)
+        var topA = CreateBox(new Vector3(1.0f, 0.05f, 0.5f), KM_Counter);
+        topA.transform.SetParent(root.transform);
+        topA.transform.localPosition = new Vector3(0, 0.925f, 0.25f);
+        topA.gameObject.name = "CountertopA";
+        var topB = CreateBox(new Vector3(0.5f, 0.05f, 0.5f), KM_Counter);
+        topB.transform.SetParent(root.transform);
+        topB.transform.localPosition = new Vector3(-0.25f, 0.925f, -0.25f);
+        topB.gameObject.name = "CountertopB";
+        // Cabinet body L-shape
+        var bodyA = CreateBox(new Vector3(0.96f, 0.8f, 0.46f), KM_Body);
+        bodyA.transform.SetParent(root.transform);
+        bodyA.transform.localPosition = new Vector3(0, 0.5f, 0.25f);
+        bodyA.gameObject.name = "BodyA";
+        var bodyB = CreateBox(new Vector3(0.46f, 0.8f, 0.46f), KM_Body);
+        bodyB.transform.SetParent(root.transform);
+        bodyB.transform.localPosition = new Vector3(-0.25f, 0.5f, -0.25f);
+        bodyB.gameObject.name = "BodyB";
+        // Toe kicks
+        var kickA = CreateBox(new Vector3(0.92f, 0.1f, 0.04f), KM_Dark);
+        kickA.transform.SetParent(root.transform);
+        kickA.transform.localPosition = new Vector3(0, 0.05f, 0.5f);
+        kickA.gameObject.name = "ToeKickA";
+        var kickB = CreateBox(new Vector3(0.04f, 0.1f, 0.46f), KM_Dark);
+        kickB.transform.SetParent(root.transform);
+        kickB.transform.localPosition = new Vector3(-0.5f, 0.05f, -0.25f);
+        kickB.gameObject.name = "ToeKickB";
+        // Handle on angled face
+        var door = CreateBox(new Vector3(0.35f, 0.7f, 0.02f), KM_Body);
+        door.transform.SetParent(root.transform);
+        door.transform.localPosition = new Vector3(0.32f, 0.48f, -0.01f);
+        door.transform.localRotation = Quaternion.Euler(0, 45, 0);
+        door.gameObject.name = "CornerDoor";
+        SavePrefab(root, "LowPoly_KM_CabinetCorner");
+        return 1;
+    }
+
+    // 8. KM_Countertop: plain countertop with no doors (open shelf underneath)
+    static int GenerateKM_Countertop()
+    {
+        var root = new GameObject("LowPoly_KM_Countertop");
+        KM_AddBaseFrame(root);
+        // Open frame (just side walls, no door)
+        var left = CreateBox(new Vector3(0.02f, 0.8f, 0.96f), KM_Body);
+        left.transform.SetParent(root.transform);
+        left.transform.localPosition = new Vector3(-0.48f, 0.5f, 0);
+        left.gameObject.name = "SideL";
+        var right = CreateBox(new Vector3(0.02f, 0.8f, 0.96f), KM_Body);
+        right.transform.SetParent(root.transform);
+        right.transform.localPosition = new Vector3(0.48f, 0.5f, 0);
+        right.gameObject.name = "SideR";
+        var back = CreateBox(new Vector3(0.96f, 0.8f, 0.02f), KM_Body);
+        back.transform.SetParent(root.transform);
+        back.transform.localPosition = new Vector3(0, 0.5f, -0.48f);
+        back.gameObject.name = "Back";
+        // Internal shelf
+        var shelf = CreateBox(new Vector3(0.92f, 0.02f, 0.9f), KM_Body);
+        shelf.transform.SetParent(root.transform);
+        shelf.transform.localPosition = new Vector3(0, 0.45f, 0);
+        shelf.gameObject.name = "InternalShelf";
+        SavePrefab(root, "LowPoly_KM_Countertop");
+        return 1;
+    }
+
+    // 9. KM_Fridge: tall fridge (1x2x1 - two units tall)
+    static int GenerateKM_Fridge()
+    {
+        var root = new GameObject("LowPoly_KM_Fridge");
+        // Main body
+        var body = CreateBox(new Vector3(0.96f, 1.96f, 0.9f), GetMat("KM_FridgeBody", new Color(0.9f, 0.9f, 0.92f), 0.3f, 0.5f));
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 1.0f, 0);
+        body.gameObject.name = "Body";
+        // Freezer door (top)
+        var freezerDoor = CreateBox(new Vector3(0.92f, 0.56f, 0.03f), GetMat("KM_FridgeBody", new Color(0.9f, 0.9f, 0.92f), 0.3f, 0.5f));
+        freezerDoor.transform.SetParent(root.transform);
+        freezerDoor.transform.localPosition = new Vector3(0, 1.7f, 0.465f);
+        freezerDoor.gameObject.name = "FreezerDoor";
+        // Fridge door (bottom, larger)
+        var fridgeDoor = CreateBox(new Vector3(0.92f, 1.2f, 0.03f), GetMat("KM_FridgeBody", new Color(0.9f, 0.9f, 0.92f), 0.3f, 0.5f));
+        fridgeDoor.transform.SetParent(root.transform);
+        fridgeDoor.transform.localPosition = new Vector3(0, 0.72f, 0.465f);
+        fridgeDoor.gameObject.name = "FridgeDoor";
+        // Door split line
+        var split = CreateBox(new Vector3(0.92f, 0.008f, 0.01f), KM_Dark);
+        split.transform.SetParent(root.transform);
+        split.transform.localPosition = new Vector3(0, 1.38f, 0.48f);
+        split.gameObject.name = "DoorSplit";
+        // Handles
+        var hTop = CreateBox(new Vector3(0.25f, 0.025f, 0.03f), KM_Handle);
+        hTop.transform.SetParent(root.transform);
+        hTop.transform.localPosition = new Vector3(0, 1.72f, 0.49f);
+        hTop.gameObject.name = "HandleTop";
+        var hBot = CreateBox(new Vector3(0.25f, 0.025f, 0.03f), KM_Handle);
+        hBot.transform.SetParent(root.transform);
+        hBot.transform.localPosition = new Vector3(0, 1.35f, 0.49f);
+        hBot.gameObject.name = "HandleBottom";
+        SavePrefab(root, "LowPoly_KM_Fridge");
+        return 1;
+    }
+
+    // 10. KM_Dishwasher: built-in dishwasher
+    static int GenerateKM_Dishwasher()
+    {
+        var root = new GameObject("LowPoly_KM_Dishwasher");
+        KM_AddBaseFrame(root);
+        var body = CreateBox(new Vector3(0.96f, 0.8f, 0.96f), KM_Metal);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.5f, 0);
+        body.gameObject.name = "Body";
+        // Door panel
+        var door = CreateBox(new Vector3(0.88f, 0.7f, 0.02f), KM_Body);
+        door.transform.SetParent(root.transform);
+        door.transform.localPosition = new Vector3(0, 0.48f, 0.49f);
+        door.gameObject.name = "Door";
+        // Handle bar (horizontal)
+        var handle = CreateBox(new Vector3(0.4f, 0.025f, 0.03f), KM_Handle);
+        handle.transform.SetParent(root.transform);
+        handle.transform.localPosition = new Vector3(0, 0.78f, 0.51f);
+        handle.gameObject.name = "Handle";
+        // Controls (small buttons)
+        for (int i = 0; i < 3; i++)
+        {
+            var btn = CreateCylinder(0.012f, 0.01f, 6, KM_Handle);
+            btn.transform.SetParent(root.transform);
+            btn.transform.localPosition = new Vector3(-0.1f + i * 0.1f, 0.86f, 0.5f);
+            btn.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            btn.gameObject.name = $"Button{i}";
+        }
+        SavePrefab(root, "LowPoly_KM_Dishwasher");
+        return 1;
+    }
+
+    // 11. KM_Hood: range hood / extractor
+    static int GenerateKM_Hood()
+    {
+        var root = new GameObject("LowPoly_KM_Hood");
+        // Chimney (tall narrow box going up)
+        var chimney = CreateBox(new Vector3(0.4f, 0.5f, 0.35f), KM_Metal);
+        chimney.transform.SetParent(root.transform);
+        chimney.transform.localPosition = new Vector3(0, 0.75f, -0.3f);
+        chimney.gameObject.name = "Chimney";
+        // Hood body (trapezoidal shape approximated as box)
+        var hood = CreateBox(new Vector3(0.9f, 0.25f, 0.55f), KM_Metal);
+        hood.transform.SetParent(root.transform);
+        hood.transform.localPosition = new Vector3(0, 0.38f, -0.2f);
+        hood.gameObject.name = "Hood";
+        // Filter grille
+        var filter = CreateBox(new Vector3(0.75f, 0.01f, 0.4f), GetMat("KM_FilterGrille", new Color(0.5f, 0.5f, 0.52f), 0.6f, 0.4f));
+        filter.transform.SetParent(root.transform);
+        filter.transform.localPosition = new Vector3(0, 0.26f, -0.2f);
+        filter.gameObject.name = "Filter";
+        // Light strip
+        var light = CreateBox(new Vector3(0.6f, 0.01f, 0.02f), GetMat("KM_LightStrip", new Color(0.95f, 0.92f, 0.8f)));
+        light.transform.SetParent(root.transform);
+        light.transform.localPosition = new Vector3(0, 0.27f, 0.03f);
+        light.gameObject.name = "Light";
+        SavePrefab(root, "LowPoly_KM_Hood");
+        return 1;
+    }
+
+    // 12. KM_Microwave: countertop microwave
+    static int GenerateKM_Microwave()
+    {
+        var root = new GameObject("LowPoly_KM_Microwave");
+        // Body
+        var body = CreateBox(new Vector3(0.9f, 0.5f, 0.55f), KM_Metal);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.25f, 0);
+        body.gameObject.name = "Body";
+        // Door
+        var door = CreateBox(new Vector3(0.55f, 0.38f, 0.02f), KM_Dark);
+        door.transform.SetParent(root.transform);
+        door.transform.localPosition = new Vector3(-0.1f, 0.26f, 0.286f);
+        door.gameObject.name = "Door";
+        // Glass
+        var glass = CreateBox(new Vector3(0.45f, 0.3f, 0.005f), KM_Glass);
+        glass.transform.SetParent(root.transform);
+        glass.transform.localPosition = new Vector3(-0.1f, 0.26f, 0.3f);
+        glass.gameObject.name = "Glass";
+        // Control panel
+        var panel = CreateBox(new Vector3(0.2f, 0.38f, 0.005f), GetMat("KM_Display", new Color(0.1f, 0.3f, 0.1f)));
+        panel.transform.SetParent(root.transform);
+        panel.transform.localPosition = new Vector3(0.32f, 0.26f, 0.286f);
+        panel.gameObject.name = "Panel";
+        // Handle
+        var handle = CreateBox(new Vector3(0.025f, 0.2f, 0.03f), KM_Handle);
+        handle.transform.SetParent(root.transform);
+        handle.transform.localPosition = new Vector3(0.16f, 0.26f, 0.3f);
+        handle.gameObject.name = "Handle";
+        SavePrefab(root, "LowPoly_KM_Microwave");
+        return 1;
+    }
+
+    // 13. KM_ShelfOpen: open wall shelf with 3 levels
+    static int GenerateKM_ShelfOpen()
+    {
+        var root = new GameObject("LowPoly_KM_ShelfOpen");
+        var matWood = GetMat("KM_ShelfWood", new Color(0.55f, 0.38f, 0.22f));
+        // 3 shelves
+        for (int i = 0; i < 3; i++)
+        {
+            var shelf = CreateBox(new Vector3(0.96f, 0.025f, 0.3f), matWood);
+            shelf.transform.SetParent(root.transform);
+            shelf.transform.localPosition = new Vector3(0, 0.15f + i * 0.35f, 0);
+            shelf.gameObject.name = $"Shelf{i}";
+        }
+        // Side brackets
+        for (int s = 0; s < 2; s++)
+        {
+            float x = s == 0 ? -0.46f : 0.46f;
+            var bracket = CreateBox(new Vector3(0.02f, 0.96f, 0.28f), matWood);
+            bracket.transform.SetParent(root.transform);
+            bracket.transform.localPosition = new Vector3(x, 0.5f, 0);
+            bracket.gameObject.name = $"Side{s}";
+        }
+        SavePrefab(root, "LowPoly_KM_ShelfOpen");
+        return 1;
+    }
+
+    // 14. KM_Island: kitchen island center piece (1x1x1)
+    static int GenerateKM_Island()
+    {
+        var root = new GameObject("LowPoly_KM_Island");
+        // Countertop (slightly larger overhang)
+        var top = CreateBox(new Vector3(1.0f, 0.05f, 1.0f), KM_Counter);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.925f, 0);
+        top.gameObject.name = "Countertop";
+        // Body
+        var body = CreateBox(new Vector3(0.92f, 0.82f, 0.92f), KM_Body);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.5f, 0);
+        body.gameObject.name = "Body";
+        // Toe kick all around
+        for (int i = 0; i < 4; i++)
+        {
+            bool xAxis = i < 2;
+            float sign = (i % 2 == 0) ? 1 : -1;
+            var kick = CreateBox(xAxis ? new Vector3(0.88f, 0.1f, 0.04f) : new Vector3(0.04f, 0.1f, 0.88f), KM_Dark);
+            kick.transform.SetParent(root.transform);
+            kick.transform.localPosition = new Vector3(
+                xAxis ? 0 : sign * 0.46f,
+                0.05f,
+                xAxis ? sign * 0.46f : 0);
+            kick.gameObject.name = $"ToeKick{i}";
+        }
+        // Drawer on front
+        var line = CreateBox(new Vector3(0.6f, 0.005f, 0.01f), KM_Dark);
+        line.transform.SetParent(root.transform);
+        line.transform.localPosition = new Vector3(0, 0.55f, 0.466f);
+        line.gameObject.name = "DrawerLine";
+        var handle = CreateBox(new Vector3(0.15f, 0.02f, 0.02f), KM_Handle);
+        handle.transform.SetParent(root.transform);
+        handle.transform.localPosition = new Vector3(0, 0.65f, 0.48f);
+        handle.gameObject.name = "DrawerHandle";
+        // Towel bar on side
+        var towelBar = CreateBox(new Vector3(0.02f, 0.02f, 0.3f), KM_Handle);
+        towelBar.transform.SetParent(root.transform);
+        towelBar.transform.localPosition = new Vector3(0.47f, 0.45f, 0);
+        towelBar.gameObject.name = "TowelBar";
+        SavePrefab(root, "LowPoly_KM_Island");
         return 1;
     }
 }
