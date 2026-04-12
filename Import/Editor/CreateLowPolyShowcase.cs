@@ -14,7 +14,7 @@ public class CreateLowPolyShowcase
 {
     static string[] PrefabFolders = new[]
     {
-        "Packages/dev.z3nth10n.proceduralcities.import/Import/Models/LowPoly",
+        "Packages/dev.z3nth10n.proceduralcities.import/Models/LowPoly",
         "Assets/LowPoly"
     };
     static string ScenePath = "Assets/Scenes/LowPolyShowcase.unity";
