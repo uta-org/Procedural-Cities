@@ -1,0 +1,2205 @@
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.ProBuilder;
+using UnityEngine.ProBuilder.MeshOperations;
+using System.IO;
+using System.Collections.Generic;
+
+/// <summary>
+/// Generates low-poly versions of heavy FBX models using ProBuilder primitives.
+/// Targets models that were all-tris and couldn't be effectively decimated.
+/// Menu: Procedural Cities / Generate LowPoly Models
+/// </summary>
+public class GenerateLowPolyModels : EditorWindow
+{
+    static string OutputFolder = "Assets/LowPoly";
+    static string MatFolder = "Assets/LowPoly/Materials";
+
+    // Cached materials
+    static Dictionary<string, Material> materials = new Dictionary<string, Material>();
+
+    static System.Func<int>[] AllGenerators => new System.Func<int>[]
+    {
+        GenerateSofa, GenerateBench, GenerateSink, GenerateOven, GenerateTV,
+        GenerateDispenser, GenerateStair, GenerateFountain, GenerateWardrobe,
+        GenerateShelf, GenerateFridge, GenerateToilet, GenerateKitchenCounter,
+        GenerateHanger, GenerateMirror,
+        GenerateAwning, GenerateBed, GenerateBush, GenerateChair, GenerateChoppingBoard,
+        GenerateClock, GenerateComputer, GenerateComputerUser, GenerateCup,
+        GenerateDoor, GenerateDoorFrame, GenerateElevator, GenerateFence,
+        GenerateFireHydrant, GenerateGlass, GenerateGrass, GenerateHanger1,
+        GenerateKettle, GenerateKitchen2, GenerateKitchen3, GenerateKitchen4,
+        GenerateLamp0, GenerateLamp1, GenerateLamp2, GenerateLamp3, GenerateLamp4,
+        GenerateLamppost, GenerateLargeTable, GenerateLocker, GenerateMirror1,
+        GenerateMirror2, GenerateOfficeChair, GenerateOfficeCubicle,
+        GenerateOfficeMeetingTable, GenerateOfficeTable, GenerateOfficeWhiteboard,
+        GeneratePan0, GeneratePan1, GenerateRestaurantChair, GenerateRestaurantTable,
+        GenerateRooftopAc, GenerateRooftopSolar, GenerateRubbishBin,
+        GenerateShelf1, GenerateShelf2, GenerateShelf3, GenerateShelf4, GenerateShelf5,
+        GenerateSmallTable, GenerateSofa1, GenerateStoreShelf, GenerateToaster,
+        GenerateToilet1, GenerateTrafficLight, GenerateTrashBox, GenerateTrashCan,
+        GenerateVase,
+    };
+
+    [MenuItem("Procedural Cities/Generate LowPoly Models")]
+    static void Generate()
+    {
+        var generators = AllGenerators;
+        int count = generators.Length;
+        try
+        {
+            Debug.Log($"[LowPoly] Starting generation of {count} models...");
+            EnsureFolders();
+            materials.Clear();
+
+            int total = 0;
+            for (int i = 0; i < count; i++)
+            {
+                EditorUtility.DisplayProgressBar("Generating LowPoly Models",
+                    $"Model {i + 1}/{count}...", (float)i / count);
+                total += generators[i]();
+            }
+
+            EditorUtility.DisplayProgressBar("Generating LowPoly Models", "Saving assets...", 1f);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log($"[LowPoly] Generated {total} low-poly models in {OutputFolder}");
+            EditorUtility.DisplayDialog("LowPoly Generator",
+                $"Successfully generated {total} low-poly models in:\n{OutputFolder}", "OK");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[LowPoly] EXCEPTION: {ex.Message}\n{ex.StackTrace}");
+            EditorUtility.DisplayDialog("LowPoly Generator",
+                $"Error: {ex.Message}\nCheck console for details.", "OK");
+        }
+        finally
+        {
+            EditorUtility.ClearProgressBar();
+        }
+    }
+
+    static void EnsureFolders()
+    {
+        // Delete stale mesh/prefab assets to prevent 0-vert corruption on re-run.
+        // Materials are reused so we keep them.
+        if (AssetDatabase.IsValidFolder("Assets/LowPoly"))
+        {
+            var stale = AssetDatabase.FindAssets("", new[] { OutputFolder });
+            foreach (var guid in stale)
+            {
+                var p = AssetDatabase.GUIDToAssetPath(guid);
+                if (p.EndsWith(".asset") || p.EndsWith(".prefab"))
+                    AssetDatabase.DeleteAsset(p);
+            }
+        }
+        else
+        {
+            AssetDatabase.CreateFolder("Assets", "LowPoly");
+        }
+        if (!AssetDatabase.IsValidFolder("Assets/LowPoly/Materials"))
+            AssetDatabase.CreateFolder("Assets/LowPoly", "Materials");
+    }
+
+    static Material GetMat(string name, Color color, float metallic = 0f, float smoothness = 0.3f)
+    {
+        if (materials.TryGetValue(name, out var cached)) return cached;
+
+        string path = $"{MatFolder}/{name}.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (mat == null)
+        {
+            mat = new Material(Shader.Find("Standard"));
+            mat.color = color;
+            mat.SetFloat("_Metallic", metallic);
+            mat.SetFloat("_Glossiness", smoothness);
+            AssetDatabase.CreateAsset(mat, path);
+        }
+        materials[name] = mat;
+        return mat;
+    }
+
+    static GameObject SavePrefab(GameObject go, string name)
+    {
+        string path = $"{OutputFolder}/{name}.prefab";
+
+        // Strip ProBuilder components before saving (keep only MeshFilter/MeshRenderer)
+        foreach (var pb in go.GetComponentsInChildren<ProBuilderMesh>())
+        {
+            pb.ToMesh();
+            pb.Refresh();
+            // Bake the mesh
+            var mf = pb.GetComponent<MeshFilter>();
+            if (mf != null && mf.sharedMesh != null)
+            {
+                var bakedMesh = Object.Instantiate(mf.sharedMesh);
+                bakedMesh.name = pb.gameObject.name;
+                string meshPath = $"{OutputFolder}/{name}_{pb.gameObject.name}.asset";
+                AssetDatabase.CreateAsset(bakedMesh, meshPath);
+                mf.sharedMesh = bakedMesh;
+            }
+            Object.DestroyImmediate(pb);
+        }
+
+        var prefab = PrefabUtility.SaveAsPrefabAsset(go, path);
+        Object.DestroyImmediate(go);
+        int verts = 0;
+        foreach (var mf in prefab.GetComponentsInChildren<MeshFilter>())
+            if (mf.sharedMesh != null) verts += mf.sharedMesh.vertexCount;
+        Debug.Log($"[LowPoly] {name}: {verts} verts");
+        return prefab;
+    }
+
+    static ProBuilderMesh CreateBox(Vector3 size, Material mat)
+    {
+        var pb = ShapeGenerator.GenerateCube(PivotLocation.Center, size);
+        pb.GetComponent<MeshRenderer>().sharedMaterial = mat;
+        return pb;
+    }
+
+    static ProBuilderMesh CreateCylinder(float radius, float height, int sides, Material mat)
+    {
+        var pb = ShapeGenerator.GenerateCylinder(PivotLocation.Center, sides, radius, height, 1, -1);
+        pb.GetComponent<MeshRenderer>().sharedMaterial = mat;
+        return pb;
+    }
+
+    // ========================================
+    // SOFA (original: 105K verts) -> ~80 verts
+    // Dimensions: h=0.85m w=1.40m (Sofa1)
+    // ========================================
+    static int GenerateSofa()
+    {
+        var root = new GameObject("LowPoly_Sofa");
+
+        var matFabric = GetMat("LP_Fabric_Gray", new Color(0.45f, 0.42f, 0.40f));
+        var matCushion = GetMat("LP_Fabric_DarkGray", new Color(0.35f, 0.32f, 0.30f));
+        var matLegs = GetMat("LP_Wood_Dark", new Color(0.25f, 0.15f, 0.08f));
+
+        // Seat base
+        var seat = CreateBox(new Vector3(1.4f, 0.2f, 0.6f), matFabric);
+        seat.transform.SetParent(root.transform);
+        seat.transform.localPosition = new Vector3(0, 0.25f, 0);
+        seat.gameObject.name = "Seat";
+
+        // Back rest
+        var back = CreateBox(new Vector3(1.4f, 0.5f, 0.12f), matFabric);
+        back.transform.SetParent(root.transform);
+        back.transform.localPosition = new Vector3(0, 0.55f, -0.24f);
+        back.gameObject.name = "Back";
+
+        // Left armrest
+        var armL = CreateBox(new Vector3(0.12f, 0.3f, 0.6f), matCushion);
+        armL.transform.SetParent(root.transform);
+        armL.transform.localPosition = new Vector3(-0.64f, 0.4f, 0);
+        armL.gameObject.name = "ArmLeft";
+
+        // Right armrest
+        var armR = CreateBox(new Vector3(0.12f, 0.3f, 0.6f), matCushion);
+        armR.transform.SetParent(root.transform);
+        armR.transform.localPosition = new Vector3(0.64f, 0.4f, 0);
+        armR.gameObject.name = "ArmRight";
+
+        // Cushions (2)
+        var cush1 = CreateBox(new Vector3(0.6f, 0.08f, 0.5f), matCushion);
+        cush1.transform.SetParent(root.transform);
+        cush1.transform.localPosition = new Vector3(-0.32f, 0.39f, 0.02f);
+        cush1.gameObject.name = "Cushion1";
+
+        var cush2 = CreateBox(new Vector3(0.6f, 0.08f, 0.5f), matCushion);
+        cush2.transform.SetParent(root.transform);
+        cush2.transform.localPosition = new Vector3(0.32f, 0.39f, 0.02f);
+        cush2.gameObject.name = "Cushion2";
+
+        // 4 legs
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.58f : 0.58f);
+            float z = (i < 2 ? -0.22f : 0.22f);
+            var leg = CreateBox(new Vector3(0.06f, 0.15f, 0.06f), matLegs);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(x, 0.075f, z);
+            leg.gameObject.name = $"Leg{i}";
+        }
+
+        SavePrefab(root, "LowPoly_Sofa");
+        return 1;
+    }
+
+    // ========================================
+    // BENCH (original: 57K verts) -> ~60 verts
+    // Dimensions: h=0.85m w=2.20m
+    // ========================================
+    static int GenerateBench()
+    {
+        var root = new GameObject("LowPoly_Bench");
+        var matWood = GetMat("LP_Wood_Bench", new Color(0.55f, 0.35f, 0.18f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+
+        // Seat planks (3 horizontal)
+        for (int i = 0; i < 3; i++)
+        {
+            var plank = CreateBox(new Vector3(2.0f, 0.04f, 0.12f), matWood);
+            plank.transform.SetParent(root.transform);
+            plank.transform.localPosition = new Vector3(0, 0.44f, -0.13f + i * 0.13f);
+            plank.gameObject.name = $"SeatPlank{i}";
+        }
+
+        // Backrest planks (2)
+        for (int i = 0; i < 2; i++)
+        {
+            var plank = CreateBox(new Vector3(2.0f, 0.08f, 0.03f), matWood);
+            plank.transform.SetParent(root.transform);
+            plank.transform.localPosition = new Vector3(0, 0.58f + i * 0.16f, -0.22f);
+            plank.transform.localRotation = Quaternion.Euler(8, 0, 0);
+            plank.gameObject.name = $"BackPlank{i}";
+        }
+
+        // Metal side supports (2)
+        for (int s = 0; s < 2; s++)
+        {
+            float x = s == 0 ? -0.9f : 0.9f;
+            // Front leg
+            var legF = CreateBox(new Vector3(0.05f, 0.44f, 0.05f), matMetal);
+            legF.transform.SetParent(root.transform);
+            legF.transform.localPosition = new Vector3(x, 0.22f, 0.12f);
+            legF.gameObject.name = $"LegF{s}";
+
+            // Back leg
+            var legB = CreateBox(new Vector3(0.05f, 0.85f, 0.05f), matMetal);
+            legB.transform.SetParent(root.transform);
+            legB.transform.localPosition = new Vector3(x, 0.425f, -0.22f);
+            legB.gameObject.name = $"LegB{s}";
+        }
+
+        SavePrefab(root, "LowPoly_Bench");
+        return 1;
+    }
+
+    // ========================================
+    // SINK (original: 41K verts) -> ~50 verts
+    // Dimensions: h=0.85m w=0.67m
+    // ========================================
+    static int GenerateSink()
+    {
+        var root = new GameObject("LowPoly_Sink");
+        var matCeramic = GetMat("LP_Ceramic_White", new Color(0.92f, 0.92f, 0.90f), 0f, 0.7f);
+        var matChrome = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+
+        // Basin (outer box)
+        var basin = CreateBox(new Vector3(0.6f, 0.18f, 0.45f), matCeramic);
+        basin.transform.SetParent(root.transform);
+        basin.transform.localPosition = new Vector3(0, 0.76f, 0);
+        basin.gameObject.name = "Basin";
+
+        // Basin inner (recessed - smaller, darker)
+        var inner = CreateBox(new Vector3(0.5f, 0.14f, 0.35f), GetMat("LP_Ceramic_Inner", new Color(0.85f, 0.85f, 0.83f)));
+        inner.transform.SetParent(root.transform);
+        inner.transform.localPosition = new Vector3(0, 0.78f, 0);
+        inner.gameObject.name = "BasinInner";
+
+        // Pedestal
+        var pedestal = CreateBox(new Vector3(0.2f, 0.67f, 0.2f), matCeramic);
+        pedestal.transform.SetParent(root.transform);
+        pedestal.transform.localPosition = new Vector3(0, 0.335f, 0);
+        pedestal.gameObject.name = "Pedestal";
+
+        // Faucet base
+        var faucetBase = CreateCylinder(0.02f, 0.12f, 8, matChrome);
+        faucetBase.transform.SetParent(root.transform);
+        faucetBase.transform.localPosition = new Vector3(0, 0.91f, -0.15f);
+        faucetBase.gameObject.name = "FaucetBase";
+
+        // Faucet spout
+        var spout = CreateBox(new Vector3(0.03f, 0.03f, 0.12f), matChrome);
+        spout.transform.SetParent(root.transform);
+        spout.transform.localPosition = new Vector3(0, 0.96f, -0.09f);
+        spout.gameObject.name = "FaucetSpout";
+
+        SavePrefab(root, "LowPoly_Sink");
+        return 1;
+    }
+
+    // ========================================
+    // OVEN (original: 40K verts) -> ~60 verts
+    // Dimensions: h=0.85m w=0.85m
+    // ========================================
+    static int GenerateOven()
+    {
+        var root = new GameObject("LowPoly_Oven");
+        var matBody = GetMat("LP_Appliance_White", new Color(0.9f, 0.9f, 0.88f));
+        var matDoor = GetMat("LP_Oven_Glass", new Color(0.15f, 0.12f, 0.1f), 0.1f, 0.8f);
+        var matKnob = GetMat("LP_Appliance_Silver", new Color(0.7f, 0.7f, 0.72f), 0.6f, 0.5f);
+        var matBurner = GetMat("LP_Metal_Black", new Color(0.1f, 0.1f, 0.1f), 0.5f, 0.3f);
+
+        // Main body
+        var body = CreateBox(new Vector3(0.6f, 0.85f, 0.6f), matBody);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.425f, 0);
+        body.gameObject.name = "Body";
+
+        // Oven door window
+        var door = CreateBox(new Vector3(0.45f, 0.3f, 0.02f), matDoor);
+        door.transform.SetParent(root.transform);
+        door.transform.localPosition = new Vector3(0, 0.28f, 0.31f);
+        door.gameObject.name = "DoorWindow";
+
+        // Stovetop
+        var top = CreateBox(new Vector3(0.6f, 0.02f, 0.6f), matBody);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.86f, 0);
+        top.gameObject.name = "Stovetop";
+
+        // Burners (4 cylinders)
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.15f : 0.15f);
+            float z = (i < 2 ? -0.15f : 0.15f);
+            var burner = CreateCylinder(0.08f, 0.015f, 12, matBurner);
+            burner.transform.SetParent(root.transform);
+            burner.transform.localPosition = new Vector3(x, 0.878f, z);
+            burner.gameObject.name = $"Burner{i}";
+        }
+
+        // Knobs (4)
+        for (int i = 0; i < 4; i++)
+        {
+            var knob = CreateCylinder(0.015f, 0.02f, 6, matKnob);
+            knob.transform.SetParent(root.transform);
+            knob.transform.localPosition = new Vector3(-0.22f + i * 0.14f, 0.68f, 0.31f);
+            knob.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            knob.gameObject.name = $"Knob{i}";
+        }
+
+        SavePrefab(root, "LowPoly_Oven");
+        return 1;
+    }
+
+    // ========================================
+    // TV (original: 64K verts) -> ~30 verts
+    // Dimensions: h=0.50m w=0.88m
+    // ========================================
+    static int GenerateTV()
+    {
+        var root = new GameObject("LowPoly_TV");
+        var matFrame = GetMat("LP_TV_Frame", new Color(0.08f, 0.08f, 0.08f), 0.3f, 0.6f);
+        var matScreen = GetMat("LP_TV_Screen", new Color(0.05f, 0.08f, 0.12f), 0f, 0.9f);
+
+        // Screen
+        var screen = CreateBox(new Vector3(0.88f, 0.50f, 0.04f), matFrame);
+        screen.transform.SetParent(root.transform);
+        screen.transform.localPosition = new Vector3(0, 0.35f, 0);
+        screen.gameObject.name = "Frame";
+
+        // Screen surface
+        var surface = CreateBox(new Vector3(0.82f, 0.44f, 0.005f), matScreen);
+        surface.transform.SetParent(root.transform);
+        surface.transform.localPosition = new Vector3(0, 0.35f, 0.023f);
+        surface.gameObject.name = "Screen";
+
+        // Stand base
+        var standBase = CreateBox(new Vector3(0.3f, 0.02f, 0.15f), matFrame);
+        standBase.transform.SetParent(root.transform);
+        standBase.transform.localPosition = new Vector3(0, 0.01f, 0);
+        standBase.gameObject.name = "StandBase";
+
+        // Stand neck
+        var standNeck = CreateBox(new Vector3(0.06f, 0.08f, 0.06f), matFrame);
+        standNeck.transform.SetParent(root.transform);
+        standNeck.transform.localPosition = new Vector3(0, 0.06f, 0);
+        standNeck.gameObject.name = "StandNeck";
+
+        SavePrefab(root, "LowPoly_TV");
+        return 1;
+    }
+
+    // ========================================
+    // DISPENSER (original: 68K verts) -> ~40 verts
+    // Dimensions: h=1.10m w=0.39m
+    // ========================================
+    static int GenerateDispenser()
+    {
+        var root = new GameObject("LowPoly_Dispenser");
+        var matBody = GetMat("LP_Appliance_White", new Color(0.9f, 0.9f, 0.88f));
+        var matTop = GetMat("LP_Plastic_LightGray", new Color(0.8f, 0.8f, 0.82f));
+        var matTap = GetMat("LP_Plastic_Blue", new Color(0.2f, 0.4f, 0.7f));
+
+        // Main body
+        var body = CreateBox(new Vector3(0.32f, 0.7f, 0.32f), matBody);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.35f, 0);
+        body.gameObject.name = "Body";
+
+        // Water bottle (cylinder on top)
+        var bottle = CreateCylinder(0.12f, 0.35f, 10, matTop);
+        bottle.transform.SetParent(root.transform);
+        bottle.transform.localPosition = new Vector3(0, 0.875f, 0);
+        bottle.gameObject.name = "Bottle";
+
+        // Taps (2 small boxes)
+        var tapBlue = CreateBox(new Vector3(0.04f, 0.04f, 0.04f), matTap);
+        tapBlue.transform.SetParent(root.transform);
+        tapBlue.transform.localPosition = new Vector3(-0.06f, 0.45f, 0.18f);
+        tapBlue.gameObject.name = "TapCold";
+
+        var tapRed = CreateBox(new Vector3(0.04f, 0.04f, 0.04f), GetMat("LP_Plastic_Red", new Color(0.7f, 0.15f, 0.15f)));
+        tapRed.transform.SetParent(root.transform);
+        tapRed.transform.localPosition = new Vector3(0.06f, 0.45f, 0.18f);
+        tapRed.gameObject.name = "TapHot";
+
+        // Drip tray
+        var tray = CreateBox(new Vector3(0.2f, 0.02f, 0.12f), matBody);
+        tray.transform.SetParent(root.transform);
+        tray.transform.localPosition = new Vector3(0, 0.3f, 0.2f);
+        tray.gameObject.name = "DripTray";
+
+        SavePrefab(root, "LowPoly_Dispenser");
+        return 1;
+    }
+
+    // ========================================
+    // STAIR (original: 43K verts) -> ~100 verts
+    // Dimensions: h=3.00m w=2.22m
+    // ========================================
+    static int GenerateStair()
+    {
+        var root = new GameObject("LowPoly_Stair");
+        var matConcrete = GetMat("LP_Concrete", new Color(0.7f, 0.68f, 0.65f));
+        var matRailing = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+
+        // 10 steps
+        float stepH = 0.3f;
+        float stepD = 0.3f;
+        float stepW = 2.0f;
+        for (int i = 0; i < 10; i++)
+        {
+            var step = CreateBox(new Vector3(stepW, stepH, stepD), matConcrete);
+            step.transform.SetParent(root.transform);
+            step.transform.localPosition = new Vector3(0, stepH * 0.5f + stepH * i, stepD * i);
+            step.gameObject.name = $"Step{i}";
+        }
+
+        // Left railing
+        var railL = CreateBox(new Vector3(0.04f, 0.04f, 4.0f), matRailing);
+        railL.transform.SetParent(root.transform);
+        railL.transform.localPosition = new Vector3(-1.0f, 1.5f + 0.45f, 1.35f);
+        railL.transform.localRotation = Quaternion.Euler(45, 0, 0);
+        railL.gameObject.name = "RailingLeft";
+
+        // Right railing
+        var railR = CreateBox(new Vector3(0.04f, 0.04f, 4.0f), matRailing);
+        railR.transform.SetParent(root.transform);
+        railR.transform.localPosition = new Vector3(1.0f, 1.5f + 0.45f, 1.35f);
+        railR.transform.localRotation = Quaternion.Euler(45, 0, 0);
+        railR.gameObject.name = "RailingRight";
+
+        SavePrefab(root, "LowPoly_Stair");
+        return 1;
+    }
+
+    // ========================================
+    // FOUNTAIN (original: 218K verts) -> ~100 verts
+    // Dimensions: h=1.00m w=5.01m
+    // ========================================
+    static int GenerateFountain()
+    {
+        var root = new GameObject("LowPoly_Fountain");
+        var matStone = GetMat("LP_Stone_Gray", new Color(0.65f, 0.63f, 0.60f));
+        var matWater = GetMat("LP_Water", new Color(0.3f, 0.5f, 0.7f, 0.7f), 0f, 0.9f);
+
+        // Base pool (octagonal approximation - cylinder)
+        var pool = CreateCylinder(2.5f, 0.35f, 12, matStone);
+        pool.transform.SetParent(root.transform);
+        pool.transform.localPosition = new Vector3(0, 0.175f, 0);
+        pool.gameObject.name = "Pool";
+
+        // Water surface
+        var water = CreateCylinder(2.3f, 0.02f, 12, matWater);
+        water.transform.SetParent(root.transform);
+        water.transform.localPosition = new Vector3(0, 0.32f, 0);
+        water.gameObject.name = "Water";
+
+        // Center pillar
+        var pillar = CreateCylinder(0.2f, 0.7f, 8, matStone);
+        pillar.transform.SetParent(root.transform);
+        pillar.transform.localPosition = new Vector3(0, 0.35f, 0);
+        pillar.gameObject.name = "Pillar";
+
+        // Top basin
+        var topBasin = CreateCylinder(0.5f, 0.1f, 10, matStone);
+        topBasin.transform.SetParent(root.transform);
+        topBasin.transform.localPosition = new Vector3(0, 0.75f, 0);
+        topBasin.gameObject.name = "TopBasin";
+
+        // Top finial
+        var finial = CreateCylinder(0.08f, 0.25f, 6, matStone);
+        finial.transform.SetParent(root.transform);
+        finial.transform.localPosition = new Vector3(0, 0.925f, 0);
+        finial.gameObject.name = "Finial";
+
+        SavePrefab(root, "LowPoly_Fountain");
+        return 1;
+    }
+
+    // ========================================
+    // WARDROBE (original: 35K verts) -> ~50 verts
+    // Dimensions: h=2.00m w=1.06m
+    // ========================================
+    static int GenerateWardrobe()
+    {
+        var root = new GameObject("LowPoly_Wardrobe");
+        var matWood = GetMat("LP_Wood_Wardrobe", new Color(0.42f, 0.28f, 0.18f));
+        var matHandle = GetMat("LP_Metal_Handle", new Color(0.6f, 0.58f, 0.55f), 0.7f, 0.5f);
+
+        // Main body
+        var body = CreateBox(new Vector3(1.0f, 2.0f, 0.55f), matWood);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 1.0f, 0);
+        body.gameObject.name = "Body";
+
+        // Door split line
+        var split = CreateBox(new Vector3(0.01f, 1.9f, 0.01f), matHandle);
+        split.transform.SetParent(root.transform);
+        split.transform.localPosition = new Vector3(0, 1.0f, 0.28f);
+        split.gameObject.name = "DoorSplit";
+
+        // Handles (2)
+        var handleL = CreateBox(new Vector3(0.02f, 0.12f, 0.02f), matHandle);
+        handleL.transform.SetParent(root.transform);
+        handleL.transform.localPosition = new Vector3(-0.08f, 1.0f, 0.29f);
+        handleL.gameObject.name = "HandleLeft";
+
+        var handleR = CreateBox(new Vector3(0.02f, 0.12f, 0.02f), matHandle);
+        handleR.transform.SetParent(root.transform);
+        handleR.transform.localPosition = new Vector3(0.08f, 1.0f, 0.29f);
+        handleR.gameObject.name = "HandleRight";
+
+        // Base molding
+        var molding = CreateBox(new Vector3(1.04f, 0.06f, 0.58f), matWood);
+        molding.transform.SetParent(root.transform);
+        molding.transform.localPosition = new Vector3(0, 0.03f, 0);
+        molding.gameObject.name = "BaseMolding";
+
+        // Top crown
+        var crown = CreateBox(new Vector3(1.04f, 0.04f, 0.58f), matWood);
+        crown.transform.SetParent(root.transform);
+        crown.transform.localPosition = new Vector3(0, 2.02f, 0);
+        crown.gameObject.name = "Crown";
+
+        SavePrefab(root, "LowPoly_Wardrobe");
+        return 1;
+    }
+
+    // ========================================
+    // SHELF (original: 29K verts) -> ~60 verts
+    // Dimensions: h=1.80m w=1.08m
+    // ========================================
+    static int GenerateShelf()
+    {
+        var root = new GameObject("LowPoly_Shelf");
+        var matWood = GetMat("LP_Wood_Shelf", new Color(0.55f, 0.38f, 0.22f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+
+        // 5 shelves
+        for (int i = 0; i < 5; i++)
+        {
+            var shelf = CreateBox(new Vector3(1.0f, 0.03f, 0.35f), matWood);
+            shelf.transform.SetParent(root.transform);
+            shelf.transform.localPosition = new Vector3(0, 0.02f + i * 0.44f, 0);
+            shelf.gameObject.name = $"Shelf{i}";
+        }
+
+        // 4 vertical supports
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.47f : 0.47f);
+            float z = (i < 2 ? -0.15f : 0.15f);
+            var support = CreateBox(new Vector3(0.03f, 1.78f, 0.03f), matMetal);
+            support.transform.SetParent(root.transform);
+            support.transform.localPosition = new Vector3(x, 0.89f, z);
+            support.gameObject.name = $"Support{i}";
+        }
+
+        SavePrefab(root, "LowPoly_Shelf");
+        return 1;
+    }
+
+    // ========================================
+    // FRIDGE (original: 6K verts, but keeping) -> ~40 verts
+    // Dimensions: h=1.80m w=0.76m
+    // ========================================
+    static int GenerateFridge()
+    {
+        var root = new GameObject("LowPoly_Fridge");
+        var matBody = GetMat("LP_Appliance_White", new Color(0.9f, 0.9f, 0.88f));
+        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+
+        // Main body
+        var body = CreateBox(new Vector3(0.7f, 1.8f, 0.65f), matBody);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.9f, 0);
+        body.gameObject.name = "Body";
+
+        // Freezer door line
+        var freezerLine = CreateBox(new Vector3(0.68f, 0.015f, 0.01f), matHandle);
+        freezerLine.transform.SetParent(root.transform);
+        freezerLine.transform.localPosition = new Vector3(0, 1.3f, 0.33f);
+        freezerLine.gameObject.name = "FreezerLine";
+
+        // Handle top (freezer)
+        var handleTop = CreateBox(new Vector3(0.02f, 0.15f, 0.03f), matHandle);
+        handleTop.transform.SetParent(root.transform);
+        handleTop.transform.localPosition = new Vector3(0.3f, 1.55f, 0.35f);
+        handleTop.gameObject.name = "HandleTop";
+
+        // Handle bottom (fridge)
+        var handleBot = CreateBox(new Vector3(0.02f, 0.2f, 0.03f), matHandle);
+        handleBot.transform.SetParent(root.transform);
+        handleBot.transform.localPosition = new Vector3(0.3f, 0.9f, 0.35f);
+        handleBot.gameObject.name = "HandleBottom";
+
+        SavePrefab(root, "LowPoly_Fridge");
+        return 1;
+    }
+
+    // ========================================
+    // TOILET (original: 128K verts) -> ~60 verts
+    // Dimensions: h=0.40m w=0.33m (Toilet1)
+    // ========================================
+    static int GenerateToilet()
+    {
+        var root = new GameObject("LowPoly_Toilet");
+        var matCeramic = GetMat("LP_Ceramic_White", new Color(0.92f, 0.92f, 0.90f), 0f, 0.7f);
+        var matSeat = GetMat("LP_Plastic_White", new Color(0.88f, 0.88f, 0.86f));
+        var matChrome = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+
+        // Bowl base
+        var bowl = CreateCylinder(0.16f, 0.3f, 10, matCeramic);
+        bowl.transform.SetParent(root.transform);
+        bowl.transform.localPosition = new Vector3(0, 0.15f, 0.05f);
+        bowl.gameObject.name = "Bowl";
+
+        // Seat (flattened cylinder)
+        var seat = CreateCylinder(0.17f, 0.03f, 10, matSeat);
+        seat.transform.SetParent(root.transform);
+        seat.transform.localPosition = new Vector3(0, 0.31f, 0.05f);
+        seat.gameObject.name = "Seat";
+
+        // Tank
+        var tank = CreateBox(new Vector3(0.32f, 0.25f, 0.14f), matCeramic);
+        tank.transform.SetParent(root.transform);
+        tank.transform.localPosition = new Vector3(0, 0.32f, -0.14f);
+        tank.gameObject.name = "Tank";
+
+        // Tank lid
+        var lid = CreateBox(new Vector3(0.34f, 0.03f, 0.15f), matCeramic);
+        lid.transform.SetParent(root.transform);
+        lid.transform.localPosition = new Vector3(0, 0.46f, -0.14f);
+        lid.gameObject.name = "TankLid";
+
+        // Flush handle
+        var flush = CreateBox(new Vector3(0.06f, 0.02f, 0.02f), matChrome);
+        flush.transform.SetParent(root.transform);
+        flush.transform.localPosition = new Vector3(0.18f, 0.44f, -0.14f);
+        flush.gameObject.name = "FlushHandle";
+
+        SavePrefab(root, "LowPoly_Toilet");
+        return 1;
+    }
+
+    // ========================================
+    // KITCHEN COUNTER (original: 305K/162K verts) -> ~80 verts
+    // Dimensions: h=0.90m w=2.17m (Kitchen4)
+    // ========================================
+    static int GenerateKitchenCounter()
+    {
+        var root = new GameObject("LowPoly_KitchenCounter");
+        var matCounter = GetMat("LP_Granite", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
+        var matCabinet = GetMat("LP_Cabinet_White", new Color(0.88f, 0.86f, 0.82f));
+        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        var matSink = GetMat("LP_Metal_Sink", new Color(0.7f, 0.7f, 0.72f), 0.7f, 0.7f);
+
+        // Countertop
+        var top = CreateBox(new Vector3(2.1f, 0.05f, 0.65f), matCounter);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.88f, 0);
+        top.gameObject.name = "Countertop";
+
+        // Cabinet body
+        var cabinet = CreateBox(new Vector3(2.1f, 0.82f, 0.6f), matCabinet);
+        cabinet.transform.SetParent(root.transform);
+        cabinet.transform.localPosition = new Vector3(0, 0.41f, 0);
+        cabinet.gameObject.name = "Cabinet";
+
+        // Cabinet doors (4)
+        for (int i = 0; i < 4; i++)
+        {
+            float x = -0.78f + i * 0.52f;
+            var doorLine = CreateBox(new Vector3(0.01f, 0.7f, 0.01f), matHandle);
+            doorLine.transform.SetParent(root.transform);
+            doorLine.transform.localPosition = new Vector3(x, 0.41f, 0.305f);
+            doorLine.gameObject.name = $"DoorLine{i}";
+
+            var handle = CreateBox(new Vector3(0.02f, 0.08f, 0.02f), matHandle);
+            handle.transform.SetParent(root.transform);
+            handle.transform.localPosition = new Vector3(x + 0.04f, 0.45f, 0.32f);
+            handle.gameObject.name = $"Handle{i}";
+        }
+
+        // Sink basin (recessed rectangle)
+        var sinkBasin = CreateBox(new Vector3(0.4f, 0.04f, 0.35f), matSink);
+        sinkBasin.transform.SetParent(root.transform);
+        sinkBasin.transform.localPosition = new Vector3(0.5f, 0.87f, 0);
+        sinkBasin.gameObject.name = "SinkBasin";
+
+        SavePrefab(root, "LowPoly_KitchenCounter");
+        return 1;
+    }
+
+    // ========================================
+    // HANGER (original: 603K verts!) -> ~40 verts
+    // Dimensions: h=1.70m w=0.47m
+    // ========================================
+    static int GenerateHanger()
+    {
+        var root = new GameObject("LowPoly_Hanger");
+        var matWood = GetMat("LP_Wood_Dark", new Color(0.25f, 0.15f, 0.08f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+
+        // Central pole
+        var pole = CreateCylinder(0.03f, 1.5f, 8, matWood);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 0.85f, 0);
+        pole.gameObject.name = "Pole";
+
+        // Base (cross)
+        var baseX = CreateBox(new Vector3(0.45f, 0.04f, 0.06f), matWood);
+        baseX.transform.SetParent(root.transform);
+        baseX.transform.localPosition = new Vector3(0, 0.02f, 0);
+        baseX.gameObject.name = "BaseX";
+
+        var baseZ = CreateBox(new Vector3(0.06f, 0.04f, 0.45f), matWood);
+        baseZ.transform.SetParent(root.transform);
+        baseZ.transform.localPosition = new Vector3(0, 0.02f, 0);
+        baseZ.gameObject.name = "BaseZ";
+
+        // Top hooks (6 arms radiating out)
+        for (int i = 0; i < 6; i++)
+        {
+            float angle = i * 60f * Mathf.Deg2Rad;
+            float x = Mathf.Cos(angle) * 0.18f;
+            float z = Mathf.Sin(angle) * 0.18f;
+
+            var hook = CreateBox(new Vector3(0.02f, 0.02f, 0.2f), matMetal);
+            hook.transform.SetParent(root.transform);
+            hook.transform.localPosition = new Vector3(x, 1.6f, z);
+            hook.transform.localRotation = Quaternion.Euler(0, -i * 60f, 15f);
+            hook.gameObject.name = $"Hook{i}";
+        }
+
+        // Top cap
+        var cap = CreateCylinder(0.05f, 0.04f, 8, matWood);
+        cap.transform.SetParent(root.transform);
+        cap.transform.localPosition = new Vector3(0, 1.62f, 0);
+        cap.gameObject.name = "Cap";
+
+        SavePrefab(root, "LowPoly_Hanger");
+        return 1;
+    }
+
+    // ========================================
+    // MIRROR (original: 70K verts) -> ~20 verts
+    // Dimensions: h=0.80m w=0.59m
+    // ========================================
+    static int GenerateMirror()
+    {
+        var root = new GameObject("LowPoly_Mirror");
+        var matFrame = GetMat("LP_Wood_Frame", new Color(0.4f, 0.25f, 0.12f));
+        var matMirror = GetMat("LP_Mirror_Silver", new Color(0.85f, 0.88f, 0.9f), 0.8f, 0.95f);
+
+        // Frame
+        var frame = CreateBox(new Vector3(0.59f, 0.80f, 0.04f), matFrame);
+        frame.transform.SetParent(root.transform);
+        frame.transform.localPosition = new Vector3(0, 0.5f, 0);
+        frame.gameObject.name = "Frame";
+
+        // Mirror surface
+        var mirror = CreateBox(new Vector3(0.51f, 0.72f, 0.005f), matMirror);
+        mirror.transform.SetParent(root.transform);
+        mirror.transform.localPosition = new Vector3(0, 0.5f, 0.023f);
+        mirror.gameObject.name = "MirrorSurface";
+
+        SavePrefab(root, "LowPoly_Mirror");
+        return 1;
+    }
+
+    // ========================== BATCH 2 ==========================
+
+    // AWNING h=1.50 w=3.83
+    static int GenerateAwning()
+    {
+        var root = new GameObject("LowPoly_Awning");
+        var matFabric = GetMat("LP_Fabric_Red", new Color(0.7f, 0.15f, 0.12f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        // Canopy (angled)
+        var canopy = CreateBox(new Vector3(3.8f, 0.04f, 1.2f), matFabric);
+        canopy.transform.SetParent(root.transform);
+        canopy.transform.localPosition = new Vector3(0, 1.35f, 0.3f);
+        canopy.transform.localRotation = Quaternion.Euler(15, 0, 0);
+        canopy.gameObject.name = "Canopy";
+        // Front bar
+        var bar = CreateBox(new Vector3(3.8f, 0.04f, 0.04f), matMetal);
+        bar.transform.SetParent(root.transform);
+        bar.transform.localPosition = new Vector3(0, 1.1f, 0.85f);
+        bar.gameObject.name = "FrontBar";
+        // Support rods (2)
+        for (int i = 0; i < 2; i++)
+        {
+            var rod = CreateBox(new Vector3(0.03f, 0.03f, 0.8f), matMetal);
+            rod.transform.SetParent(root.transform);
+            rod.transform.localPosition = new Vector3(i == 0 ? -1.7f : 1.7f, 1.25f, 0.5f);
+            rod.transform.localRotation = Quaternion.Euler(15, 0, 0);
+            rod.gameObject.name = $"Rod{i}";
+        }
+        SavePrefab(root, "LowPoly_Awning");
+        return 1;
+    }
+
+    // BED h=0.55 w=1.77
+    static int GenerateBed()
+    {
+        var root = new GameObject("LowPoly_Bed");
+        var matFrame = GetMat("LP_Wood_Bed", new Color(0.45f, 0.3f, 0.18f));
+        var matMattress = GetMat("LP_Fabric_Mattress", new Color(0.9f, 0.88f, 0.85f));
+        var matPillow = GetMat("LP_Fabric_Pillow", new Color(0.95f, 0.93f, 0.9f));
+        var matBlanket = GetMat("LP_Fabric_Blue", new Color(0.25f, 0.35f, 0.55f));
+        // Frame
+        var frame = CreateBox(new Vector3(1.7f, 0.15f, 2.0f), matFrame);
+        frame.transform.SetParent(root.transform);
+        frame.transform.localPosition = new Vector3(0, 0.075f, 0);
+        frame.gameObject.name = "Frame";
+        // Mattress
+        var mattress = CreateBox(new Vector3(1.6f, 0.2f, 1.9f), matMattress);
+        mattress.transform.SetParent(root.transform);
+        mattress.transform.localPosition = new Vector3(0, 0.25f, 0);
+        mattress.gameObject.name = "Mattress";
+        // Pillows
+        for (int i = 0; i < 2; i++)
+        {
+            var pillow = CreateBox(new Vector3(0.55f, 0.1f, 0.35f), matPillow);
+            pillow.transform.SetParent(root.transform);
+            pillow.transform.localPosition = new Vector3(i == 0 ? -0.4f : 0.4f, 0.4f, -0.75f);
+            pillow.gameObject.name = $"Pillow{i}";
+        }
+        // Blanket
+        var blanket = CreateBox(new Vector3(1.55f, 0.05f, 1.2f), matBlanket);
+        blanket.transform.SetParent(root.transform);
+        blanket.transform.localPosition = new Vector3(0, 0.38f, 0.3f);
+        blanket.gameObject.name = "Blanket";
+        // Headboard
+        var headboard = CreateBox(new Vector3(1.7f, 0.45f, 0.06f), matFrame);
+        headboard.transform.SetParent(root.transform);
+        headboard.transform.localPosition = new Vector3(0, 0.35f, -1.03f);
+        headboard.gameObject.name = "Headboard";
+        SavePrefab(root, "LowPoly_Bed");
+        return 1;
+    }
+
+    // BUSH h=1.00 w=1.04
+    static int GenerateBush()
+    {
+        var root = new GameObject("LowPoly_Bush");
+        var matLeaf = GetMat("LP_Leaf_Green", new Color(0.2f, 0.45f, 0.15f));
+        // 3 overlapping icosahedrons
+        float[] sizes = { 0.5f, 0.42f, 0.38f };
+        Vector3[] offsets = { Vector3.zero, new Vector3(0.25f, -0.05f, 0.15f), new Vector3(-0.2f, -0.08f, -0.12f) };
+        for (int i = 0; i < 3; i++)
+        {
+            var sphere = ShapeGenerator.GenerateIcosahedron(PivotLocation.Center, sizes[i], 1);
+            sphere.GetComponent<MeshRenderer>().sharedMaterial = matLeaf;
+            sphere.transform.SetParent(root.transform);
+            sphere.transform.localPosition = new Vector3(offsets[i].x, 0.5f + offsets[i].y, offsets[i].z);
+            sphere.gameObject.name = $"Bush{i}";
+        }
+        SavePrefab(root, "LowPoly_Bush");
+        return 1;
+    }
+
+    // CHAIR h=0.90 w=0.47
+    static int GenerateChair()
+    {
+        var root = new GameObject("LowPoly_Chair");
+        var matWood = GetMat("LP_Wood_Chair", new Color(0.5f, 0.35f, 0.2f));
+        // Seat
+        var seat = CreateBox(new Vector3(0.42f, 0.04f, 0.42f), matWood);
+        seat.transform.SetParent(root.transform);
+        seat.transform.localPosition = new Vector3(0, 0.45f, 0);
+        seat.gameObject.name = "Seat";
+        // Backrest
+        var back = CreateBox(new Vector3(0.42f, 0.42f, 0.04f), matWood);
+        back.transform.SetParent(root.transform);
+        back.transform.localPosition = new Vector3(0, 0.68f, -0.19f);
+        back.gameObject.name = "Back";
+        // 4 legs
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.17f : 0.17f);
+            float z = (i < 2 ? -0.17f : 0.17f);
+            var leg = CreateBox(new Vector3(0.03f, 0.45f, 0.03f), matWood);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(x, 0.225f, z);
+            leg.gameObject.name = $"Leg{i}";
+        }
+        SavePrefab(root, "LowPoly_Chair");
+        return 1;
+    }
+
+    // CHOPPINGBOARD h=0.10 w=2.92
+    static int GenerateChoppingBoard()
+    {
+        var root = new GameObject("LowPoly_ChoppingBoard");
+        var matWood = GetMat("LP_Wood_Cutting", new Color(0.6f, 0.45f, 0.25f));
+        var board = CreateBox(new Vector3(0.35f, 0.02f, 0.25f), matWood);
+        board.transform.SetParent(root.transform);
+        board.transform.localPosition = new Vector3(0, 0.01f, 0);
+        board.gameObject.name = "Board";
+        // Handle
+        var handle = CreateBox(new Vector3(0.08f, 0.02f, 0.06f), matWood);
+        handle.transform.SetParent(root.transform);
+        handle.transform.localPosition = new Vector3(0.22f, 0.01f, 0);
+        handle.gameObject.name = "Handle";
+        SavePrefab(root, "LowPoly_ChoppingBoard");
+        return 1;
+    }
+
+    // CLOCK h=0.30 w=0.30
+    static int GenerateClock()
+    {
+        var root = new GameObject("LowPoly_Clock");
+        var matBody = GetMat("LP_Plastic_White", new Color(0.88f, 0.88f, 0.86f));
+        var matFace = GetMat("LP_Clock_Face", new Color(0.95f, 0.95f, 0.93f));
+        var matHand = GetMat("LP_Metal_Black", new Color(0.1f, 0.1f, 0.1f), 0.5f, 0.3f);
+        // Body
+        var body = CreateCylinder(0.14f, 0.04f, 16, matBody);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.15f, 0);
+        body.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        body.gameObject.name = "Body";
+        // Face
+        var face = CreateCylinder(0.12f, 0.005f, 16, matFace);
+        face.transform.SetParent(root.transform);
+        face.transform.localPosition = new Vector3(0, 0.15f, 0.023f);
+        face.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        face.gameObject.name = "Face";
+        // Hands
+        var hourH = CreateBox(new Vector3(0.01f, 0.06f, 0.005f), matHand);
+        hourH.transform.SetParent(root.transform);
+        hourH.transform.localPosition = new Vector3(0, 0.18f, 0.026f);
+        hourH.gameObject.name = "HourHand";
+        var minH = CreateBox(new Vector3(0.008f, 0.09f, 0.005f), matHand);
+        minH.transform.SetParent(root.transform);
+        minH.transform.localPosition = new Vector3(0.02f, 0.15f, 0.026f);
+        minH.transform.localRotation = Quaternion.Euler(0, 0, -70);
+        minH.gameObject.name = "MinuteHand";
+        SavePrefab(root, "LowPoly_Clock");
+        return 1;
+    }
+
+    // COMPUTER h=0.45 w=0.54 (monitor)
+    static int GenerateComputer()
+    {
+        var root = new GameObject("LowPoly_Computer");
+        var matFrame = GetMat("LP_TV_Frame", new Color(0.08f, 0.08f, 0.08f), 0.3f, 0.6f);
+        var matScreen = GetMat("LP_TV_Screen", new Color(0.05f, 0.08f, 0.12f), 0f, 0.9f);
+        // Monitor
+        var frame = CreateBox(new Vector3(0.5f, 0.35f, 0.03f), matFrame);
+        frame.transform.SetParent(root.transform);
+        frame.transform.localPosition = new Vector3(0, 0.3f, 0);
+        frame.gameObject.name = "Monitor";
+        var screen = CreateBox(new Vector3(0.44f, 0.29f, 0.005f), matScreen);
+        screen.transform.SetParent(root.transform);
+        screen.transform.localPosition = new Vector3(0, 0.3f, 0.018f);
+        screen.gameObject.name = "Screen";
+        // Stand
+        var neck = CreateBox(new Vector3(0.06f, 0.1f, 0.06f), matFrame);
+        neck.transform.SetParent(root.transform);
+        neck.transform.localPosition = new Vector3(0, 0.08f, 0);
+        neck.gameObject.name = "Neck";
+        var base_ = CreateBox(new Vector3(0.2f, 0.02f, 0.15f), matFrame);
+        base_.transform.SetParent(root.transform);
+        base_.transform.localPosition = new Vector3(0, 0.01f, 0);
+        base_.gameObject.name = "Base";
+        // Keyboard
+        var kb = CreateBox(new Vector3(0.35f, 0.015f, 0.12f), matFrame);
+        kb.transform.SetParent(root.transform);
+        kb.transform.localPosition = new Vector3(0, 0.008f, 0.25f);
+        kb.gameObject.name = "Keyboard";
+        SavePrefab(root, "LowPoly_Computer");
+        return 1;
+    }
+
+    // COMPUTERUSER h=0.75 w=1.43 (desk + monitor)
+    static int GenerateComputerUser()
+    {
+        var root = new GameObject("LowPoly_ComputerUser");
+        var matDesk = GetMat("LP_Wood_Desk", new Color(0.5f, 0.38f, 0.24f));
+        var matFrame = GetMat("LP_TV_Frame", new Color(0.08f, 0.08f, 0.08f), 0.3f, 0.6f);
+        var matScreen = GetMat("LP_TV_Screen", new Color(0.05f, 0.08f, 0.12f), 0f, 0.9f);
+        // Desk top
+        var desk = CreateBox(new Vector3(1.4f, 0.04f, 0.7f), matDesk);
+        desk.transform.SetParent(root.transform);
+        desk.transform.localPosition = new Vector3(0, 0.73f, 0);
+        desk.gameObject.name = "DeskTop";
+        // Desk legs
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.65f : 0.65f);
+            float z = (i < 2 ? -0.3f : 0.3f);
+            var leg = CreateBox(new Vector3(0.04f, 0.73f, 0.04f), matDesk);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(x, 0.365f, z);
+            leg.gameObject.name = $"DeskLeg{i}";
+        }
+        // Monitor
+        var mon = CreateBox(new Vector3(0.45f, 0.3f, 0.03f), matFrame);
+        mon.transform.SetParent(root.transform);
+        mon.transform.localPosition = new Vector3(0, 0.92f, -0.2f);
+        mon.gameObject.name = "Monitor";
+        var scr = CreateBox(new Vector3(0.4f, 0.25f, 0.005f), matScreen);
+        scr.transform.SetParent(root.transform);
+        scr.transform.localPosition = new Vector3(0, 0.92f, -0.182f);
+        scr.gameObject.name = "Screen";
+        SavePrefab(root, "LowPoly_ComputerUser");
+        return 1;
+    }
+
+    // CUP h=0.10 w=0.23
+    static int GenerateCup()
+    {
+        var root = new GameObject("LowPoly_Cup");
+        var matCeramic = GetMat("LP_Ceramic_White", new Color(0.92f, 0.92f, 0.90f), 0f, 0.7f);
+        var cup = CreateCylinder(0.04f, 0.09f, 8, matCeramic);
+        cup.transform.SetParent(root.transform);
+        cup.transform.localPosition = new Vector3(0, 0.045f, 0);
+        cup.gameObject.name = "Cup";
+        // Handle
+        var handle = CreateBox(new Vector3(0.01f, 0.05f, 0.03f), matCeramic);
+        handle.transform.SetParent(root.transform);
+        handle.transform.localPosition = new Vector3(0.05f, 0.045f, 0);
+        handle.gameObject.name = "Handle";
+        SavePrefab(root, "LowPoly_Cup");
+        return 1;
+    }
+
+    // DOOR h=2.10 w=1.22
+    static int GenerateDoor()
+    {
+        var root = new GameObject("LowPoly_Door");
+        var matWood = GetMat("LP_Wood_Door", new Color(0.42f, 0.28f, 0.16f));
+        var matHandle = GetMat("LP_Metal_Handle", new Color(0.6f, 0.58f, 0.55f), 0.7f, 0.5f);
+        // Door panel
+        var panel = CreateBox(new Vector3(0.9f, 2.0f, 0.05f), matWood);
+        panel.transform.SetParent(root.transform);
+        panel.transform.localPosition = new Vector3(0, 1.0f, 0);
+        panel.gameObject.name = "Panel";
+        // Upper panel detail
+        var upperP = CreateBox(new Vector3(0.7f, 0.6f, 0.01f), matWood);
+        upperP.transform.SetParent(root.transform);
+        upperP.transform.localPosition = new Vector3(0, 1.5f, 0.031f);
+        upperP.gameObject.name = "UpperPanel";
+        // Lower panel detail
+        var lowerP = CreateBox(new Vector3(0.7f, 0.6f, 0.01f), matWood);
+        lowerP.transform.SetParent(root.transform);
+        lowerP.transform.localPosition = new Vector3(0, 0.5f, 0.031f);
+        lowerP.gameObject.name = "LowerPanel";
+        // Handle
+        var hndl = CreateCylinder(0.015f, 0.06f, 6, matHandle);
+        hndl.transform.SetParent(root.transform);
+        hndl.transform.localPosition = new Vector3(0.35f, 1.0f, 0.04f);
+        hndl.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        hndl.gameObject.name = "Handle";
+        SavePrefab(root, "LowPoly_Door");
+        return 1;
+    }
+
+    // DOORFRAME h=2.20 w=1.01
+    static int GenerateDoorFrame()
+    {
+        var root = new GameObject("LowPoly_DoorFrame");
+        var matWood = GetMat("LP_Wood_Frame", new Color(0.4f, 0.25f, 0.12f));
+        // Left jamb
+        var left = CreateBox(new Vector3(0.08f, 2.2f, 0.12f), matWood);
+        left.transform.SetParent(root.transform);
+        left.transform.localPosition = new Vector3(-0.5f, 1.1f, 0);
+        left.gameObject.name = "LeftJamb";
+        // Right jamb
+        var right = CreateBox(new Vector3(0.08f, 2.2f, 0.12f), matWood);
+        right.transform.SetParent(root.transform);
+        right.transform.localPosition = new Vector3(0.5f, 1.1f, 0);
+        right.gameObject.name = "RightJamb";
+        // Header
+        var header = CreateBox(new Vector3(1.08f, 0.08f, 0.12f), matWood);
+        header.transform.SetParent(root.transform);
+        header.transform.localPosition = new Vector3(0, 2.16f, 0);
+        header.gameObject.name = "Header";
+        SavePrefab(root, "LowPoly_DoorFrame");
+        return 1;
+    }
+
+    // ELEVATOR h=2.40 w=3.10
+    static int GenerateElevator()
+    {
+        var root = new GameObject("LowPoly_Elevator");
+        var matMetal = GetMat("LP_Metal_Elevator", new Color(0.6f, 0.6f, 0.62f), 0.6f, 0.5f);
+        var matDoor = GetMat("LP_Metal_DoorElev", new Color(0.55f, 0.55f, 0.58f), 0.7f, 0.6f);
+        // Back wall
+        var backW = CreateBox(new Vector3(2.0f, 2.4f, 0.05f), matMetal);
+        backW.transform.SetParent(root.transform);
+        backW.transform.localPosition = new Vector3(0, 1.2f, -0.9f);
+        backW.gameObject.name = "BackWall";
+        // Side walls
+        for (int i = 0; i < 2; i++)
+        {
+            var side = CreateBox(new Vector3(0.05f, 2.4f, 1.8f), matMetal);
+            side.transform.SetParent(root.transform);
+            side.transform.localPosition = new Vector3(i == 0 ? -1.0f : 1.0f, 1.2f, 0);
+            side.gameObject.name = $"SideWall{i}";
+        }
+        // Doors (2)
+        for (int i = 0; i < 2; i++)
+        {
+            var door = CreateBox(new Vector3(0.48f, 2.2f, 0.03f), matDoor);
+            door.transform.SetParent(root.transform);
+            door.transform.localPosition = new Vector3(i == 0 ? -0.25f : 0.25f, 1.1f, 0.88f);
+            door.gameObject.name = $"Door{i}";
+        }
+        // Floor
+        var floor = CreateBox(new Vector3(2.0f, 0.03f, 1.8f), matMetal);
+        floor.transform.SetParent(root.transform);
+        floor.transform.localPosition = new Vector3(0, 0.015f, 0);
+        floor.gameObject.name = "Floor";
+        SavePrefab(root, "LowPoly_Elevator");
+        return 1;
+    }
+
+    // FENCE h=1.20 w=1.78
+    static int GenerateFence()
+    {
+        var root = new GameObject("LowPoly_Fence");
+        var matWood = GetMat("LP_Wood_Fence", new Color(0.52f, 0.38f, 0.22f));
+        // Horizontal rails (2)
+        for (int i = 0; i < 2; i++)
+        {
+            var rail = CreateBox(new Vector3(1.78f, 0.06f, 0.04f), matWood);
+            rail.transform.SetParent(root.transform);
+            rail.transform.localPosition = new Vector3(0, 0.3f + i * 0.55f, 0);
+            rail.gameObject.name = $"Rail{i}";
+        }
+        // Vertical pickets (7)
+        for (int i = 0; i < 7; i++)
+        {
+            var picket = CreateBox(new Vector3(0.06f, 1.2f, 0.02f), matWood);
+            picket.transform.SetParent(root.transform);
+            picket.transform.localPosition = new Vector3(-0.78f + i * 0.26f, 0.6f, 0);
+            picket.gameObject.name = $"Picket{i}";
+        }
+        SavePrefab(root, "LowPoly_Fence");
+        return 1;
+    }
+
+    // FIREHYDRANT h=0.60 w=0.41
+    static int GenerateFireHydrant()
+    {
+        var root = new GameObject("LowPoly_FireHydrant");
+        var matRed = GetMat("LP_Paint_Red", new Color(0.75f, 0.1f, 0.1f));
+        var matCap = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        // Body
+        var body = CreateCylinder(0.1f, 0.45f, 8, matRed);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.225f, 0);
+        body.gameObject.name = "Body";
+        // Top cap
+        var cap = CreateCylinder(0.07f, 0.08f, 8, matCap);
+        cap.transform.SetParent(root.transform);
+        cap.transform.localPosition = new Vector3(0, 0.5f, 0);
+        cap.gameObject.name = "Cap";
+        // Side nozzles
+        for (int i = 0; i < 2; i++)
+        {
+            var nozzle = CreateCylinder(0.04f, 0.1f, 6, matRed);
+            nozzle.transform.SetParent(root.transform);
+            nozzle.transform.localPosition = new Vector3(i == 0 ? -0.14f : 0.14f, 0.32f, 0);
+            nozzle.transform.localRotation = Quaternion.Euler(0, 0, i == 0 ? 90 : -90);
+            nozzle.gameObject.name = $"Nozzle{i}";
+        }
+        SavePrefab(root, "LowPoly_FireHydrant");
+        return 1;
+    }
+
+    // GLASS h=0.15 w=0.14
+    static int GenerateGlass()
+    {
+        var root = new GameObject("LowPoly_Glass");
+        var matGlass = GetMat("LP_Glass_Clear", new Color(0.85f, 0.9f, 0.92f, 0.4f), 0.1f, 0.9f);
+        var glass = CreateCylinder(0.035f, 0.12f, 8, matGlass);
+        glass.transform.SetParent(root.transform);
+        glass.transform.localPosition = new Vector3(0, 0.06f, 0);
+        glass.gameObject.name = "Glass";
+        SavePrefab(root, "LowPoly_Glass");
+        return 1;
+    }
+
+    // GRASS h=0.15 w=0.18
+    static int GenerateGrass()
+    {
+        var root = new GameObject("LowPoly_Grass");
+        var matGrass = GetMat("LP_Grass_Green", new Color(0.25f, 0.55f, 0.15f));
+        // Simple low triangular tufts using prisms
+        for (int i = 0; i < 3; i++)
+        {
+            var tuft = ShapeGenerator.GeneratePrism(PivotLocation.Center, new Vector3(0.08f, 0.14f, 0.04f));
+            tuft.GetComponent<MeshRenderer>().sharedMaterial = matGrass;
+            tuft.transform.SetParent(root.transform);
+            tuft.transform.localPosition = new Vector3(-0.05f + i * 0.05f, 0.07f, (i == 1 ? 0.03f : 0));
+            tuft.transform.localRotation = Quaternion.Euler(0, i * 40, 0);
+            tuft.gameObject.name = $"Tuft{i}";
+        }
+        SavePrefab(root, "LowPoly_Grass");
+        return 1;
+    }
+
+    // HANGER1 h=0.40 w=1.03 (wall-mounted coat rack)
+    static int GenerateHanger1()
+    {
+        var root = new GameObject("LowPoly_Hanger1");
+        var matWood = GetMat("LP_Wood_Dark", new Color(0.25f, 0.15f, 0.08f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        // Bar
+        var bar = CreateBox(new Vector3(1.0f, 0.06f, 0.06f), matWood);
+        bar.transform.SetParent(root.transform);
+        bar.transform.localPosition = new Vector3(0, 0.35f, 0);
+        bar.gameObject.name = "Bar";
+        // Hooks (5)
+        for (int i = 0; i < 5; i++)
+        {
+            var hook = CreateBox(new Vector3(0.02f, 0.08f, 0.03f), matMetal);
+            hook.transform.SetParent(root.transform);
+            hook.transform.localPosition = new Vector3(-0.4f + i * 0.2f, 0.28f, 0.04f);
+            hook.gameObject.name = $"Hook{i}";
+        }
+        SavePrefab(root, "LowPoly_Hanger1");
+        return 1;
+    }
+
+    // KETTLE h=0.25 w=0.29
+    static int GenerateKettle()
+    {
+        var root = new GameObject("LowPoly_Kettle");
+        var matMetal = GetMat("LP_Metal_Kettle", new Color(0.7f, 0.7f, 0.72f), 0.8f, 0.7f);
+        // Body
+        var body = CreateCylinder(0.1f, 0.18f, 10, matMetal);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.09f, 0);
+        body.gameObject.name = "Body";
+        // Lid
+        var lid = CreateCylinder(0.06f, 0.03f, 10, matMetal);
+        lid.transform.SetParent(root.transform);
+        lid.transform.localPosition = new Vector3(0, 0.2f, 0);
+        lid.gameObject.name = "Lid";
+        // Handle
+        var handle = CreateBox(new Vector3(0.02f, 0.08f, 0.08f), matMetal);
+        handle.transform.SetParent(root.transform);
+        handle.transform.localPosition = new Vector3(0, 0.22f, 0);
+        handle.gameObject.name = "Handle";
+        // Spout
+        var spout = CreateBox(new Vector3(0.03f, 0.06f, 0.06f), matMetal);
+        spout.transform.SetParent(root.transform);
+        spout.transform.localPosition = new Vector3(0.12f, 0.15f, 0);
+        spout.transform.localRotation = Quaternion.Euler(0, 0, -30);
+        spout.gameObject.name = "Spout";
+        SavePrefab(root, "LowPoly_Kettle");
+        return 1;
+    }
+
+    // KITCHEN2 h=2.20 w=0.91 (tall kitchen cabinet)
+    static int GenerateKitchen2()
+    {
+        var root = new GameObject("LowPoly_Kitchen2");
+        var matCabinet = GetMat("LP_Cabinet_White", new Color(0.88f, 0.86f, 0.82f));
+        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        var matCounter = GetMat("LP_Granite", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
+        // Lower cabinet
+        var lower = CreateBox(new Vector3(0.85f, 0.85f, 0.6f), matCabinet);
+        lower.transform.SetParent(root.transform);
+        lower.transform.localPosition = new Vector3(0, 0.425f, 0);
+        lower.gameObject.name = "LowerCabinet";
+        // Counter
+        var counter = CreateBox(new Vector3(0.88f, 0.04f, 0.63f), matCounter);
+        counter.transform.SetParent(root.transform);
+        counter.transform.localPosition = new Vector3(0, 0.87f, 0);
+        counter.gameObject.name = "Counter";
+        // Upper cabinet
+        var upper = CreateBox(new Vector3(0.85f, 0.7f, 0.35f), matCabinet);
+        upper.transform.SetParent(root.transform);
+        upper.transform.localPosition = new Vector3(0, 1.8f, -0.12f);
+        upper.gameObject.name = "UpperCabinet";
+        // Handles
+        for (int i = 0; i < 2; i++)
+        {
+            var h = CreateBox(new Vector3(0.02f, 0.08f, 0.02f), matHandle);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(i == 0 ? -0.1f : 0.1f, i == 0 ? 0.5f : 1.6f, i == 0 ? 0.31f : 0.06f);
+            h.gameObject.name = $"Handle{i}";
+        }
+        SavePrefab(root, "LowPoly_Kitchen2");
+        return 1;
+    }
+
+    // KITCHEN3 h=0.90 w=1.59
+    static int GenerateKitchen3()
+    {
+        var root = new GameObject("LowPoly_Kitchen3");
+        var matCabinet = GetMat("LP_Cabinet_White", new Color(0.88f, 0.86f, 0.82f));
+        var matCounter = GetMat("LP_Granite", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
+        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        var top = CreateBox(new Vector3(1.5f, 0.05f, 0.65f), matCounter);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.88f, 0);
+        top.gameObject.name = "Countertop";
+        var cab = CreateBox(new Vector3(1.5f, 0.82f, 0.6f), matCabinet);
+        cab.transform.SetParent(root.transform);
+        cab.transform.localPosition = new Vector3(0, 0.41f, 0);
+        cab.gameObject.name = "Cabinet";
+        for (int i = 0; i < 3; i++)
+        {
+            var h = CreateBox(new Vector3(0.02f, 0.08f, 0.02f), matHandle);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(-0.42f + i * 0.42f, 0.45f, 0.31f);
+            h.gameObject.name = $"Handle{i}";
+        }
+        SavePrefab(root, "LowPoly_Kitchen3");
+        return 1;
+    }
+
+    // KITCHEN4 h=0.90 w=2.17
+    static int GenerateKitchen4()
+    {
+        var root = new GameObject("LowPoly_Kitchen4");
+        var matCabinet = GetMat("LP_Cabinet_White", new Color(0.88f, 0.86f, 0.82f));
+        var matCounter = GetMat("LP_Granite", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
+        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        var matSink = GetMat("LP_Metal_Sink", new Color(0.7f, 0.7f, 0.72f), 0.7f, 0.7f);
+        var top = CreateBox(new Vector3(2.1f, 0.05f, 0.65f), matCounter);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.88f, 0);
+        top.gameObject.name = "Countertop";
+        var cab = CreateBox(new Vector3(2.1f, 0.82f, 0.6f), matCabinet);
+        cab.transform.SetParent(root.transform);
+        cab.transform.localPosition = new Vector3(0, 0.41f, 0);
+        cab.gameObject.name = "Cabinet";
+        for (int i = 0; i < 4; i++)
+        {
+            var h = CreateBox(new Vector3(0.02f, 0.08f, 0.02f), matHandle);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(-0.65f + i * 0.43f, 0.45f, 0.31f);
+            h.gameObject.name = $"Handle{i}";
+        }
+        var sink = CreateBox(new Vector3(0.4f, 0.04f, 0.35f), matSink);
+        sink.transform.SetParent(root.transform);
+        sink.transform.localPosition = new Vector3(0.55f, 0.87f, 0);
+        sink.gameObject.name = "SinkBasin";
+        SavePrefab(root, "LowPoly_Kitchen4");
+        return 1;
+    }
+
+    // LAMP0 h=0.40 w=0.21 (table lamp)
+    static int GenerateLamp0()
+    {
+        var root = new GameObject("LowPoly_Lamp0");
+        var matBase = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var matShade = GetMat("LP_Fabric_LampShade", new Color(0.9f, 0.85f, 0.75f));
+        var basePart = CreateCylinder(0.06f, 0.02f, 8, matBase);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.01f, 0);
+        basePart.gameObject.name = "Base";
+        var pole = CreateCylinder(0.015f, 0.25f, 6, matBase);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 0.14f, 0);
+        pole.gameObject.name = "Pole";
+        var shade = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.1f, 0.12f, 8);
+        shade.GetComponent<MeshRenderer>().sharedMaterial = matShade;
+        shade.transform.SetParent(root.transform);
+        shade.transform.localPosition = new Vector3(0, 0.33f, 0);
+        shade.gameObject.name = "Shade";
+        SavePrefab(root, "LowPoly_Lamp0");
+        return 1;
+    }
+
+    // LAMP1 h=1.50 w=0.42 (floor lamp)
+    static int GenerateLamp1()
+    {
+        var root = new GameObject("LowPoly_Lamp1");
+        var matBase = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var matShade = GetMat("LP_Fabric_LampShade", new Color(0.9f, 0.85f, 0.75f));
+        var basePart = CreateCylinder(0.12f, 0.03f, 10, matBase);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.015f, 0);
+        basePart.gameObject.name = "Base";
+        var pole = CreateCylinder(0.015f, 1.2f, 6, matBase);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 0.63f, 0);
+        pole.gameObject.name = "Pole";
+        var shade = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.18f, 0.22f, 8);
+        shade.GetComponent<MeshRenderer>().sharedMaterial = matShade;
+        shade.transform.SetParent(root.transform);
+        shade.transform.localPosition = new Vector3(0, 1.35f, 0);
+        shade.gameObject.name = "Shade";
+        SavePrefab(root, "LowPoly_Lamp1");
+        return 1;
+    }
+
+    // LAMP2 h=1.50 w=0.32 (floor lamp slim)
+    static int GenerateLamp2()
+    {
+        var root = new GameObject("LowPoly_Lamp2");
+        var matBase = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var matShade = GetMat("LP_Plastic_LightGray", new Color(0.8f, 0.8f, 0.82f));
+        var basePart = CreateCylinder(0.1f, 0.03f, 8, matBase);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.015f, 0);
+        basePart.gameObject.name = "Base";
+        var pole = CreateCylinder(0.012f, 1.2f, 6, matBase);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 0.63f, 0);
+        pole.gameObject.name = "Pole";
+        var shade = CreateCylinder(0.14f, 0.25f, 8, matShade);
+        shade.transform.SetParent(root.transform);
+        shade.transform.localPosition = new Vector3(0, 1.35f, 0);
+        shade.gameObject.name = "Shade";
+        SavePrefab(root, "LowPoly_Lamp2");
+        return 1;
+    }
+
+    // LAMP3 h=0.60 w=0.37 (desk lamp)
+    static int GenerateLamp3()
+    {
+        var root = new GameObject("LowPoly_Lamp3");
+        var matBase = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var matShade = GetMat("LP_Metal_Kettle", new Color(0.7f, 0.7f, 0.72f), 0.8f, 0.7f);
+        var basePart = CreateCylinder(0.08f, 0.02f, 8, matBase);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.01f, 0);
+        basePart.gameObject.name = "Base";
+        // Arm
+        var arm = CreateBox(new Vector3(0.02f, 0.4f, 0.02f), matBase);
+        arm.transform.SetParent(root.transform);
+        arm.transform.localPosition = new Vector3(0, 0.22f, 0);
+        arm.transform.localRotation = Quaternion.Euler(0, 0, 15);
+        arm.gameObject.name = "Arm";
+        // Head
+        var head = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.08f, 0.1f, 8);
+        head.GetComponent<MeshRenderer>().sharedMaterial = matShade;
+        head.transform.SetParent(root.transform);
+        head.transform.localPosition = new Vector3(0.06f, 0.48f, 0);
+        head.transform.localRotation = Quaternion.Euler(0, 0, 30);
+        head.gameObject.name = "Head";
+        SavePrefab(root, "LowPoly_Lamp3");
+        return 1;
+    }
+
+    // LAMP4 h=1.50 w=0.31 (floor lamp modern)
+    static int GenerateLamp4()
+    {
+        var root = new GameObject("LowPoly_Lamp4");
+        var matBase = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var matShade = GetMat("LP_Fabric_LampShade", new Color(0.9f, 0.85f, 0.75f));
+        var basePart = CreateCylinder(0.1f, 0.025f, 8, matBase);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.013f, 0);
+        basePart.gameObject.name = "Base";
+        var pole = CreateCylinder(0.012f, 1.25f, 6, matBase);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 0.65f, 0);
+        pole.gameObject.name = "Pole";
+        var shade = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.13f, 0.2f, 8);
+        shade.GetComponent<MeshRenderer>().sharedMaterial = matShade;
+        shade.transform.SetParent(root.transform);
+        shade.transform.localPosition = new Vector3(0, 1.38f, 0);
+        shade.gameObject.name = "Shade";
+        SavePrefab(root, "LowPoly_Lamp4");
+        return 1;
+    }
+
+    // LAMPPOST h=4.50 w=1.41
+    static int GenerateLamppost()
+    {
+        var root = new GameObject("LowPoly_Lamppost");
+        var matMetal = GetMat("LP_Metal_Lamppost", new Color(0.2f, 0.2f, 0.22f), 0.5f, 0.4f);
+        var matLight = GetMat("LP_Light_Warm", new Color(0.95f, 0.9f, 0.7f));
+        // Pole
+        var pole = CreateCylinder(0.06f, 4.0f, 8, matMetal);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 2.0f, 0);
+        pole.gameObject.name = "Pole";
+        // Arm
+        var arm = CreateBox(new Vector3(0.04f, 0.04f, 0.6f), matMetal);
+        arm.transform.SetParent(root.transform);
+        arm.transform.localPosition = new Vector3(0, 4.1f, 0.3f);
+        arm.transform.localRotation = Quaternion.Euler(20, 0, 0);
+        arm.gameObject.name = "Arm";
+        // Light fixture
+        var light = CreateBox(new Vector3(0.2f, 0.08f, 0.35f), matLight);
+        light.transform.SetParent(root.transform);
+        light.transform.localPosition = new Vector3(0, 4.05f, 0.65f);
+        light.gameObject.name = "Light";
+        // Base
+        var basePart = CreateCylinder(0.15f, 0.15f, 8, matMetal);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.075f, 0);
+        basePart.gameObject.name = "Base";
+        SavePrefab(root, "LowPoly_Lamppost");
+        return 1;
+    }
+
+    // LARGETABLE h=0.75 w=1.51
+    static int GenerateLargeTable()
+    {
+        var root = new GameObject("LowPoly_LargeTable");
+        var matWood = GetMat("LP_Wood_Table", new Color(0.52f, 0.38f, 0.22f));
+        // Top
+        var top = CreateBox(new Vector3(1.4f, 0.05f, 0.8f), matWood);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.73f, 0);
+        top.gameObject.name = "Top";
+        // 4 legs
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.6f : 0.6f);
+            float z = (i < 2 ? -0.32f : 0.32f);
+            var leg = CreateBox(new Vector3(0.05f, 0.7f, 0.05f), matWood);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(x, 0.35f, z);
+            leg.gameObject.name = $"Leg{i}";
+        }
+        SavePrefab(root, "LowPoly_LargeTable");
+        return 1;
+    }
+
+    // LOCKER h=1.80 w=2.90
+    static int GenerateLocker()
+    {
+        var root = new GameObject("LowPoly_Locker");
+        var matMetal = GetMat("LP_Metal_Locker", new Color(0.5f, 0.52f, 0.55f), 0.4f, 0.3f);
+        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        // 4 locker units
+        for (int i = 0; i < 4; i++)
+        {
+            float x = -1.08f + i * 0.72f;
+            var unit = CreateBox(new Vector3(0.68f, 1.8f, 0.5f), matMetal);
+            unit.transform.SetParent(root.transform);
+            unit.transform.localPosition = new Vector3(x, 0.9f, 0);
+            unit.gameObject.name = $"Unit{i}";
+            var hndl = CreateBox(new Vector3(0.02f, 0.1f, 0.02f), matHandle);
+            hndl.transform.SetParent(root.transform);
+            hndl.transform.localPosition = new Vector3(x + 0.28f, 0.9f, 0.26f);
+            hndl.gameObject.name = $"Handle{i}";
+        }
+        SavePrefab(root, "LowPoly_Locker");
+        return 1;
+    }
+
+    // MIRROR1 h=0.80 w=0.51 (round mirror)
+    static int GenerateMirror1()
+    {
+        var root = new GameObject("LowPoly_Mirror1");
+        var matFrame = GetMat("LP_Wood_Frame", new Color(0.4f, 0.25f, 0.12f));
+        var matMirror = GetMat("LP_Mirror_Silver", new Color(0.85f, 0.88f, 0.9f), 0.8f, 0.95f);
+        var frame = CreateCylinder(0.25f, 0.04f, 12, matFrame);
+        frame.transform.SetParent(root.transform);
+        frame.transform.localPosition = new Vector3(0, 0.4f, 0);
+        frame.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        frame.gameObject.name = "Frame";
+        var mirror = CreateCylinder(0.22f, 0.005f, 12, matMirror);
+        mirror.transform.SetParent(root.transform);
+        mirror.transform.localPosition = new Vector3(0, 0.4f, 0.023f);
+        mirror.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        mirror.gameObject.name = "MirrorSurface";
+        SavePrefab(root, "LowPoly_Mirror1");
+        return 1;
+    }
+
+    // MIRROR2 h=0.80 w=0.59
+    static int GenerateMirror2()
+    {
+        var root = new GameObject("LowPoly_Mirror2");
+        var matFrame = GetMat("LP_Metal_Handle", new Color(0.6f, 0.58f, 0.55f), 0.7f, 0.5f);
+        var matMirror = GetMat("LP_Mirror_Silver", new Color(0.85f, 0.88f, 0.9f), 0.8f, 0.95f);
+        var frame = CreateBox(new Vector3(0.59f, 0.80f, 0.04f), matFrame);
+        frame.transform.SetParent(root.transform);
+        frame.transform.localPosition = new Vector3(0, 0.5f, 0);
+        frame.gameObject.name = "Frame";
+        var mirror = CreateBox(new Vector3(0.51f, 0.72f, 0.005f), matMirror);
+        mirror.transform.SetParent(root.transform);
+        mirror.transform.localPosition = new Vector3(0, 0.5f, 0.023f);
+        mirror.gameObject.name = "MirrorSurface";
+        SavePrefab(root, "LowPoly_Mirror2");
+        return 1;
+    }
+
+    // OFFICECHAIR h=1.20 w=0.85
+    static int GenerateOfficeChair()
+    {
+        var root = new GameObject("LowPoly_OfficeChair");
+        var matSeat = GetMat("LP_Fabric_OfficeChair", new Color(0.15f, 0.15f, 0.2f));
+        var matMetal = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        // Seat
+        var seat = CreateBox(new Vector3(0.48f, 0.06f, 0.45f), matSeat);
+        seat.transform.SetParent(root.transform);
+        seat.transform.localPosition = new Vector3(0, 0.5f, 0);
+        seat.gameObject.name = "Seat";
+        // Backrest
+        var back = CreateBox(new Vector3(0.46f, 0.5f, 0.04f), matSeat);
+        back.transform.SetParent(root.transform);
+        back.transform.localPosition = new Vector3(0, 0.8f, -0.22f);
+        back.transform.localRotation = Quaternion.Euler(-5, 0, 0);
+        back.gameObject.name = "Back";
+        // Armrests
+        for (int i = 0; i < 2; i++)
+        {
+            var arm = CreateBox(new Vector3(0.04f, 0.04f, 0.3f), matMetal);
+            arm.transform.SetParent(root.transform);
+            arm.transform.localPosition = new Vector3(i == 0 ? -0.25f : 0.25f, 0.62f, -0.05f);
+            arm.gameObject.name = $"Armrest{i}";
+        }
+        // Center pole
+        var pole = CreateCylinder(0.03f, 0.25f, 6, matMetal);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 0.35f, 0);
+        pole.gameObject.name = "Pole";
+        // Star base (5 legs)
+        for (int i = 0; i < 5; i++)
+        {
+            float angle = i * 72 * Mathf.Deg2Rad;
+            var leg = CreateBox(new Vector3(0.03f, 0.03f, 0.25f), matMetal);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(Mathf.Cos(angle) * 0.15f, 0.06f, Mathf.Sin(angle) * 0.15f);
+            leg.transform.localRotation = Quaternion.Euler(0, -i * 72, 0);
+            leg.gameObject.name = $"BaseLeg{i}";
+        }
+        SavePrefab(root, "LowPoly_OfficeChair");
+        return 1;
+    }
+
+    // OFFICECUBICLE h=1.50 w=1.34
+    static int GenerateOfficeCubicle()
+    {
+        var root = new GameObject("LowPoly_OfficeCubicle");
+        var matPanel = GetMat("LP_Fabric_Cubicle", new Color(0.55f, 0.55f, 0.58f));
+        var matFrame = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        // Back panel
+        var backP = CreateBox(new Vector3(1.3f, 1.5f, 0.04f), matPanel);
+        backP.transform.SetParent(root.transform);
+        backP.transform.localPosition = new Vector3(0, 0.75f, -0.5f);
+        backP.gameObject.name = "BackPanel";
+        // Side panel
+        var sideP = CreateBox(new Vector3(0.04f, 1.5f, 1.0f), matPanel);
+        sideP.transform.SetParent(root.transform);
+        sideP.transform.localPosition = new Vector3(-0.65f, 0.75f, 0);
+        sideP.gameObject.name = "SidePanel";
+        // Desk
+        var desk = CreateBox(new Vector3(1.2f, 0.04f, 0.6f), GetMat("LP_Wood_Desk", new Color(0.5f, 0.38f, 0.24f)));
+        desk.transform.SetParent(root.transform);
+        desk.transform.localPosition = new Vector3(0, 0.73f, -0.15f);
+        desk.gameObject.name = "Desk";
+        SavePrefab(root, "LowPoly_OfficeCubicle");
+        return 1;
+    }
+
+    // OFFICEMEETINGTABLE h=0.75 w=4.00
+    static int GenerateOfficeMeetingTable()
+    {
+        var root = new GameObject("LowPoly_OfficeMeetingTable");
+        var matWood = GetMat("LP_Wood_Table", new Color(0.52f, 0.38f, 0.22f));
+        var matMetal = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        var top = CreateBox(new Vector3(3.8f, 0.05f, 1.4f), matWood);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.73f, 0);
+        top.gameObject.name = "Top";
+        // 4 legs
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -1.7f : 1.7f);
+            float z = (i < 2 ? -0.55f : 0.55f);
+            var leg = CreateBox(new Vector3(0.06f, 0.7f, 0.06f), matMetal);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(x, 0.35f, z);
+            leg.gameObject.name = $"Leg{i}";
+        }
+        SavePrefab(root, "LowPoly_OfficeMeetingTable");
+        return 1;
+    }
+
+    // OFFICETABLE h=0.75 w=1.17
+    static int GenerateOfficeTable()
+    {
+        var root = new GameObject("LowPoly_OfficeTable");
+        var matWood = GetMat("LP_Wood_Desk", new Color(0.5f, 0.38f, 0.24f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var top = CreateBox(new Vector3(1.1f, 0.04f, 0.6f), matWood);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.73f, 0);
+        top.gameObject.name = "Top";
+        // Legs
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.48f : 0.48f);
+            float z = (i < 2 ? -0.25f : 0.25f);
+            var leg = CreateBox(new Vector3(0.04f, 0.7f, 0.04f), matMetal);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(x, 0.35f, z);
+            leg.gameObject.name = $"Leg{i}";
+        }
+        // Back panel (modesty panel)
+        var panel = CreateBox(new Vector3(1.0f, 0.4f, 0.02f), matWood);
+        panel.transform.SetParent(root.transform);
+        panel.transform.localPosition = new Vector3(0, 0.48f, -0.28f);
+        panel.gameObject.name = "ModestyPanel";
+        SavePrefab(root, "LowPoly_OfficeTable");
+        return 1;
+    }
+
+    // OFFICEWHITEBOARD h=1.20 w=2.07
+    static int GenerateOfficeWhiteboard()
+    {
+        var root = new GameObject("LowPoly_OfficeWhiteboard");
+        var matFrame = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var matBoard = GetMat("LP_Whiteboard", new Color(0.96f, 0.96f, 0.95f), 0f, 0.7f);
+        var frame = CreateBox(new Vector3(2.0f, 1.2f, 0.04f), matFrame);
+        frame.transform.SetParent(root.transform);
+        frame.transform.localPosition = new Vector3(0, 0.7f, 0);
+        frame.gameObject.name = "Frame";
+        var board = CreateBox(new Vector3(1.9f, 1.1f, 0.005f), matBoard);
+        board.transform.SetParent(root.transform);
+        board.transform.localPosition = new Vector3(0, 0.7f, 0.023f);
+        board.gameObject.name = "Board";
+        // Tray
+        var tray = CreateBox(new Vector3(1.0f, 0.03f, 0.06f), matFrame);
+        tray.transform.SetParent(root.transform);
+        tray.transform.localPosition = new Vector3(0, 0.12f, 0.04f);
+        tray.gameObject.name = "Tray";
+        SavePrefab(root, "LowPoly_OfficeWhiteboard");
+        return 1;
+    }
+
+    // PAN0 h=0.08 w=0.37
+    static int GeneratePan0()
+    {
+        var root = new GameObject("LowPoly_Pan0");
+        var matMetal = GetMat("LP_Metal_Pan", new Color(0.25f, 0.25f, 0.27f), 0.6f, 0.5f);
+        var pan = CreateCylinder(0.13f, 0.05f, 10, matMetal);
+        pan.transform.SetParent(root.transform);
+        pan.transform.localPosition = new Vector3(0, 0.025f, 0);
+        pan.gameObject.name = "Pan";
+        var handle = CreateBox(new Vector3(0.03f, 0.02f, 0.15f), matMetal);
+        handle.transform.SetParent(root.transform);
+        handle.transform.localPosition = new Vector3(0, 0.03f, 0.2f);
+        handle.gameObject.name = "Handle";
+        SavePrefab(root, "LowPoly_Pan0");
+        return 1;
+    }
+
+    // PAN1 h=0.10 w=0.40
+    static int GeneratePan1()
+    {
+        var root = new GameObject("LowPoly_Pan1");
+        var matMetal = GetMat("LP_Metal_Pan", new Color(0.25f, 0.25f, 0.27f), 0.6f, 0.5f);
+        var pot = CreateCylinder(0.13f, 0.1f, 10, matMetal);
+        pot.transform.SetParent(root.transform);
+        pot.transform.localPosition = new Vector3(0, 0.05f, 0);
+        pot.gameObject.name = "Pot";
+        // 2 side handles
+        for (int i = 0; i < 2; i++)
+        {
+            var h = CreateBox(new Vector3(0.06f, 0.02f, 0.02f), matMetal);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(i == 0 ? -0.16f : 0.16f, 0.08f, 0);
+            h.gameObject.name = $"Handle{i}";
+        }
+        // Lid
+        var lid = CreateCylinder(0.12f, 0.015f, 10, matMetal);
+        lid.transform.SetParent(root.transform);
+        lid.transform.localPosition = new Vector3(0, 0.11f, 0);
+        lid.gameObject.name = "Lid";
+        SavePrefab(root, "LowPoly_Pan1");
+        return 1;
+    }
+
+    // RESTAURANTCHAIR h=0.90 w=0.64
+    static int GenerateRestaurantChair()
+    {
+        var root = new GameObject("LowPoly_RestaurantChair");
+        var matSeat = GetMat("LP_Fabric_RestChair", new Color(0.55f, 0.12f, 0.12f));
+        var matFrame = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var seat = CreateBox(new Vector3(0.44f, 0.05f, 0.42f), matSeat);
+        seat.transform.SetParent(root.transform);
+        seat.transform.localPosition = new Vector3(0, 0.45f, 0);
+        seat.gameObject.name = "Seat";
+        var back = CreateBox(new Vector3(0.44f, 0.4f, 0.04f), matSeat);
+        back.transform.SetParent(root.transform);
+        back.transform.localPosition = new Vector3(0, 0.68f, -0.19f);
+        back.gameObject.name = "Back";
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.18f : 0.18f);
+            float z = (i < 2 ? -0.17f : 0.17f);
+            var leg = CreateCylinder(0.015f, 0.45f, 6, matFrame);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(x, 0.225f, z);
+            leg.gameObject.name = $"Leg{i}";
+        }
+        SavePrefab(root, "LowPoly_RestaurantChair");
+        return 1;
+    }
+
+    // RESTAURANTTABLE h=0.75 w=0.98
+    static int GenerateRestaurantTable()
+    {
+        var root = new GameObject("LowPoly_RestaurantTable");
+        var matWood = GetMat("LP_Wood_Table", new Color(0.52f, 0.38f, 0.22f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var top = CreateCylinder(0.45f, 0.04f, 10, matWood);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.73f, 0);
+        top.gameObject.name = "Top";
+        var pole = CreateCylinder(0.04f, 0.55f, 6, matMetal);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 0.42f, 0);
+        pole.gameObject.name = "Pole";
+        var basePart = CreateCylinder(0.2f, 0.04f, 8, matMetal);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.02f, 0);
+        basePart.gameObject.name = "Base";
+        SavePrefab(root, "LowPoly_RestaurantTable");
+        return 1;
+    }
+
+    // ROOFTOPAC h=0.80 w=0.74
+    static int GenerateRooftopAc()
+    {
+        var root = new GameObject("LowPoly_RooftopAc");
+        var matMetal = GetMat("LP_Metal_AC", new Color(0.6f, 0.62f, 0.65f), 0.4f, 0.3f);
+        var matFan = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var body = CreateBox(new Vector3(0.7f, 0.6f, 0.7f), matMetal);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.3f, 0);
+        body.gameObject.name = "Body";
+        // Fan grill on top
+        var grill = CreateCylinder(0.25f, 0.02f, 10, matFan);
+        grill.transform.SetParent(root.transform);
+        grill.transform.localPosition = new Vector3(0, 0.61f, 0);
+        grill.gameObject.name = "Grill";
+        // Feet
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.28f : 0.28f);
+            float z = (i < 2 ? -0.28f : 0.28f);
+            var foot = CreateBox(new Vector3(0.06f, 0.06f, 0.06f), matFan);
+            foot.transform.SetParent(root.transform);
+            foot.transform.localPosition = new Vector3(x, -0.03f, z);
+            foot.gameObject.name = $"Foot{i}";
+        }
+        SavePrefab(root, "LowPoly_RooftopAc");
+        return 1;
+    }
+
+    // ROOFTOPSOLAR h=0.40 w=0.66
+    static int GenerateRooftopSolar()
+    {
+        var root = new GameObject("LowPoly_RooftopSolar");
+        var matPanel = GetMat("LP_Solar_Panel", new Color(0.12f, 0.15f, 0.25f), 0.3f, 0.6f);
+        var matFrame = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var panel = CreateBox(new Vector3(0.6f, 0.03f, 0.95f), matPanel);
+        panel.transform.SetParent(root.transform);
+        panel.transform.localPosition = new Vector3(0, 0.25f, 0);
+        panel.transform.localRotation = Quaternion.Euler(25, 0, 0);
+        panel.gameObject.name = "Panel";
+        // Support legs
+        for (int i = 0; i < 2; i++)
+        {
+            var leg = CreateBox(new Vector3(0.03f, 0.2f, 0.03f), matFrame);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(i == 0 ? -0.22f : 0.22f, 0.1f, -0.2f);
+            leg.gameObject.name = $"Leg{i}";
+        }
+        SavePrefab(root, "LowPoly_RooftopSolar");
+        return 1;
+    }
+
+    // RUBBISHBIN h=0.90 w=0.86
+    static int GenerateRubbishBin()
+    {
+        var root = new GameObject("LowPoly_RubbishBin");
+        var matPlastic = GetMat("LP_Plastic_Green_Bin", new Color(0.15f, 0.4f, 0.15f));
+        var body = CreateCylinder(0.35f, 0.85f, 8, matPlastic);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.425f, 0);
+        body.gameObject.name = "Body";
+        // Lid
+        var lid = CreateCylinder(0.37f, 0.05f, 8, matPlastic);
+        lid.transform.SetParent(root.transform);
+        lid.transform.localPosition = new Vector3(0, 0.875f, 0);
+        lid.gameObject.name = "Lid";
+        SavePrefab(root, "LowPoly_RubbishBin");
+        return 1;
+    }
+
+    // SHELF1..5 variants
+    static int GenerateShelf1()
+    {
+        return GenerateShelfVariant("LowPoly_Shelf1", 5.5f, 1.8f, 5);
+    }
+    static int GenerateShelf2()
+    {
+        return GenerateShelfVariant("LowPoly_Shelf2", 1.0f, 1.8f, 5);
+    }
+    static int GenerateShelf3()
+    {
+        return GenerateShelfVariant("LowPoly_Shelf3", 1.0f, 1.8f, 5);
+    }
+    static int GenerateShelf4()
+    {
+        return GenerateShelfVariant("LowPoly_Shelf4", 3.4f, 1.8f, 5);
+    }
+    static int GenerateShelf5()
+    {
+        return GenerateShelfVariant("LowPoly_Shelf5", 1.5f, 1.8f, 5);
+    }
+
+    static int GenerateShelfVariant(string name, float width, float height, int shelves)
+    {
+        var root = new GameObject(name);
+        var matWood = GetMat("LP_Wood_Shelf", new Color(0.55f, 0.38f, 0.22f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        float spacing = height / (shelves - 1);
+        for (int i = 0; i < shelves; i++)
+        {
+            var shelf = CreateBox(new Vector3(width - 0.1f, 0.03f, 0.35f), matWood);
+            shelf.transform.SetParent(root.transform);
+            shelf.transform.localPosition = new Vector3(0, 0.02f + i * spacing, 0);
+            shelf.gameObject.name = $"Shelf{i}";
+        }
+        int posts = Mathf.Max(2, Mathf.CeilToInt(width / 1.2f) + 1);
+        for (int i = 0; i < posts; i++)
+        {
+            float x = -(width - 0.1f) / 2f + i * ((width - 0.1f) / (posts - 1));
+            var post = CreateBox(new Vector3(0.03f, height, 0.03f), matMetal);
+            post.transform.SetParent(root.transform);
+            post.transform.localPosition = new Vector3(x, height / 2f, 0.15f);
+            post.gameObject.name = $"Post{i}";
+            var post2 = CreateBox(new Vector3(0.03f, height, 0.03f), matMetal);
+            post2.transform.SetParent(root.transform);
+            post2.transform.localPosition = new Vector3(x, height / 2f, -0.15f);
+            post2.gameObject.name = $"PostB{i}";
+        }
+        SavePrefab(root, name);
+        return 1;
+    }
+
+    // SMALLTABLE h=0.50 w=0.58
+    static int GenerateSmallTable()
+    {
+        var root = new GameObject("LowPoly_SmallTable");
+        var matWood = GetMat("LP_Wood_Table", new Color(0.52f, 0.38f, 0.22f));
+        var top = CreateCylinder(0.27f, 0.035f, 8, matWood);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.48f, 0);
+        top.gameObject.name = "Top";
+        var pole = CreateCylinder(0.03f, 0.35f, 6, matWood);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 0.28f, 0);
+        pole.gameObject.name = "Pole";
+        var basePart = CreateCylinder(0.15f, 0.04f, 8, matWood);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.02f, 0);
+        basePart.gameObject.name = "Base";
+        SavePrefab(root, "LowPoly_SmallTable");
+        return 1;
+    }
+
+    // SOFA1 h=0.85 w=1.40
+    static int GenerateSofa1()
+    {
+        var root = new GameObject("LowPoly_Sofa1");
+        var matFabric = GetMat("LP_Fabric_Brown", new Color(0.45f, 0.32f, 0.2f));
+        var matLegs = GetMat("LP_Wood_Dark", new Color(0.25f, 0.15f, 0.08f));
+        var seat = CreateBox(new Vector3(1.3f, 0.2f, 0.55f), matFabric);
+        seat.transform.SetParent(root.transform);
+        seat.transform.localPosition = new Vector3(0, 0.25f, 0);
+        seat.gameObject.name = "Seat";
+        var back = CreateBox(new Vector3(1.3f, 0.45f, 0.1f), matFabric);
+        back.transform.SetParent(root.transform);
+        back.transform.localPosition = new Vector3(0, 0.55f, -0.22f);
+        back.gameObject.name = "Back";
+        for (int i = 0; i < 2; i++)
+        {
+            var arm = CreateBox(new Vector3(0.1f, 0.25f, 0.55f), matFabric);
+            arm.transform.SetParent(root.transform);
+            arm.transform.localPosition = new Vector3(i == 0 ? -0.6f : 0.6f, 0.38f, 0);
+            arm.gameObject.name = $"Arm{i}";
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.55f : 0.55f);
+            float z = (i < 2 ? -0.2f : 0.2f);
+            var leg = CreateBox(new Vector3(0.05f, 0.15f, 0.05f), matLegs);
+            leg.transform.SetParent(root.transform);
+            leg.transform.localPosition = new Vector3(x, 0.075f, z);
+            leg.gameObject.name = $"Leg{i}";
+        }
+        SavePrefab(root, "LowPoly_Sofa1");
+        return 1;
+    }
+
+    // STORESHELF h=2.00 w=5.18
+    static int GenerateStoreShelf()
+    {
+        return GenerateShelfVariant("LowPoly_StoreShelf", 5.0f, 2.0f, 5);
+    }
+
+    // TOASTER h=0.20 w=0.53
+    static int GenerateToaster()
+    {
+        var root = new GameObject("LowPoly_Toaster");
+        var matMetal = GetMat("LP_Metal_Kettle", new Color(0.7f, 0.7f, 0.72f), 0.8f, 0.7f);
+        var matSlot = GetMat("LP_Metal_Black", new Color(0.1f, 0.1f, 0.1f), 0.5f, 0.3f);
+        var body = CreateBox(new Vector3(0.25f, 0.17f, 0.14f), matMetal);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.085f, 0);
+        body.gameObject.name = "Body";
+        // Slots
+        for (int i = 0; i < 2; i++)
+        {
+            var slot = CreateBox(new Vector3(0.08f, 0.01f, 0.1f), matSlot);
+            slot.transform.SetParent(root.transform);
+            slot.transform.localPosition = new Vector3(-0.05f + i * 0.1f, 0.175f, 0);
+            slot.gameObject.name = $"Slot{i}";
+        }
+        // Lever
+        var lever = CreateBox(new Vector3(0.04f, 0.03f, 0.015f), matMetal);
+        lever.transform.SetParent(root.transform);
+        lever.transform.localPosition = new Vector3(0.14f, 0.1f, 0);
+        lever.gameObject.name = "Lever";
+        SavePrefab(root, "LowPoly_Toaster");
+        return 1;
+    }
+
+    // TOILET1 h=0.40 w=0.33
+    static int GenerateToilet1()
+    {
+        var root = new GameObject("LowPoly_Toilet1");
+        var matCeramic = GetMat("LP_Ceramic_White", new Color(0.92f, 0.92f, 0.90f), 0f, 0.7f);
+        var matSeat = GetMat("LP_Plastic_White", new Color(0.88f, 0.88f, 0.86f));
+        var bowl = CreateCylinder(0.15f, 0.28f, 10, matCeramic);
+        bowl.transform.SetParent(root.transform);
+        bowl.transform.localPosition = new Vector3(0, 0.14f, 0.04f);
+        bowl.gameObject.name = "Bowl";
+        var seat = CreateCylinder(0.16f, 0.025f, 10, matSeat);
+        seat.transform.SetParent(root.transform);
+        seat.transform.localPosition = new Vector3(0, 0.29f, 0.04f);
+        seat.gameObject.name = "Seat";
+        var tank = CreateBox(new Vector3(0.3f, 0.22f, 0.12f), matCeramic);
+        tank.transform.SetParent(root.transform);
+        tank.transform.localPosition = new Vector3(0, 0.28f, -0.12f);
+        tank.gameObject.name = "Tank";
+        SavePrefab(root, "LowPoly_Toilet1");
+        return 1;
+    }
+
+    // TRAFFICLIGHT h=5.00 w=0.68
+    static int GenerateTrafficLight()
+    {
+        var root = new GameObject("LowPoly_TrafficLight");
+        var matPole = GetMat("LP_Metal_Lamppost", new Color(0.2f, 0.2f, 0.22f), 0.5f, 0.4f);
+        var matBody = GetMat("LP_Metal_Black", new Color(0.1f, 0.1f, 0.1f), 0.5f, 0.3f);
+        var matRed = GetMat("LP_Light_Red", new Color(0.9f, 0.1f, 0.1f));
+        var matYellow = GetMat("LP_Light_Yellow", new Color(0.9f, 0.8f, 0.1f));
+        var matGreen = GetMat("LP_Light_Green", new Color(0.1f, 0.85f, 0.15f));
+        // Pole
+        var pole = CreateCylinder(0.06f, 4.2f, 8, matPole);
+        pole.transform.SetParent(root.transform);
+        pole.transform.localPosition = new Vector3(0, 2.1f, 0);
+        pole.gameObject.name = "Pole";
+        // Housing
+        var housing = CreateBox(new Vector3(0.3f, 0.85f, 0.2f), matBody);
+        housing.transform.SetParent(root.transform);
+        housing.transform.localPosition = new Vector3(0, 4.55f, 0);
+        housing.gameObject.name = "Housing";
+        // Lights
+        Material[] lightMats = { matRed, matYellow, matGreen };
+        for (int i = 0; i < 3; i++)
+        {
+            var light = CreateCylinder(0.08f, 0.02f, 8, lightMats[i]);
+            light.transform.SetParent(root.transform);
+            light.transform.localPosition = new Vector3(0, 4.8f - i * 0.25f, 0.11f);
+            light.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            light.gameObject.name = $"Light{i}";
+        }
+        SavePrefab(root, "LowPoly_TrafficLight");
+        return 1;
+    }
+
+    // TRASHBOX h=0.70 w=0.75
+    static int GenerateTrashBox()
+    {
+        var root = new GameObject("LowPoly_TrashBox");
+        var matMetal = GetMat("LP_Metal_TrashBox", new Color(0.45f, 0.45f, 0.48f), 0.4f, 0.3f);
+        var body = CreateBox(new Vector3(0.7f, 0.65f, 0.5f), matMetal);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.325f, 0);
+        body.gameObject.name = "Body";
+        // Lid (hinged)
+        var lid = CreateBox(new Vector3(0.72f, 0.03f, 0.52f), matMetal);
+        lid.transform.SetParent(root.transform);
+        lid.transform.localPosition = new Vector3(0, 0.665f, 0);
+        lid.gameObject.name = "Lid";
+        SavePrefab(root, "LowPoly_TrashBox");
+        return 1;
+    }
+
+    // TRASHCAN h=0.35 w=0.19
+    static int GenerateTrashCan()
+    {
+        var root = new GameObject("LowPoly_TrashCan");
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+        var can = CreateCylinder(0.09f, 0.32f, 8, matMetal);
+        can.transform.SetParent(root.transform);
+        can.transform.localPosition = new Vector3(0, 0.16f, 0);
+        can.gameObject.name = "Can";
+        SavePrefab(root, "LowPoly_TrashCan");
+        return 1;
+    }
+
+    // VASE h=0.30 w=0.13
+    static int GenerateVase()
+    {
+        var root = new GameObject("LowPoly_Vase");
+        var matCeramic = GetMat("LP_Ceramic_Vase", new Color(0.6f, 0.35f, 0.2f), 0.1f, 0.6f);
+        // Body (cylinder narrowing at top)
+        var body = CreateCylinder(0.06f, 0.25f, 8, matCeramic);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, 0.125f, 0);
+        body.gameObject.name = "Body";
+        // Lip
+        var lip = CreateCylinder(0.045f, 0.04f, 8, matCeramic);
+        lip.transform.SetParent(root.transform);
+        lip.transform.localPosition = new Vector3(0, 0.27f, 0);
+        lip.gameObject.name = "Lip";
+        // Base
+        var basePart = CreateCylinder(0.05f, 0.02f, 8, matCeramic);
+        basePart.transform.SetParent(root.transform);
+        basePart.transform.localPosition = new Vector3(0, 0.01f, 0);
+        basePart.gameObject.name = "Base";
+        SavePrefab(root, "LowPoly_Vase");
+        return 1;
+    }
+}
