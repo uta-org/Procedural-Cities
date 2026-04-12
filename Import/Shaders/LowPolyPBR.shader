@@ -60,6 +60,7 @@ Shader "Procedural Cities/LowPoly PBR"
             #if defined(_TRIPLANAR)
             float3 worldPos;
             float3 worldNormal;
+            INTERNAL_DATA
             #endif
         };
 
