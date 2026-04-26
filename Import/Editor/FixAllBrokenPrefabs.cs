@@ -199,15 +199,12 @@ public static class FixAllBrokenPrefabs
         var mr = modelGo.AddComponent<MeshRenderer>();
         mr.sharedMaterials = finalMaterials.ToArray();
 
-        // Label child
+        // Label child (TextMesh auto-creates MeshRenderer with font material)
         var labelGo = new GameObject($"Label_{name}");
         labelGo.transform.SetParent(root.transform);
         labelGo.transform.localPosition = new Vector3(0, labelHeight, 0);
         labelGo.transform.localRotation = Quaternion.identity;
         labelGo.transform.localScale = Vector3.one;
-
-        var labelMr = labelGo.AddComponent<MeshRenderer>();
-        labelMr.sharedMaterial = AssetDatabase.GetBuiltinExtraResource<Material>("Default-Diffuse.mat");
 
         var tm = labelGo.AddComponent<TextMesh>();
         tm.text = name;
@@ -296,9 +293,6 @@ public static class FixAllBrokenPrefabs
         labelGo.transform.SetParent(root.transform);
         labelGo.transform.localPosition = new Vector3(0, maxY + 0.3f, 0);
 
-        var labelMr = labelGo.AddComponent<MeshRenderer>();
-        labelMr.sharedMaterial = AssetDatabase.GetBuiltinExtraResource<Material>("Default-Diffuse.mat");
-
         var tm = labelGo.AddComponent<TextMesh>();
         tm.text = "Tree";
         tm.characterSize = 0.06f;
@@ -312,5 +306,62 @@ public static class FixAllBrokenPrefabs
 
         Debug.Log($"[FixAll] Rebuilt Tree from 3DS ({meshes.Length} meshes)");
         return true;
+    }
+
+    // ─────────────────────────────────────────────────────
+    //  FIX LABELS (repair existing prefabs with wrong material)
+    // ─────────────────────────────────────────────────────
+    [MenuItem("Procedural Cities/Fix Prefab Labels")]
+    static void FixLabels()
+    {
+        var guids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabDir });
+        int fixedCount = 0;
+
+        foreach (var guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab == null) continue;
+
+            var textMeshes = prefab.GetComponentsInChildren<TextMesh>(true);
+            if (textMeshes.Length == 0) continue;
+
+            bool needsFix = false;
+            foreach (var textMesh in textMeshes)
+            {
+                var meshRenderer = textMesh.GetComponent<MeshRenderer>();
+                if (meshRenderer != null && meshRenderer.sharedMaterial != null
+                    && meshRenderer.sharedMaterial.name == "Default-Diffuse")
+                {
+                    needsFix = true;
+                    break;
+                }
+            }
+
+            if (!needsFix) continue;
+
+            // Load prefab contents for editing
+            string prefabContentsPath = path;
+            var root = PrefabUtility.LoadPrefabContents(prefabContentsPath);
+
+            foreach (var textMesh in root.GetComponentsInChildren<TextMesh>(true))
+            {
+                var meshRenderer = textMesh.GetComponent<MeshRenderer>();
+                if (meshRenderer != null)
+                {
+                    // Reset to font material (TextMesh default)
+                    meshRenderer.sharedMaterial = textMesh.font != null
+                        ? textMesh.font.material
+                        : null;
+                }
+            }
+
+            PrefabUtility.SaveAsPrefabAsset(root, prefabContentsPath);
+            PrefabUtility.UnloadPrefabContents(root);
+            fixedCount++;
+        }
+
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[FixAll] Fixed labels on {fixedCount} prefabs.");
     }
 }
