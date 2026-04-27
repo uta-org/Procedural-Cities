@@ -103,7 +103,7 @@
             "sceneName": "[05] ChoppingBoard",
             "position": {
                 "x": 22.34480094909668,
-                "y": -0.10671667754650116,
+                "y": 0.0,
                 "z": 1.6358000040054322
             },
             "rotation": {
@@ -112,8 +112,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.10000000149011612,
-            "worldWidth": 2.9227986335754396,
+            "worldHeight": 0.02,
+            "worldWidth": 0.435,
             "forwardAngleY": 0.0
         },
         {
