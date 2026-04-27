@@ -987,31 +987,98 @@ public class GenerateLowPolyModels : EditorWindow
     static int GenerateClock()
     {
         var root = new GameObject("LowPoly_Clock");
+        float R = 0.14f;        // outer radius
+        float faceR = 0.125f;   // face radius
+        float depth = 0.035f;   // body thickness
+        float cy = 0.15f + R;   // center Y so bottom touches y=0.15
+
         var matBody = GetMat("LP_Plastic_White", new Color(0.88f, 0.88f, 0.86f));
-        var matFace = GetMat("LP_Clock_Face", new Color(0.95f, 0.95f, 0.93f));
+        var matFace = GetMat("LP_Clock_Face", new Color(0.96f, 0.96f, 0.94f));
+        // Face needs emission so it's visible on vertical surfaces with overhead lighting
+        matFace.EnableKeyword("_EMISSION");
+        matFace.SetFloat("_UseEmission", 1f);
+        matFace.SetColor("_EmissionColor", new Color(0.9f, 0.9f, 0.88f, 1f));
+        matFace.SetFloat("_EmissionIntensity", 2f);
+        matFace.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
         var matHand = GetMat("LP_Metal_Black", new Color(0.1f, 0.1f, 0.1f), 0.5f, 0.3f);
-        // Body
-        var body = CreateCylinder(0.14f, 0.04f, 16, matBody);
+        var matRim = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.75f), 0.8f, 0.7f);
+        var matMarker = GetMat("LP_Clock_Marker", new Color(0.15f, 0.15f, 0.15f));
+
+        // Body (main disc, stands upright facing +Z)
+        var body = CreateCylinder(R, depth, 24, matBody);
         body.transform.SetParent(root.transform);
-        body.transform.localPosition = new Vector3(0, 0.15f, 0);
+        body.transform.localPosition = new Vector3(0, cy, 0);
         body.transform.localRotation = Quaternion.Euler(90, 0, 0);
         body.gameObject.name = "Body";
-        // Face
-        var face = CreateCylinder(0.12f, 0.005f, 16, matFace);
+
+        // Chrome rim ring (slightly larger, thin) - on front face (-Z)
+        var rim = CreateCylinder(R + 0.005f, 0.008f, 24, matRim);
+        rim.transform.SetParent(root.transform);
+        rim.transform.localPosition = new Vector3(0, cy, -(depth * 0.5f));
+        rim.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        rim.gameObject.name = "Rim";
+
+        // White face disc - on front face (-Z)
+        float faceZ = -(depth * 0.5f + 0.002f);
+        var face = CreateCylinder(faceR, 0.003f, 24, matFace);
         face.transform.SetParent(root.transform);
-        face.transform.localPosition = new Vector3(0, 0.15f, 0.023f);
+        face.transform.localPosition = new Vector3(0, cy, faceZ);
         face.transform.localRotation = Quaternion.Euler(90, 0, 0);
         face.gameObject.name = "Face";
-        // Hands
-        var hourH = CreateBox(new Vector3(0.01f, 0.06f, 0.005f), matHand);
+
+        // Hour markers (12 ticks around the face) - on front
+        float markerZ = faceZ - 0.002f;
+        for (int h = 0; h < 12; h++)
+        {
+            float angle = h * 30f * Mathf.Deg2Rad;
+            float dist = faceR * 0.82f;
+            float mx = Mathf.Sin(angle) * dist;
+            float my = Mathf.Cos(angle) * dist;
+            // Major ticks at 12/3/6/9, minor for others
+            bool major = (h % 3 == 0);
+            float tickLen = major ? 0.018f : 0.012f;
+            float tickW = major ? 0.008f : 0.005f;
+            var tick = CreateBox(new Vector3(tickW, tickLen, 0.003f), matMarker);
+            tick.transform.SetParent(root.transform);
+            tick.transform.localPosition = new Vector3(mx, cy + my, markerZ);
+            tick.transform.localRotation = Quaternion.Euler(0, 0, -h * 30f);
+            tick.gameObject.name = $"Tick_{h}";
+        }
+
+        // Hour hand (short, thick) - pointing towards ~2 o'clock position
+        float handZ = markerZ - 0.003f;
+        float hourAngleDeg = 60f; // ~2 o'clock position
+        var hourH = CreateBox(new Vector3(0.012f, 0.065f, 0.004f), matHand);
         hourH.transform.SetParent(root.transform);
-        hourH.transform.localPosition = new Vector3(0, 0.18f, 0.026f);
+        float hourDist = 0.032f;
+        float hourRad = hourAngleDeg * Mathf.Deg2Rad;
+        hourH.transform.localPosition = new Vector3(
+            Mathf.Sin(hourRad) * hourDist,
+            cy + Mathf.Cos(hourRad) * hourDist,
+            handZ);
+        hourH.transform.localRotation = Quaternion.Euler(0, 0, -hourAngleDeg);
         hourH.gameObject.name = "HourHand";
-        var minH = CreateBox(new Vector3(0.008f, 0.09f, 0.005f), matHand);
+
+        // Minute hand (long, thin) - pointing towards ~10 o'clock position
+        float minAngleDeg = -60f; // ~10 o'clock position
+        var minH = CreateBox(new Vector3(0.008f, 0.09f, 0.004f), matHand);
         minH.transform.SetParent(root.transform);
-        minH.transform.localPosition = new Vector3(0.02f, 0.15f, 0.026f);
-        minH.transform.localRotation = Quaternion.Euler(0, 0, -70);
+        float minDist = 0.045f;
+        float minRad = minAngleDeg * Mathf.Deg2Rad;
+        minH.transform.localPosition = new Vector3(
+            Mathf.Sin(minRad) * minDist,
+            cy + Mathf.Cos(minRad) * minDist,
+            handZ);
+        minH.transform.localRotation = Quaternion.Euler(0, 0, -minAngleDeg);
         minH.gameObject.name = "MinuteHand";
+
+        // Center pin
+        var pin = CreateCylinder(0.008f, 0.008f, 8, matHand);
+        pin.transform.SetParent(root.transform);
+        pin.transform.localPosition = new Vector3(0, cy, handZ - 0.002f);
+        pin.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        pin.gameObject.name = "CenterPin";
+
         SavePrefab(root, "LowPoly_Clock");
         return 1;
     }
