@@ -11,7 +11,12 @@ namespace ProceduralCities.Import.Editor
         private const string ShowcaseRootName = "PrefabShowcase";
 
         [System.Serializable]
-        private class Vec3Json { public float x, y, z; }
+        private class Vec3Json
+        {
+            public float x,
+                y,
+                z;
+        }
 
         [System.Serializable]
         private class PrefabEntry
@@ -40,14 +45,18 @@ namespace ProceduralCities.Import.Editor
             var root = GameObject.Find(ShowcaseRootName);
             if (root == null)
             {
-                Debug.LogError($"[RestorePrefabTransforms] '{ShowcaseRootName}' not found in scene.");
+                Debug.LogError(
+                    $"[RestorePrefabTransforms] '{ShowcaseRootName}' not found in scene."
+                );
                 return;
             }
 
             var jsonAsset = Resources.Load<TextAsset>(JsonResourceName);
             if (jsonAsset == null)
             {
-                Debug.LogError($"[RestorePrefabTransforms] Resource '{JsonResourceName}' not found. Ensure prefab_transforms.json is in a Resources/ folder.");
+                Debug.LogError(
+                    $"[RestorePrefabTransforms] Resource '{JsonResourceName}' not found. Ensure prefab_transforms.json is in a Resources/ folder."
+                );
                 return;
             }
 
@@ -69,13 +78,23 @@ namespace ProceduralCities.Import.Editor
                 PrefabEntry entry;
                 if (!byName.TryGetValue(child.name, out entry))
                 {
-                    Debug.LogWarning($"[RestorePrefabTransforms] No JSON entry for '{child.name}', skipping.");
+                    Debug.LogWarning(
+                        $"[RestorePrefabTransforms] No JSON entry for '{child.name}', skipping."
+                    );
                     skipped++;
                     continue;
                 }
 
-                child.localPosition = new Vector3(entry.position.x, entry.position.y, entry.position.z);
-                child.localEulerAngles = new Vector3(entry.rotation.x, entry.rotation.y, entry.rotation.z);
+                child.localPosition = new Vector3(
+                    entry.position.x,
+                    entry.position.y,
+                    entry.position.z
+                );
+                child.localEulerAngles = new Vector3(
+                    entry.rotation.x,
+                    entry.rotation.y,
+                    entry.rotation.z
+                );
                 child.localScale = Vector3.one * entry.scale;
 
                 // Fix label scale so it stays at lossy (1,1,1)
@@ -92,10 +111,13 @@ namespace ProceduralCities.Import.Editor
             }
 
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene()
+            );
 
-            Debug.Log($"[RestorePrefabTransforms] Done. Applied: {applied}, Skipped: {skipped}. " +
-                      $"JSON generated: {data.generatedDate}, Player height: {data.playerHeight}m");
+            Debug.Log(
+                $"[RestorePrefabTransforms] Done. Applied: {applied}, Skipped: {skipped}. "
+                    + $"JSON generated: {data.generatedDate}, Player height: {data.playerHeight}m"
+            );
         }
     }
 }
