@@ -128,9 +128,23 @@ public static class RebuildOfficeChair
         }
 
         AssetDatabase.SaveAssets();
+
+        // Clean up intermediate LowPoly assets (individual mesh .asset files + prefab)
+        var staleGuids = AssetDatabase.FindAssets("LowPoly_OfficeChair", new[] { LowPolyDir });
+        int deleted = 0;
+        foreach (var guid in staleGuids)
+        {
+            var p = AssetDatabase.GUIDToAssetPath(guid);
+            if (p.Contains("LowPoly_OfficeChair"))
+            {
+                AssetDatabase.DeleteAsset(p);
+                deleted++;
+            }
+        }
+
         AssetDatabase.Refresh();
 
-        Debug.Log($"[RebuildChair] Done! Bounds: {combinedMesh.bounds.size}, verts={combinedMesh.vertexCount}, mats={finalMaterials.Count}");
+        Debug.Log($"[RebuildChair] Done! Bounds: {combinedMesh.bounds.size}, verts={combinedMesh.vertexCount}, mats={finalMaterials.Count}, cleaned {deleted} intermediate assets");
     }
 
     static void CollectMeshParts(Transform parent, Matrix4x4 parentMatrix,
