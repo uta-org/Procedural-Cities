@@ -1,6 +1,6 @@
 {
     "playerHeight": 2.0,
-    "generatedDate": "2026-04-27 12:05:08",
+    "generatedDate": "2026-04-27 13:13:00",
     "prefabs": [
         {
             "index": 0,
@@ -8,7 +8,7 @@
             "sceneName": "[00] Awning",
             "position": {
                 "x": 2.0278000831604006,
-                "y": -0.3983532786369324,
+                "y": -3.643643379211426,
                 "z": 1.6358000040054322
             },
             "rotation": {
@@ -17,8 +17,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.16399243474006654,
-            "worldWidth": 1.4016132354736329,
+            "worldHeight": 1.500000238418579,
+            "worldWidth": 12.82022476196289,
             "forwardAngleY": 0.0
         },
         {
@@ -36,8 +36,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.28460606932640078,
-            "worldWidth": 1.01963210105896,
+            "worldHeight": 0.550000011920929,
+            "worldWidth": 1.9704346656799317,
             "forwardAngleY": 0.0
         },
         {
@@ -55,8 +55,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.47172462940216067,
-            "worldWidth": 1.1099402904510499,
+            "worldHeight": 0.8500000238418579,
+            "worldWidth": 2.0,
             "forwardAngleY": 0.0
         },
         {
@@ -74,8 +74,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 2.3376708030700685,
-            "worldWidth": 1.0923576354980469,
+            "worldHeight": 1.0,
+            "worldWidth": 1.2499998807907105,
             "forwardAngleY": 0.0
         },
         {
@@ -84,7 +84,7 @@
             "sceneName": "[04] Chair",
             "position": {
                 "x": 18.464000701904298,
-                "y": 0.13350912928581239,
+                "y": 0.44999998807907107,
                 "z": 1.6358000040054322
             },
             "rotation": {
@@ -93,8 +93,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.26701825857162478,
-            "worldWidth": 0.24921704828739167,
+            "worldHeight": 0.8999999761581421,
+            "worldWidth": 0.8399999737739563,
             "forwardAngleY": 0.0
         },
         {
@@ -103,7 +103,7 @@
             "sceneName": "[05] ChoppingBoard",
             "position": {
                 "x": 22.34480094909668,
-                "y": -0.003939701244235039,
+                "y": -0.10671667754650116,
                 "z": 1.6358000040054322
             },
             "rotation": {
@@ -112,8 +112,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.0036917394027113916,
-            "worldWidth": 0.10790210962295532,
+            "worldHeight": 0.10000000149011612,
+            "worldWidth": 2.9227986335754396,
             "forwardAngleY": 0.0
         },
         {
@@ -122,7 +122,7 @@
             "sceneName": "[06] Clock",
             "position": {
                 "x": 26.489299774169923,
-                "y": 0.01760678179562092,
+                "y": 0.15000000596046449,
                 "z": 1.6358000040054322
             },
             "rotation": {
@@ -131,8 +131,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.03521356359124184,
-            "worldWidth": 0.10955330729484558,
+            "worldHeight": 0.30000001192092898,
+            "worldWidth": 0.9333333373069763,
             "forwardAngleY": 0.0
         },
         {
@@ -150,8 +150,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.1601671725511551,
-            "worldWidth": 0.168597012758255,
+            "worldHeight": 0.44999998807907107,
+            "worldWidth": 0.473684161901474,
             "forwardAngleY": 0.0
         },
         {
@@ -169,8 +169,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.8708296418190002,
-            "worldWidth": 1.139403223991394,
+            "worldHeight": 0.75,
+            "worldWidth": 0.9813083410263062,
             "forwardAngleY": 0.0
         },
         {
@@ -179,7 +179,7 @@
             "sceneName": "[09] Cup",
             "position": {
                 "x": 42.83639907836914,
-                "y": 0.018592189997434617,
+                "y": 0.05025339126586914,
                 "z": 1.6358000040054322
             },
             "rotation": {
@@ -188,8 +188,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.036996886134147647,
-            "worldWidth": 0.036996886134147647,
+            "worldHeight": 0.10000000894069672,
+            "worldWidth": 0.10000000894069672,
             "forwardAngleY": 0.0
         },
         {
@@ -207,8 +207,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.38142257928848269,
-            "worldWidth": 0.1525690257549286,
+            "worldHeight": 1.100000023841858,
+            "worldWidth": 0.4399999976158142,
             "forwardAngleY": 0.0
         },
         {
@@ -217,7 +217,7 @@
             "sceneName": "[11] Door",
             "position": {
                 "x": 6.203100204467773,
-                "y": 0.6137210130691528,
+                "y": 1.0499999523162842,
                 "z": 6.026199817657471
             },
             "rotation": {
@@ -226,8 +226,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.2274420261383057,
-            "worldWidth": 0.5523489117622376,
+            "worldHeight": 2.0999999046325685,
+            "worldWidth": 0.9449999928474426,
             "forwardAngleY": 0.0
         },
         {
@@ -245,8 +245,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.3036595582962037,
-            "worldWidth": 0.6399783492088318,
+            "worldHeight": 2.200000047683716,
+            "worldWidth": 1.0800000429153443,
             "forwardAngleY": 0.0
         },
         {
@@ -264,8 +264,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.5974390506744385,
-            "worldWidth": 1.3644790649414063,
+            "worldHeight": 2.4000000953674318,
+            "worldWidth": 2.049999952316284,
             "forwardAngleY": 0.0
         },
         {
@@ -283,8 +283,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.3545445203781128,
-            "worldWidth": 0.5259076952934265,
+            "worldHeight": 1.2000000476837159,
+            "worldWidth": 1.78000009059906,
             "forwardAngleY": 0.0
         },
         {
@@ -302,8 +302,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.13047221302986146,
-            "worldWidth": 0.09181378781795502,
+            "worldHeight": 0.6000000238418579,
+            "worldWidth": 0.4222222864627838,
             "forwardAngleY": 0.0
         },
         {
@@ -321,8 +321,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.2788657546043396,
-            "worldWidth": 1.3279321193695069,
+            "worldHeight": 1.0,
+            "worldWidth": 4.761904716491699,
             "forwardAngleY": 0.0
         },
         {
@@ -340,8 +340,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 2.6305248737335207,
-            "worldWidth": 0.9290313720703125,
+            "worldHeight": 1.7999999523162842,
+            "worldWidth": 0.699999988079071,
             "forwardAngleY": 0.0
         },
         {
@@ -350,7 +350,7 @@
             "sceneName": "[18] Glass",
             "position": {
                 "x": 33.89929962158203,
-                "y": 0.014956377446651459,
+                "y": 0.07500000298023224,
                 "z": 6.026199817657471
             },
             "rotation": {
@@ -359,8 +359,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.029912754893302919,
-            "worldWidth": 0.01744910702109337,
+            "worldHeight": 0.15000000596046449,
+            "worldWidth": 0.08750000596046448,
             "forwardAngleY": 0.0
         },
         {
@@ -378,8 +378,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 2.5734050273895265,
-            "worldWidth": 2.97430419921875,
+            "worldHeight": 0.15000000596046449,
+            "worldWidth": 0.17854508757591248,
             "forwardAngleY": 0.0
         },
         {
@@ -397,8 +397,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.7603484392166138,
-            "worldWidth": 0.2086321860551834,
+            "worldHeight": 1.7000001668930054,
+            "worldWidth": 0.4664634168148041,
             "forwardAngleY": 0.0
         },
         {
@@ -407,7 +407,7 @@
             "sceneName": "[21] Hanger1",
             "position": {
                 "x": 6.203100204467773,
-                "y": -0.06762413680553436,
+                "y": -0.6857143640518189,
                 "z": 10.614800453186036
             },
             "rotation": {
@@ -416,8 +416,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.03944740444421768,
-            "worldWidth": 0.28176718950271609,
+            "worldHeight": 0.3999999761581421,
+            "worldWidth": 2.8571431636810304,
             "forwardAngleY": 0.0
         },
         {
@@ -435,8 +435,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.030896775424480439,
-            "worldWidth": 0.029469627887010576,
+            "worldHeight": 0.25,
+            "worldWidth": 0.23845230042934419,
             "forwardAngleY": 0.0
         },
         {
@@ -454,8 +454,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.3189246654510499,
-            "worldWidth": 0.539838969707489,
+            "worldHeight": 2.200000047683716,
+            "worldWidth": 0.9004652500152588,
             "forwardAngleY": 0.0
         },
         {
@@ -492,8 +492,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.16212530434131623,
-            "worldWidth": 0.3762023448944092,
+            "worldHeight": 0.8999999761581421,
+            "worldWidth": 2.08839750289917,
             "forwardAngleY": 0.0
         },
         {
@@ -502,7 +502,7 @@
             "sceneName": "[26] Lamp0",
             "position": {
                 "x": 26.489299774169923,
-                "y": 0.1464971899986267,
+                "y": 0.4000168740749359,
                 "z": 10.614800453186036
             },
             "rotation": {
@@ -511,8 +511,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.14649100601673127,
-            "worldWidth": 0.09154421836137772,
+            "worldHeight": 0.3999999761581421,
+            "worldWidth": 0.24996542930603028,
             "forwardAngleY": 0.0
         },
         {
@@ -521,7 +521,7 @@
             "sceneName": "[27] Lamp1",
             "position": {
                 "x": 30.38559913635254,
-                "y": 1.1128971576690674,
+                "y": 1.5,
                 "z": 10.614800453186036
             },
             "rotation": {
@@ -530,8 +530,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.1128971576690674,
-            "worldWidth": 0.3118959069252014,
+            "worldHeight": 1.5,
+            "worldWidth": 0.4203837215900421,
             "forwardAngleY": 0.0
         },
         {
@@ -540,7 +540,7 @@
             "sceneName": "[28] Lamp2",
             "position": {
                 "x": 33.89929962158203,
-                "y": 1.045447826385498,
+                "y": 1.5,
                 "z": 10.614800453186036
             },
             "rotation": {
@@ -549,8 +549,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.045447826385498,
-            "worldWidth": 0.22168265283107758,
+            "worldHeight": 1.5,
+            "worldWidth": 0.3180684447288513,
             "forwardAngleY": 0.0
         },
         {
@@ -559,7 +559,7 @@
             "sceneName": "[29] Lamp3",
             "position": {
                 "x": 42.83639907836914,
-                "y": 0.36315491795539858,
+                "y": 0.5999999642372131,
                 "z": 10.614800453186036
             },
             "rotation": {
@@ -568,8 +568,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.36315491795539858,
-            "worldWidth": 0.22095660865306855,
+            "worldHeight": 0.5999999642372131,
+            "worldWidth": 0.36506175994873049,
             "forwardAngleY": 0.0
         },
         {
@@ -578,7 +578,7 @@
             "sceneName": "[30] Lamp4",
             "position": {
                 "x": 2.0278000831604006,
-                "y": 1.112897276878357,
+                "y": 1.5000001192092896,
                 "z": 15.224499702453614
             },
             "rotation": {
@@ -587,8 +587,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.1128971576690674,
-            "worldWidth": 0.22826354205608369,
+            "worldHeight": 1.5,
+            "worldWidth": 0.307661235332489,
             "forwardAngleY": 0.0
         },
         {
@@ -606,8 +606,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 4.646190643310547,
-            "worldWidth": 1.0731123685836793,
+            "worldHeight": 4.5,
+            "worldWidth": 1.0393471717834473,
             "forwardAngleY": 0.0
         },
         {
@@ -625,8 +625,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.33571508526802065,
-            "worldWidth": 0.6225180625915527,
+            "worldHeight": 0.75,
+            "worldWidth": 1.39072847366333,
             "forwardAngleY": 0.0
         },
         {
@@ -644,8 +644,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.759412169456482,
-            "worldWidth": 2.7759616374969484,
+            "worldHeight": 1.7999998331069947,
+            "worldWidth": 2.8399999141693117,
             "forwardAngleY": 0.0
         },
         {
@@ -654,7 +654,7 @@
             "sceneName": "[34] Mirror",
             "position": {
                 "x": 18.464000701904298,
-                "y": -0.07528579235076904,
+                "y": -0.10000002384185791,
                 "z": 15.224499702453614
             },
             "rotation": {
@@ -663,8 +663,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.602286159992218,
-            "worldWidth": 0.4441860616207123,
+            "worldHeight": 0.7999999523162842,
+            "worldWidth": 0.5900000333786011,
             "forwardAngleY": 0.0
         },
         {
@@ -673,7 +673,7 @@
             "sceneName": "[35] Mirror1",
             "position": {
                 "x": 22.34480094909668,
-                "y": -0.04420095682144165,
+                "y": -0.2399998903274536,
                 "z": 15.224499702453614
             },
             "rotation": {
@@ -682,8 +682,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.14733660221099854,
-            "worldWidth": 0.14733657240867616,
+            "worldHeight": 0.7999999523162842,
+            "worldWidth": 0.7999998331069946,
             "forwardAngleY": 0.0
         },
         {
@@ -692,7 +692,7 @@
             "sceneName": "[36] Mirror2",
             "position": {
                 "x": 26.489299774169923,
-                "y": -0.029289066791534425,
+                "y": -0.10000002384185791,
                 "z": 15.224499702453614
             },
             "rotation": {
@@ -701,8 +701,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.23431259393692017,
-            "worldWidth": 0.1728055328130722,
+            "worldHeight": 0.7999999523162842,
+            "worldWidth": 0.5899999737739563,
             "forwardAngleY": 0.0
         },
         {
@@ -711,7 +711,7 @@
             "sceneName": "[37] OfficeChair",
             "position": {
                 "x": 30.38559913635254,
-                "y": 0.0,
+                "y": -0.053689002990722659,
                 "z": 15.224499702453614
             },
             "rotation": {
@@ -720,8 +720,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.6725221872329713,
-            "worldWidth": 1.3899765014648438,
+            "worldHeight": 1.2000000476837159,
+            "worldWidth": 0.6442686319351196,
             "forwardAngleY": 0.0
         },
         {
@@ -739,8 +739,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.9578577876091003,
-            "worldWidth": 0.8429148197174072,
+            "worldHeight": 1.5,
+            "worldWidth": 1.3199999332427979,
             "forwardAngleY": 0.0
         },
         {
@@ -758,8 +758,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.38592594861984255,
-            "worldWidth": 1.9424086809158326,
+            "worldHeight": 0.75,
+            "worldWidth": 3.774834156036377,
             "forwardAngleY": 0.0
         },
         {
@@ -777,8 +777,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.27223944664001467,
-            "worldWidth": 0.3992845416069031,
+            "worldHeight": 0.75,
+            "worldWidth": 1.100000023841858,
             "forwardAngleY": 0.0
         },
         {
@@ -787,7 +787,7 @@
             "sceneName": "[41] OfficeWhiteboard",
             "position": {
                 "x": 6.203100204467773,
-                "y": -0.0552520751953125,
+                "y": -0.10000002384185791,
                 "z": 19.24519920349121
             },
             "rotation": {
@@ -796,8 +796,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.6630252599716187,
-            "worldWidth": 1.1050420999526978,
+            "worldHeight": 1.1999999284744263,
+            "worldWidth": 2.0,
             "forwardAngleY": 0.0
         },
         {
@@ -806,7 +806,7 @@
             "sceneName": "[42] Oven",
             "position": {
                 "x": 9.863900184631348,
-                "y": 0.2104267030954361,
+                "y": 0.42500004172325137,
                 "z": 19.24519920349121
             },
             "rotation": {
@@ -815,8 +815,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.4208534061908722,
-            "worldWidth": 0.29707297682762148,
+            "worldHeight": 0.8500000834465027,
+            "worldWidth": 0.6000000238418579,
             "forwardAngleY": 0.0
         },
         {
@@ -834,8 +834,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.031134018674492837,
-            "worldWidth": 0.2482236623764038,
+            "worldHeight": 0.07999999821186066,
+            "worldWidth": 0.637819766998291,
             "forwardAngleY": 0.0
         },
         {
@@ -853,8 +853,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.09720425307750702,
-            "worldWidth": 0.31436267495155337,
+            "worldHeight": 0.10000000894069672,
+            "worldWidth": 0.3234042525291443,
             "forwardAngleY": 0.0
         },
         {
@@ -872,8 +872,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.6583141684532166,
-            "worldWidth": 0.3291570842266083,
+            "worldHeight": 0.8999999761581421,
+            "worldWidth": 0.44999998807907107,
             "forwardAngleY": 0.0
         },
         {
@@ -891,8 +891,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.28494542837142947,
-            "worldWidth": 0.3419345021247864,
+            "worldHeight": 0.75,
+            "worldWidth": 0.8999999761581421,
             "forwardAngleY": 0.0
         },
         {
@@ -901,7 +901,7 @@
             "sceneName": "[47] RooftopAc",
             "position": {
                 "x": 30.38559913635254,
-                "y": 0.09126514196395874,
+                "y": 0.07058823108673096,
                 "z": 19.24519920349121
             },
             "rotation": {
@@ -910,8 +910,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.0343385934829713,
-            "worldWidth": 1.0647603273391724,
+            "worldHeight": 0.800000011920929,
+            "worldWidth": 0.8235294222831726,
             "forwardAngleY": 0.0
         },
         {
@@ -929,8 +929,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.14140619337558747,
-            "worldWidth": 0.26606133580207827,
+            "worldHeight": 0.3999999761581421,
+            "worldWidth": 0.752615749835968,
             "forwardAngleY": 0.0
         },
         {
@@ -948,8 +948,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.5806610584259033,
-            "worldWidth": 0.4774324595928192,
+            "worldHeight": 0.8999999761581421,
+            "worldWidth": 0.7400000095367432,
             "forwardAngleY": 0.0
         },
         {
@@ -967,8 +967,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.8349735140800476,
-            "worldWidth": 0.4651663303375244,
+            "worldHeight": 1.7999999523162842,
+            "worldWidth": 1.002785563468933,
             "forwardAngleY": 0.0
         },
         {
@@ -986,8 +986,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.5979734659194947,
-            "worldWidth": 4.72860860824585,
+            "worldHeight": 1.7999999523162842,
+            "worldWidth": 5.326430797576904,
             "forwardAngleY": 0.0
         },
         {
@@ -1005,8 +1005,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.8535800576210022,
-            "worldWidth": 0.4326046109199524,
+            "worldHeight": 1.7999998331069947,
+            "worldWidth": 0.9122615456581116,
             "forwardAngleY": 0.0
         },
         {
@@ -1024,8 +1024,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.3939156532287598,
-            "worldWidth": 0.7064531445503235,
+            "worldHeight": 1.7999999523162842,
+            "worldWidth": 0.9122614860534668,
             "forwardAngleY": 0.0
         },
         {
@@ -1043,8 +1043,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.8535800576210022,
-            "worldWidth": 1.5490037202835084,
+            "worldHeight": 1.7999998331069947,
+            "worldWidth": 3.2664849758148195,
             "forwardAngleY": 0.0
         },
         {
@@ -1062,8 +1062,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.1546950340270997,
-            "worldWidth": 0.8998440504074097,
+            "worldHeight": 1.7999999523162842,
+            "worldWidth": 1.4027247428894044,
             "forwardAngleY": 0.0
         },
         {
@@ -1081,8 +1081,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.3315126299858093,
-            "worldWidth": 0.20400778949260713,
+            "worldHeight": 0.8500000238418579,
+            "worldWidth": 0.5230769515037537,
             "forwardAngleY": 0.0
         },
         {
@@ -1100,8 +1100,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.491223692893982,
-            "worldWidth": 2.762836456298828,
+            "worldHeight": 0.5,
+            "worldWidth": 0.5427135229110718,
             "forwardAngleY": 0.0
         },
         {
@@ -1110,7 +1110,7 @@
             "sceneName": "[58] Sofa",
             "position": {
                 "x": 33.89929962158203,
-                "y": 0.020632781088352205,
+                "y": 0.4250006675720215,
                 "z": 21.770000457763673
             },
             "rotation": {
@@ -1119,8 +1119,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.04126549884676933,
-            "worldWidth": 1.3281632661819459,
+            "worldHeight": 0.8499999046325684,
+            "worldWidth": 27.357934951782228,
             "forwardAngleY": 0.0
         },
         {
@@ -1138,8 +1138,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.29910293221473696,
-            "worldWidth": 0.5017210841178894,
+            "worldHeight": 0.8500000238418579,
+            "worldWidth": 1.4258066415786744,
             "forwardAngleY": 0.0
         },
         {
@@ -1157,8 +1157,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.495091438293457,
-            "worldWidth": 1.3276500701904297,
+            "worldHeight": 3.0,
+            "worldWidth": 2.664017915725708,
             "forwardAngleY": 0.0
         },
         {
@@ -1176,8 +1176,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.3418186902999879,
-            "worldWidth": 3.2506961822509767,
+            "worldHeight": 2.0,
+            "worldWidth": 4.84520959854126,
             "forwardAngleY": 0.0
         },
         {
@@ -1195,8 +1195,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.03269039839506149,
-            "worldWidth": 0.05175979807972908,
+            "worldHeight": 0.20000000298023225,
+            "worldWidth": 0.3166666626930237,
             "forwardAngleY": 0.0
         },
         {
@@ -1214,8 +1214,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.12922215461730958,
-            "worldWidth": 0.11607675999403,
+            "worldHeight": 0.4000000059604645,
+            "worldWidth": 0.3593091666698456,
             "forwardAngleY": 0.0
         },
         {
@@ -1233,8 +1233,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.08408955484628678,
-            "worldWidth": 0.08024494349956513,
+            "worldHeight": 0.4000000059604645,
+            "worldWidth": 0.38171184062957766,
             "forwardAngleY": 0.0
         },
         {
@@ -1252,8 +1252,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 2.3426284790039064,
-            "worldWidth": 0.14126402139663697,
+            "worldHeight": 5.0,
+            "worldWidth": 0.30150750279426577,
             "forwardAngleY": 0.0
         },
         {
@@ -1271,8 +1271,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.45266997814178469,
-            "worldWidth": 0.4792976379394531,
+            "worldHeight": 0.699999988079071,
+            "worldWidth": 0.7411764860153198,
             "forwardAngleY": 0.0
         },
         {
@@ -1290,8 +1290,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.10687568783760071,
-            "worldWidth": 0.06011757627129555,
+            "worldHeight": 0.3499999940395355,
+            "worldWidth": 0.19687500596046449,
             "forwardAngleY": 0.0
         },
         {
@@ -1347,8 +1347,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 0.18577554821968079,
-            "worldWidth": 0.27247077226638796,
+            "worldHeight": 0.5,
+            "worldWidth": 0.7333332300186157,
             "forwardAngleY": 0.0
         },
         {
@@ -1366,8 +1366,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.7348686456680298,
-            "worldWidth": 1.3288531303405762,
+            "worldHeight": 0.30000001192092898,
+            "worldWidth": 0.12413791567087174,
             "forwardAngleY": 0.0
         },
         {
@@ -1385,8 +1385,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.0693483352661133,
-            "worldWidth": 0.5451579689979553,
+            "worldHeight": 2.0,
+            "worldWidth": 1.0196077823638917,
             "forwardAngleY": 0.0
         }
     ]

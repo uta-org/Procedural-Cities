@@ -225,7 +225,6 @@ namespace ProceduralCities.Import.Editor
             if (failedNames.Count > 0)
                 msg += $"\nFailed: {string.Join(", ", failedNames)}";
             Debug.Log($"[BakeScales] {msg}");
-            EditorUtility.DisplayDialog("Bake Scales Into Prefabs", msg, "OK");
         }
 
         // ─────────────────────────────────────────────────────
@@ -395,9 +394,276 @@ namespace ProceduralCities.Import.Editor
             }
 
             Debug.Log($"[BakeScales] Fixed {fixedCount} imported model scales.");
-            if (fixedCount > 0)
-                EditorUtility.DisplayDialog("Fix Imported Models",
-                    $"Fixed {fixedCount} imported model import scales.", "OK");
+        }
+
+        // ─────────────────────────────────────────────────────
+        //  CORRECT PREFAB PROPORTIONS TO REAL-WORLD SIZES
+        //  Reads target heights from GenerateLowPolyModels comments
+        //  and scales mesh vertices uniformly so each object matches
+        //  realistic proportions relative to a 1.7m player.
+        // ─────────────────────────────────────────────────────
+        // Target heights (meters) from GenerateLowPolyModels.cs design dimensions
+        private static readonly Dictionary<string, float> TargetHeights = new Dictionary<string, float>
+        {
+            { "Awning",             1.50f },
+            { "Bed",                0.55f },
+            { "Bench",              0.85f },
+            { "Bush",               1.00f },
+            { "Chair",              0.90f },
+            { "ChoppingBoard",      0.10f },
+            { "Clock",              0.30f },
+            { "Computer",           0.45f },
+            { "ComputerUser",       0.75f },
+            { "Cup",                0.10f },
+            { "Dispenser",          1.10f },
+            { "Door",               2.10f },
+            { "DoorFrame",          2.20f },
+            { "Elevator",           2.40f },
+            { "Fence",              1.20f },
+            { "FireHydrant",        0.60f },
+            { "Fountain",           1.00f },
+            { "Fridge",             1.80f },
+            { "Glass",              0.15f },
+            { "Grass",              0.15f },
+            { "Hanger",             1.70f },
+            { "Hanger1",            0.40f },
+            { "Kettle",             0.25f },
+            { "Kitchen2",           2.20f },
+            { "Kitchen3",           0.90f },
+            { "Kitchen4",           0.90f },
+            { "Lamp0",              0.40f },
+            { "Lamp1",              1.50f },
+            { "Lamp2",              1.50f },
+            { "Lamp3",              0.60f },
+            { "Lamp4",              1.50f },
+            { "Lamppost",           4.50f },
+            { "LargeTable",         0.75f },
+            { "Locker",             1.80f },
+            { "Mirror",             0.80f },
+            { "Mirror1",            0.80f },
+            { "Mirror2",            0.80f },
+            { "OfficeChair",        1.20f },
+            { "OfficeCubicle",      1.50f },
+            { "OfficeMeetingTable", 0.75f },
+            { "OfficeTable",        0.75f },
+            { "OfficeWhiteboard",   1.20f },
+            { "Oven",               0.85f },
+            { "Pan0",               0.08f },
+            { "Pan1",               0.10f },
+            { "RestaurantChair",    0.90f },
+            { "RestaurantTable",    0.75f },
+            { "RooftopAc",          0.80f },
+            { "RooftopSolar",       0.40f },
+            { "RubbishBin",         0.90f },
+            { "Shelf",              1.80f },
+            { "Shelf1",             1.80f },
+            { "Shelf2",             1.80f },
+            { "Shelf3",             1.80f },
+            { "Shelf4",             1.80f },
+            { "Shelf5",             1.80f },
+            { "Sink",               0.85f },
+            { "SmallTable",         0.50f },
+            { "Sofa",               0.85f },
+            { "Sofa1",              0.85f },
+            { "Stair",              3.00f },
+            { "StoreShelf",         2.00f },
+            { "Toaster",            0.20f },
+            { "Toilet",             0.40f },
+            { "Toilet1",            0.40f },
+            { "TrafficLight",       5.00f },
+            { "TrashBox",           0.70f },
+            { "TrashCan",           0.35f },
+            { "Tv",                 0.50f },
+            { "Vase",               0.30f },
+            { "Wardrobe",           2.00f },
+        };
+
+        [MenuItem("Procedural Cities/Correct Prefab Proportions (Real-World Sizes)")]
+        public static void CorrectPrefabProportions()
+        {
+            string jsonPath = FindJsonPath();
+            if (string.IsNullOrEmpty(jsonPath))
+            {
+                Debug.LogError("[CorrectProportions] Cannot find prefab_transforms.json");
+                return;
+            }
+
+            string jsonText = File.ReadAllText(jsonPath);
+            var data = JsonUtility.FromJson<TransformData>(jsonText);
+            if (data?.prefabs == null)
+            {
+                Debug.LogError("[CorrectProportions] Failed to parse prefab_transforms.json");
+                return;
+            }
+
+            var entryByName = new Dictionary<string, PrefabEntry>();
+            foreach (var p in data.prefabs)
+                entryByName[p.name] = p;
+
+            var guids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabDir });
+            var importedModelExtensions = new HashSet<string> { ".3ds", ".obj", ".fbx", ".blend", ".dae" };
+            int corrected = 0, skipped = 0, failed = 0;
+            var correctedNames = new List<string>();
+            var failedNames = new List<string>();
+
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string prefabPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                string prefabName = Path.GetFileNameWithoutExtension(prefabPath);
+
+                EditorUtility.DisplayProgressBar("Correcting Proportions",
+                    $"Processing {prefabName} ({i + 1}/{guids.Length})",
+                    (float)i / guids.Length);
+
+                if (!TargetHeights.TryGetValue(prefabName, out float targetH))
+                {
+                    Debug.Log($"[CorrectProportions] No target height for '{prefabName}', skipping.");
+                    skipped++;
+                    continue;
+                }
+
+                if (!entryByName.TryGetValue(prefabName, out var entry))
+                {
+                    Debug.LogWarning($"[CorrectProportions] No JSON entry for '{prefabName}', skipping.");
+                    skipped++;
+                    continue;
+                }
+
+                float currentH = entry.worldHeight;
+                if (currentH < 0.0001f)
+                {
+                    Debug.LogWarning($"[CorrectProportions] '{prefabName}' has near-zero height ({currentH}), skipping.");
+                    failedNames.Add(prefabName + " (zero height)");
+                    failed++;
+                    continue;
+                }
+
+                float factor = targetH / currentH;
+
+                // Skip if already within 2% tolerance
+                if (Mathf.Abs(factor - 1f) < 0.02f)
+                {
+                    Debug.Log($"[CorrectProportions] '{prefabName}': factor={factor:F4} ≈ 1.0, skipping.");
+                    skipped++;
+                    continue;
+                }
+
+                // Check if mesh is an imported model
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                if (prefab == null) { failed++; continue; }
+
+                var mf = prefab.GetComponentInChildren<MeshFilter>();
+                if (mf == null || mf.sharedMesh == null) { failed++; continue; }
+
+                string meshPath = AssetDatabase.GetAssetPath(mf.sharedMesh);
+                string ext = Path.GetExtension(meshPath).ToLowerInvariant();
+
+                if (importedModelExtensions.Contains(ext))
+                {
+                    // Imported model: adjust ModelImporter.globalScale
+                    var importer = AssetImporter.GetAtPath(meshPath) as ModelImporter;
+                    if (importer == null) { failed++; continue; }
+
+                    float oldScale = importer.globalScale;
+                    importer.globalScale = oldScale * factor;
+
+                    Debug.Log($"[CorrectProportions] '{prefabName}' (imported): globalScale {oldScale:F6} → {importer.globalScale:F6} " +
+                              $"(factor={factor:F4}, currentH={currentH:F4} → targetH={targetH:F4})");
+
+                    importer.SaveAndReimport();
+                }
+                else
+                {
+                    // _Combined.asset or runtime mesh: scale vertices
+                    var prefabContents = PrefabUtility.LoadPrefabContents(prefabPath);
+                    if (prefabContents == null) { failed++; continue; }
+
+                    Transform meshChild = null;
+                    Transform labelChild = null;
+                    foreach (Transform child in prefabContents.transform)
+                    {
+                        if (meshChild == null &&
+                            (child.GetComponent<MeshFilter>() != null || child.GetComponent<Renderer>() != null))
+                            meshChild = child;
+                        if (labelChild == null && child.name.StartsWith("Label_"))
+                            labelChild = child;
+                    }
+
+                    if (meshChild == null)
+                    {
+                        PrefabUtility.UnloadPrefabContents(prefabContents);
+                        failed++;
+                        continue;
+                    }
+
+                    var meshFilter = meshChild.GetComponent<MeshFilter>();
+                    if (meshFilter == null || meshFilter.sharedMesh == null)
+                    {
+                        PrefabUtility.UnloadPrefabContents(prefabContents);
+                        failed++;
+                        continue;
+                    }
+
+                    var mesh = meshFilter.sharedMesh;
+                    var vertices = mesh.vertices;
+                    for (int v = 0; v < vertices.Length; v++)
+                        vertices[v] *= factor;
+
+                    mesh.vertices = vertices;
+                    mesh.RecalculateBounds();
+                    mesh.RecalculateNormals();
+                    EditorUtility.SetDirty(mesh);
+
+                    // Update label position
+                    if (labelChild != null)
+                    {
+                        float newLabelY = mesh.bounds.max.y + 0.05f;
+                        labelChild.localPosition = new Vector3(0, newLabelY, 0);
+                    }
+
+                    PrefabUtility.SaveAsPrefabAsset(prefabContents, prefabPath);
+                    PrefabUtility.UnloadPrefabContents(prefabContents);
+                }
+
+                // Update JSON entry
+                float newWorldH = currentH * factor;
+                float newWorldW = entry.worldWidth * factor;
+                entry.worldHeight = newWorldH;
+                entry.worldWidth = newWorldW;
+
+                // Recalculate Y position: need to reload mesh bounds for the corrected mesh
+                {
+                    var freshPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                    var freshMf = freshPrefab?.GetComponentInChildren<MeshFilter>();
+                    if (freshMf != null && freshMf.sharedMesh != null)
+                    {
+                        entry.position.y = -freshMf.sharedMesh.bounds.min.y;
+                        entry.worldHeight = freshMf.sharedMesh.bounds.size.y;
+                        entry.worldWidth = Mathf.Max(freshMf.sharedMesh.bounds.size.x, freshMf.sharedMesh.bounds.size.z);
+                    }
+                }
+
+                Debug.Log($"[CorrectProportions] '{prefabName}': factor={factor:F4} " +
+                          $"worldH: {currentH:F3}→{newWorldH:F3}, worldW: {entry.worldWidth / factor:F3}→{newWorldW:F3}");
+                correctedNames.Add($"{prefabName} ({currentH:F3}→{newWorldH:F3}m)");
+                corrected++;
+            }
+
+            // Save JSON
+            data.generatedDate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string output = JsonUtility.ToJson(data, true);
+            File.WriteAllText(jsonPath, output);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            EditorUtility.ClearProgressBar();
+
+            string msg = $"Corrected: {corrected}, Skipped: {skipped}, Failed: {failed}";
+            Debug.Log($"[CorrectProportions] {msg}");
+            if (correctedNames.Count > 0)
+                Debug.Log($"[CorrectProportions] Corrected objects:\n" + string.Join("\n", correctedNames));
+            if (failedNames.Count > 0)
+                Debug.Log($"[CorrectProportions] Failed: {string.Join(", ", failedNames)}");
         }
 
         // ─────────────────────────────────────────────────────
