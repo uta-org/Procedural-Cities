@@ -711,7 +711,7 @@
             "sceneName": "[37] OfficeChair",
             "position": {
                 "x": 30.38559913635254,
-                "y": -0.053689002990722659,
+                "y": 0.0,
                 "z": 15.224499702453614
             },
             "rotation": {
@@ -720,8 +720,8 @@
                 "z": 0.0
             },
             "scale": 1.0,
-            "worldHeight": 1.2000000476837159,
-            "worldWidth": 0.6442686319351196,
+            "worldHeight": 1.08,
+            "worldWidth": 0.59,
             "forwardAngleY": 0.0
         },
         {

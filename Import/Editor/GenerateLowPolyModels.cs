@@ -1663,40 +1663,95 @@ public class GenerateLowPolyModels : EditorWindow
         var root = new GameObject("LowPoly_OfficeChair");
         var matSeat = GetMat("LP_Fabric_OfficeChair", new Color(0.15f, 0.15f, 0.2f));
         var matMetal = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
-        // Seat
-        var seat = CreateBox(new Vector3(0.48f, 0.06f, 0.45f), matSeat);
+        var matPlastic = GetMat("LP_Plastic_Black", new Color(0.08f, 0.08f, 0.08f), 0.2f, 0.4f);
+
+        // === SEAT (cushioned look: thicker with slight bevel) ===
+        var seat = CreateBox(new Vector3(0.48f, 0.08f, 0.45f), matSeat);
         seat.transform.SetParent(root.transform);
-        seat.transform.localPosition = new Vector3(0, 0.5f, 0);
+        seat.transform.localPosition = new Vector3(0, 0.48f, 0.02f);
         seat.gameObject.name = "Seat";
-        // Backrest
-        var back = CreateBox(new Vector3(0.46f, 0.5f, 0.04f), matSeat);
-        back.transform.SetParent(root.transform);
-        back.transform.localPosition = new Vector3(0, 0.8f, -0.22f);
-        back.transform.localRotation = Quaternion.Euler(-5, 0, 0);
-        back.gameObject.name = "Back";
-        // Armrests
+        // Seat bottom plate
+        var seatPlate = CreateBox(new Vector3(0.46f, 0.02f, 0.43f), matPlastic);
+        seatPlate.transform.SetParent(root.transform);
+        seatPlate.transform.localPosition = new Vector3(0, 0.43f, 0.02f);
+        seatPlate.gameObject.name = "SeatPlate";
+
+        // === BACKREST (taller, with slight lumbar curve via two segments) ===
+        // Lower back (slightly reclined)
+        var backLower = CreateBox(new Vector3(0.46f, 0.25f, 0.04f), matSeat);
+        backLower.transform.SetParent(root.transform);
+        backLower.transform.localPosition = new Vector3(0, 0.68f, -0.20f);
+        backLower.transform.localRotation = Quaternion.Euler(-8, 0, 0);
+        backLower.gameObject.name = "BackLower";
+        // Upper back (more reclined)
+        var backUpper = CreateBox(new Vector3(0.44f, 0.28f, 0.035f), matSeat);
+        backUpper.transform.SetParent(root.transform);
+        backUpper.transform.localPosition = new Vector3(0, 0.94f, -0.23f);
+        backUpper.transform.localRotation = Quaternion.Euler(-12, 0, 0);
+        backUpper.gameObject.name = "BackUpper";
+        // Back shell (plastic backing)
+        var backShell = CreateBox(new Vector3(0.44f, 0.50f, 0.015f), matPlastic);
+        backShell.transform.SetParent(root.transform);
+        backShell.transform.localPosition = new Vector3(0, 0.80f, -0.24f);
+        backShell.transform.localRotation = Quaternion.Euler(-10, 0, 0);
+        backShell.gameObject.name = "BackShell";
+
+        // === ARMRESTS (with arm pads on top) ===
         for (int i = 0; i < 2; i++)
         {
-            var arm = CreateBox(new Vector3(0.04f, 0.04f, 0.3f), matMetal);
-            arm.transform.SetParent(root.transform);
-            arm.transform.localPosition = new Vector3(i == 0 ? -0.25f : 0.25f, 0.62f, -0.05f);
-            arm.gameObject.name = $"Armrest{i}";
+            float side = i == 0 ? -1f : 1f;
+            // Vertical support
+            var armPost = CreateBox(new Vector3(0.03f, 0.18f, 0.03f), matPlastic);
+            armPost.transform.SetParent(root.transform);
+            armPost.transform.localPosition = new Vector3(side * 0.24f, 0.56f, -0.08f);
+            armPost.gameObject.name = $"ArmPost{i}";
+            // Arm pad (soft top)
+            var armPad = CreateBox(new Vector3(0.06f, 0.025f, 0.22f), matPlastic);
+            armPad.transform.SetParent(root.transform);
+            armPad.transform.localPosition = new Vector3(side * 0.24f, 0.66f, -0.04f);
+            armPad.gameObject.name = $"ArmPad{i}";
         }
-        // Center pole
-        var pole = CreateCylinder(0.03f, 0.25f, 6, matMetal);
+
+        // === GAS LIFT CYLINDER ===
+        var liftOuter = CreateCylinder(0.035f, 0.12f, 8, matPlastic);
+        liftOuter.transform.SetParent(root.transform);
+        liftOuter.transform.localPosition = new Vector3(0, 0.38f, 0);
+        liftOuter.gameObject.name = "LiftOuter";
+        // Inner chrome pole
+        var pole = CreateCylinder(0.02f, 0.20f, 6, matMetal);
         pole.transform.SetParent(root.transform);
-        pole.transform.localPosition = new Vector3(0, 0.35f, 0);
+        pole.transform.localPosition = new Vector3(0, 0.30f, 0);
         pole.gameObject.name = "Pole";
-        // Star base (5 legs)
+
+        // === 5-STAR BASE WITH CASTERS ===
+        // Central hub
+        var hub = CreateCylinder(0.04f, 0.04f, 8, matMetal);
+        hub.transform.SetParent(root.transform);
+        hub.transform.localPosition = new Vector3(0, 0.08f, 0);
+        hub.gameObject.name = "Hub";
+
         for (int i = 0; i < 5; i++)
         {
             float angle = i * 72 * Mathf.Deg2Rad;
-            var leg = CreateBox(new Vector3(0.03f, 0.03f, 0.25f), matMetal);
+            float legLen = 0.28f;
+            float cx = Mathf.Sin(angle);
+            float cz = Mathf.Cos(angle);
+
+            // Base leg (tapered arm)
+            var leg = CreateBox(new Vector3(0.025f, 0.025f, legLen), matMetal);
             leg.transform.SetParent(root.transform);
-            leg.transform.localPosition = new Vector3(Mathf.Cos(angle) * 0.15f, 0.06f, Mathf.Sin(angle) * 0.15f);
+            leg.transform.localPosition = new Vector3(cx * legLen * 0.5f, 0.06f, cz * legLen * 0.5f);
             leg.transform.localRotation = Quaternion.Euler(0, -i * 72, 0);
             leg.gameObject.name = $"BaseLeg{i}";
+
+            // Caster wheel at tip
+            var caster = CreateCylinder(0.02f, 0.025f, 6, matPlastic);
+            caster.transform.SetParent(root.transform);
+            caster.transform.localPosition = new Vector3(cx * legLen, 0.02f, cz * legLen);
+            caster.transform.localRotation = Quaternion.Euler(0, 0, 90);
+            caster.gameObject.name = $"Caster{i}";
         }
+
         SavePrefab(root, "LowPoly_OfficeChair");
         return 1;
     }
