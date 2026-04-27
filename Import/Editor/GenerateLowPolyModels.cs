@@ -1715,40 +1715,57 @@ public class GenerateLowPolyModels : EditorWindow
         // === GAS LIFT CYLINDER ===
         var liftOuter = CreateCylinder(0.035f, 0.12f, 8, matPlastic);
         liftOuter.transform.SetParent(root.transform);
-        liftOuter.transform.localPosition = new Vector3(0, 0.38f, 0);
+        liftOuter.transform.localPosition = new Vector3(0, 0.37f, 0);
         liftOuter.gameObject.name = "LiftOuter";
-        // Inner chrome pole
-        var pole = CreateCylinder(0.02f, 0.20f, 6, matMetal);
+        // Inner chrome pole (visible between hub and lift)
+        var pole = CreateCylinder(0.018f, 0.22f, 6, matMetal);
         pole.transform.SetParent(root.transform);
-        pole.transform.localPosition = new Vector3(0, 0.30f, 0);
+        pole.transform.localPosition = new Vector3(0, 0.22f, 0);
         pole.gameObject.name = "Pole";
 
         // === 5-STAR BASE WITH CASTERS ===
-        // Central hub
-        var hub = CreateCylinder(0.04f, 0.04f, 8, matMetal);
+        // Central hub (wide, squat cylinder)
+        var hub = CreateCylinder(0.055f, 0.045f, 10, matPlastic);
         hub.transform.SetParent(root.transform);
-        hub.transform.localPosition = new Vector3(0, 0.08f, 0);
+        hub.transform.localPosition = new Vector3(0, 0.065f, 0);
         hub.gameObject.name = "Hub";
+        // Hub top cap (connects to pole)
+        var hubCap = CreateCylinder(0.03f, 0.02f, 8, matMetal);
+        hubCap.transform.SetParent(root.transform);
+        hubCap.transform.localPosition = new Vector3(0, 0.095f, 0);
+        hubCap.gameObject.name = "HubCap";
 
         for (int i = 0; i < 5; i++)
         {
             float angle = i * 72 * Mathf.Deg2Rad;
-            float legLen = 0.28f;
-            float cx = Mathf.Sin(angle);
-            float cz = Mathf.Cos(angle);
+            float legLen = 0.30f;
+            float dx = Mathf.Sin(angle);
+            float dz = Mathf.Cos(angle);
+            float yRot = i * 72f;
 
-            // Base leg (tapered arm)
-            var leg = CreateBox(new Vector3(0.025f, 0.025f, legLen), matMetal);
+            // Main leg arm (wider, shaped like a real chair leg)
+            var leg = CreateBox(new Vector3(0.038f, 0.028f, legLen), matPlastic);
             leg.transform.SetParent(root.transform);
-            leg.transform.localPosition = new Vector3(cx * legLen * 0.5f, 0.06f, cz * legLen * 0.5f);
-            leg.transform.localRotation = Quaternion.Euler(0, -i * 72, 0);
+            leg.transform.localPosition = new Vector3(
+                dx * legLen * 0.5f, 0.050f, dz * legLen * 0.5f);
+            leg.transform.localRotation = Quaternion.Euler(0, yRot, 0);
             leg.gameObject.name = $"BaseLeg{i}";
 
-            // Caster wheel at tip
-            var caster = CreateCylinder(0.02f, 0.025f, 6, matPlastic);
+            // Leg tip (slight widening at the end where caster attaches)
+            var legTip = CreateBox(new Vector3(0.032f, 0.038f, 0.045f), matPlastic);
+            legTip.transform.SetParent(root.transform);
+            legTip.transform.localPosition = new Vector3(
+                dx * (legLen - 0.01f), 0.040f, dz * (legLen - 0.01f));
+            legTip.transform.localRotation = Quaternion.Euler(0, yRot, 0);
+            legTip.gameObject.name = $"LegTip{i}";
+
+            // Caster wheel (lying on its side, visible under the leg tip)
+            var caster = CreateCylinder(0.018f, 0.022f, 8, matPlastic);
             caster.transform.SetParent(root.transform);
-            caster.transform.localPosition = new Vector3(cx * legLen, 0.02f, cz * legLen);
-            caster.transform.localRotation = Quaternion.Euler(0, 0, 90);
+            caster.transform.localPosition = new Vector3(
+                dx * legLen, 0.018f, dz * legLen);
+            // Rotate to lie on side, perpendicular to leg direction
+            caster.transform.localRotation = Quaternion.Euler(0, yRot, 90);
             caster.gameObject.name = $"Caster{i}";
         }
 

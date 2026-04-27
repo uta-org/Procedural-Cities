@@ -8,6 +8,7 @@ public static class RebuildOfficeChair
     const string PkgRoot = "Packages/dev.z3nth10n.proceduralcities.import";
     const string LowPolyDir = "Assets/LowPoly";                       // where GenerateLowPolyModels writes
     const string CombinedDir = PkgRoot + "/Models/LowPoly";           // where _Combined lives
+    const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";   // package materials (persistent)
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
     [MenuItem("Procedural Cities/Rebuild Office Chair")]
@@ -88,7 +89,10 @@ public static class RebuildOfficeChair
                 transform = Matrix4x4.identity,
                 subMeshIndex = 0
             });
-            finalMaterials.Add(kvp.Value.mats[0]);
+            // Resolve material to the package copy (persistent across git)
+            var srcMat = kvp.Value.mats[0];
+            var pkgMat = AssetDatabase.LoadAssetAtPath<Material>($"{PkgMatDir}/{srcMat.name}.mat");
+            finalMaterials.Add(pkgMat != null ? pkgMat : srcMat);
         }
 
         var combinedMesh = new Mesh();
