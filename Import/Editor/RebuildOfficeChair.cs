@@ -142,6 +142,9 @@ public static class RebuildOfficeChair
             }
         }
 
+        // Force reimport package assets so file-linked package cache stays in sync
+        AssetDatabase.ImportAsset(combinedPath, ImportAssetOptions.ForceUpdate);
+        AssetDatabase.ImportAsset(prefabPath, ImportAssetOptions.ForceUpdate);
         AssetDatabase.Refresh();
 
         Debug.Log($"[RebuildChair] Done! Bounds: {combinedMesh.bounds.size}, verts={combinedMesh.vertexCount}, mats={finalMaterials.Count}, cleaned {deleted} intermediate assets");
