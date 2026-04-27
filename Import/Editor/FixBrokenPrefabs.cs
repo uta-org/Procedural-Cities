@@ -169,15 +169,12 @@ public static class FixBrokenPrefabs
         var mr = modelGo.AddComponent<MeshRenderer>();
         mr.sharedMaterials = finalMaterials;
 
-        // Label child
+        // Label child (TextMesh auto-creates MeshRenderer with font material)
         var labelGo = new GameObject($"Label_{name}");
         labelGo.transform.SetParent(root.transform);
         labelGo.transform.localPosition = new Vector3(0, labelHeight + 0.1f, 0);
         labelGo.transform.localRotation = Quaternion.identity;
         labelGo.transform.localScale = Vector3.one;
-
-        var labelMr = labelGo.AddComponent<MeshRenderer>();
-        labelMr.sharedMaterial = AssetDatabase.GetBuiltinExtraResource<Material>("Default-Diffuse.mat");
 
         var tm = labelGo.AddComponent<TextMesh>();
         tm.text = name;
@@ -257,15 +254,12 @@ public static class FixBrokenPrefabs
             maxY = bounds.max.y;
         }
 
-        // Label child
+        // Label child (TextMesh auto-creates MeshRenderer with font material)
         var labelGo = new GameObject("Label_Tree");
         labelGo.transform.SetParent(root.transform);
         labelGo.transform.localPosition = new Vector3(0, maxY + 0.3f, 0);
         labelGo.transform.localRotation = Quaternion.identity;
         labelGo.transform.localScale = Vector3.one;
-
-        var labelMr = labelGo.AddComponent<MeshRenderer>();
-        labelMr.sharedMaterial = AssetDatabase.GetBuiltinExtraResource<Material>("Default-Diffuse.mat");
 
         var tm = labelGo.AddComponent<TextMesh>();
         tm.text = "Tree";
