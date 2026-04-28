@@ -1556,13 +1556,13 @@ public class GenerateLowPolyModels : EditorWindow
         knob.transform.localPosition = new Vector3(0, 0.2275f, 0);
         knob.gameObject.name = "LidKnob";
 
-        // Arched handle – smooth cylinder pipe (attaches at upper body, arcs over lid)
-        int handleSteps = 14;
-        float handleRadius = 0.08f;
-        float handleCenterY = 0.15f;
-        float hStartAngle = 45f;
-        float hEndAngle = 135f;
-        float handlePipeR = 0.008f;
+        // Arched handle – opposite to spout, arc in XY plane curving outward
+        int handleSteps = 12;
+        float handleRadius = 0.07f;
+        float handleCenterX = -0.09f;  // opposite to spout (+X)
+        float handleCenterY = 0.12f;
+        float hStartAngle = 115f;
+        float hEndAngle = 245f;
 
         for (int i = 0; i < handleSteps; i++)
         {
@@ -1571,22 +1571,22 @@ public class GenerateLowPolyModels : EditorWindow
             float a0 = Mathf.Lerp(hStartAngle, hEndAngle, t0) * Mathf.Deg2Rad;
             float a1 = Mathf.Lerp(hStartAngle, hEndAngle, t1) * Mathf.Deg2Rad;
 
-            float x0 = Mathf.Cos(a0) * handleRadius;
+            float x0 = Mathf.Cos(a0) * handleRadius + handleCenterX;
             float y0 = Mathf.Sin(a0) * handleRadius + handleCenterY;
-            float x1 = Mathf.Cos(a1) * handleRadius;
+            float x1 = Mathf.Cos(a1) * handleRadius + handleCenterX;
             float y1 = Mathf.Sin(a1) * handleRadius + handleCenterY;
 
             float midX = (x0 + x1) * 0.5f;
             float midY = (y0 + y1) * 0.5f;
             float dx = x1 - x0;
             float dy = y1 - y0;
-            float segLen = Mathf.Sqrt(dx * dx + dy * dy) * 1.2f;
-            float rotZ = Mathf.Atan2(dx, dy) * Mathf.Rad2Deg;
+            float segLen = Mathf.Sqrt(dx * dx + dy * dy) * 1.4f;
+            float angle = Mathf.Atan2(dx, dy) * Mathf.Rad2Deg;
 
-            var seg = CreateCylinder(handlePipeR, segLen, 6, matHandle);
+            var seg = CreateBox(new Vector3(0.015f, segLen, 0.015f), matHandle);
             seg.transform.SetParent(root.transform);
-            seg.transform.localPosition = new Vector3(0, midY, midX);
-            seg.transform.localRotation = Quaternion.Euler(rotZ, 0, 0);
+            seg.transform.localPosition = new Vector3(midX, midY, 0);
+            seg.transform.localRotation = Quaternion.Euler(0, 0, -angle);
             seg.gameObject.name = $"Handle{i}";
         }
 
