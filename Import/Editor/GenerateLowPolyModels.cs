@@ -2070,74 +2070,47 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
-    // LAMP3 h=0.60 w=0.37 (desk lamp - articulated two-arm)
+    // LAMP3 h=0.60 w=0.37 (desk lamp)
     static int GenerateLamp3()
     {
         var root = new GameObject("LowPoly_Lamp3");
         var matBase = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
         var matShade = GetMat("LP_Metal_Kettle", new Color(0.7f, 0.7f, 0.72f), 0.8f, 0.7f);
 
-        // --- Base disc ---
-        var basePart = CreateCylinder(0.08f, 0.015f, 8, matBase);
+        // --- Weighted base disc ---
+        var basePart = CreateCylinder(0.09f, 0.02f, 8, matBase);
         basePart.transform.SetParent(root.transform);
-        basePart.transform.localPosition = new Vector3(0, 0.0075f, 0);
+        basePart.transform.localPosition = new Vector3(0, 0.01f, 0);
         basePart.gameObject.name = "Base";
 
-        float baseTop = 0.015f;
-        float armW = 0.015f;
+        // --- Single arm, tilted 15° ---
+        float baseTop = 0.02f;
+        float armLen = 0.40f;
+        float armAng = 15f;
+        float aRad = armAng * Mathf.Deg2Rad;
+        // Arm center = midpoint of tilted arm
+        float acx = (armLen / 2f) * Mathf.Sin(aRad);
+        float acy = baseTop + (armLen / 2f) * Mathf.Cos(aRad);
+        var arm = CreateBox(new Vector3(0.015f, armLen, 0.015f), matBase);
+        arm.transform.SetParent(root.transform);
+        arm.transform.localPosition = new Vector3(acx, acy, 0);
+        arm.transform.localRotation = Quaternion.Euler(0, 0, armAng);
+        arm.gameObject.name = "Arm";
 
-        // --- Lower arm ---
-        float lowerLen = 0.34f;
-        float lowerAng = 8f;
-        float lRad = lowerAng * Mathf.Deg2Rad;
-        float lcx = (lowerLen / 2f) * Mathf.Sin(lRad);
-        float lcy = baseTop + (lowerLen / 2f) * Mathf.Cos(lRad);
-        var lowerArm = CreateBox(new Vector3(armW, lowerLen, armW), matBase);
-        lowerArm.transform.SetParent(root.transform);
-        lowerArm.transform.localPosition = new Vector3(lcx, lcy, 0);
-        lowerArm.transform.localRotation = Quaternion.Euler(0, 0, lowerAng);
-        lowerArm.gameObject.name = "LowerArm";
+        // Arm tip position
+        float tipX = armLen * Mathf.Sin(aRad);
+        float tipY = baseTop + armLen * Mathf.Cos(aRad);
 
-        // Joint (top of lower arm)
-        float jx = lowerLen * Mathf.Sin(lRad);
-        float jy = baseTop + lowerLen * Mathf.Cos(lRad);
-        var joint = CreateCylinder(0.012f, 0.018f, 6, matBase);
-        joint.transform.SetParent(root.transform);
-        joint.transform.localPosition = new Vector3(jx, jy, 0);
-        joint.transform.localRotation = Quaternion.Euler(90, 0, 0);
-        joint.gameObject.name = "Joint";
-
-        // --- Upper arm ---
-        float upperLen = 0.26f;
-        float upperAng = 28f;
-        float uRad = upperAng * Mathf.Deg2Rad;
-        float ucx = jx + (upperLen / 2f) * Mathf.Sin(uRad);
-        float ucy = jy + (upperLen / 2f) * Mathf.Cos(uRad);
-        var upperArm = CreateBox(new Vector3(armW, upperLen, armW), matBase);
-        upperArm.transform.SetParent(root.transform);
-        upperArm.transform.localPosition = new Vector3(ucx, ucy, 0);
-        upperArm.transform.localRotation = Quaternion.Euler(0, 0, upperAng);
-        upperArm.gameObject.name = "UpperArm";
-
-        // Arm top (shade attachment point)
-        float sx = jx + upperLen * Mathf.Sin(uRad);
-        float sy = jy + upperLen * Mathf.Cos(uRad);
-
-        // --- Shade socket (small connector) ---
-        var socket = CreateCylinder(0.013f, 0.02f, 6, matBase);
-        socket.transform.SetParent(root.transform);
-        socket.transform.localPosition = new Vector3(sx, sy, 0);
-        socket.gameObject.name = "Socket";
-
-        // --- Shade (cone, opening faces down) ---
-        float shadeR = 0.09f;
-        float shadeH = 0.10f;
-        float shadeTilt = 20f; // tilt from vertical
+        // --- Shade (cone, opening faces down-left) ---
+        // GenerateCone: tip at local +Y, base (opening) at local -Y
+        // Euler(0,0,tilt) rotates +Y toward +X
+        // Place cone center so tip touches arm tip
+        float shadeR = 0.07f;
+        float shadeH = 0.09f;
+        float shadeTilt = 25f;
         float sRad = shadeTilt * Mathf.Deg2Rad;
-        // Cone: tip at +Y (narrow), base at -Y (wide opening)
-        // Place so tip coincides with arm top
-        float hx = sx + (shadeH / 2f) * Mathf.Sin(sRad);
-        float hy = sy - (shadeH / 2f) * Mathf.Cos(sRad);
+        float hx = tipX - (shadeH / 2f) * Mathf.Sin(sRad);
+        float hy = tipY - (shadeH / 2f) * Mathf.Cos(sRad);
         var head = ShapeGenerator.GenerateCone(PivotLocation.Center, shadeR, shadeH, 8);
         head.GetComponent<MeshRenderer>().sharedMaterial = matShade;
         head.transform.SetParent(root.transform);
@@ -2145,13 +2118,12 @@ public class GenerateLowPolyModels : EditorWindow
         head.transform.localRotation = Quaternion.Euler(0, 0, shadeTilt);
         head.gameObject.name = "Head";
 
-        // --- Bulb (small bright cylinder inside shade) ---
+        // --- Bulb (warm glow cylinder inside shade) ---
         var matBulb = GetMat("LP_Lamp_Bulb", new Color(1f, 0.95f, 0.8f), 0.1f, 0.2f);
-        var bulb = CreateCylinder(0.02f, 0.03f, 6, matBulb);
+        var bulb = CreateCylinder(0.018f, 0.025f, 6, matBulb);
         bulb.transform.SetParent(root.transform);
-        // Position bulb slightly below shade center, along shade axis
-        float bx = sx + (shadeH * 0.15f) * Mathf.Sin(sRad);
-        float by = sy - (shadeH * 0.15f) * Mathf.Cos(sRad);
+        float bx = tipX - (shadeH * 0.35f) * Mathf.Sin(sRad);
+        float by = tipY - (shadeH * 0.35f) * Mathf.Cos(sRad);
         bulb.transform.localPosition = new Vector3(bx, by, 0);
         bulb.gameObject.name = "Bulb";
 
