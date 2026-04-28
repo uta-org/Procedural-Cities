@@ -4,6 +4,7 @@ using UnityEngine.ProBuilder;
 using UnityEngine.ProBuilder.MeshOperations;
 using System.IO;
 using System.Collections.Generic;
+using System.Reflection;
 
 /// <summary>
 /// Generates low-poly versions of heavy FBX models using ProBuilder primitives.
@@ -152,6 +153,19 @@ public class GenerateLowPolyModels : EditorWindow
             Object.DestroyImmediate(pb);
         }
 
+        // Save non-ProBuilder meshes (e.g. manually created hollow cylinders)
+        foreach (var mf in go.GetComponentsInChildren<MeshFilter>())
+        {
+            if (mf.sharedMesh != null && string.IsNullOrEmpty(AssetDatabase.GetAssetPath(mf.sharedMesh)))
+            {
+                var meshCopy = Object.Instantiate(mf.sharedMesh);
+                meshCopy.name = mf.gameObject.name;
+                string meshPath = $"{OutputFolder}/{name}_{mf.gameObject.name}.asset";
+                AssetDatabase.CreateAsset(meshCopy, meshPath);
+                mf.sharedMesh = meshCopy;
+            }
+        }
+
         var prefab = PrefabUtility.SaveAsPrefabAsset(go, path);
         Object.DestroyImmediate(go);
         int verts = 0;
@@ -173,6 +187,119 @@ public class GenerateLowPolyModels : EditorWindow
         var pb = ShapeGenerator.GenerateCylinder(PivotLocation.Center, sides, radius, height, 1, -1);
         pb.GetComponent<MeshRenderer>().sharedMaterial = mat;
         return pb;
+    }
+
+    /// <summary>
+    /// CSG boolean subtraction: carves `cutter` from `body`, returns a new GameObject with the result mesh.
+    /// Both input GameObjects are destroyed. Uses reflection to access ProBuilder's internal CSG.Subtract.
+    /// </summary>
+    static GameObject CsgSubtract(GameObject body, GameObject cutter, Material mat)
+    {
+        // Bake ProBuilder meshes to plain MeshFilter meshes
+        foreach (var pb in body.GetComponentsInChildren<ProBuilderMesh>())
+        {
+            pb.ToMesh();
+            pb.Refresh();
+        }
+        foreach (var pb in cutter.GetComponentsInChildren<ProBuilderMesh>())
+        {
+            pb.ToMesh();
+            pb.Refresh();
+        }
+
+        // Find CSG class via reflection (internal to Unity.ProBuilder.Csg)
+        var csgAssembly = Assembly.Load("Unity.ProBuilder.Csg");
+        var csgType = csgAssembly.GetType("UnityEngine.ProBuilder.Csg.CSG");
+        var subtractMethod = csgType.GetMethod("Subtract",
+            BindingFlags.Public | BindingFlags.Static,
+            null, new[] { typeof(GameObject), typeof(GameObject) }, null);
+
+        var model = subtractMethod.Invoke(null, new object[] { body, cutter });
+
+        // Get mesh from Model via explicit cast operator
+        var modelType = model.GetType();
+        var meshProp = modelType.GetProperty("mesh");
+        var resultMesh = (Mesh)meshProp.GetValue(model);
+
+        Object.DestroyImmediate(cutter);
+        Object.DestroyImmediate(body);
+
+        // Create clean result GameObject
+        var result = new GameObject("CsgResult");
+        var mf = result.AddComponent<MeshFilter>();
+        mf.sharedMesh = resultMesh;
+        var mr = result.AddComponent<MeshRenderer>();
+        mr.sharedMaterial = mat;
+        return result;
+    }
+
+    /// <summary>
+    /// Creates a hollow cylinder (tube) mesh with open top.
+    /// outerRadius/innerRadius define wall thickness, height is total height.
+    /// Bottom is closed (disk), top is open to show interior.
+    /// </summary>
+    static GameObject CreateHollowCylinder(float outerRadius, float innerRadius, float height, int sides, Material mat)
+    {
+        var verts = new List<Vector3>();
+        var tris = new List<int>();
+
+        // Generate ring vertices at bottom (y=0) and top (y=height)
+        // Order: outerBottom, outerTop, innerBottom, innerTop
+        for (int i = 0; i <= sides; i++)
+        {
+            float angle = (float)i / sides * Mathf.PI * 2f;
+            float cos = Mathf.Cos(angle);
+            float sin = Mathf.Sin(angle);
+
+            verts.Add(new Vector3(cos * outerRadius, 0, sin * outerRadius));      // outer bottom
+            verts.Add(new Vector3(cos * outerRadius, height, sin * outerRadius));  // outer top
+            verts.Add(new Vector3(cos * innerRadius, 0, sin * innerRadius));       // inner bottom
+            verts.Add(new Vector3(cos * innerRadius, height, sin * innerRadius));  // inner top
+        }
+
+        // Center vertex for bottom floor
+        int centerIdx = verts.Count;
+        verts.Add(new Vector3(0, 0, 0));
+
+        int vertsPerSlice = 4;
+        for (int i = 0; i < sides; i++)
+        {
+            int curr = i * vertsPerSlice;
+            int next = (i + 1) * vertsPerSlice;
+
+            // Outer wall (normals outward) - CW winding from outside
+            tris.Add(curr + 0); tris.Add(curr + 1); tris.Add(next + 0);
+            tris.Add(next + 0); tris.Add(curr + 1); tris.Add(next + 1);
+
+            // Inner wall (normals inward) - CCW from outside = CW from inside
+            tris.Add(curr + 2); tris.Add(next + 2); tris.Add(curr + 3);
+            tris.Add(curr + 3); tris.Add(next + 2); tris.Add(next + 3);
+
+            // Bottom annulus (outer to inner ring, normals UP)
+            tris.Add(curr + 0); tris.Add(curr + 2); tris.Add(next + 0);
+            tris.Add(curr + 2); tris.Add(next + 2); tris.Add(next + 0);
+
+            // Bottom center fan (inner ring to center, normals UP)
+            tris.Add(centerIdx); tris.Add(next + 2); tris.Add(curr + 2);
+
+            // Top rim (between outer and inner top rings)
+            tris.Add(curr + 1); tris.Add(curr + 3); tris.Add(next + 1);
+            tris.Add(next + 1); tris.Add(curr + 3); tris.Add(next + 3);
+        }
+
+        var mesh = new Mesh();
+        mesh.SetVertices(verts);
+        mesh.SetTriangles(tris, 0);
+        mesh.RecalculateNormals();
+        mesh.RecalculateTangents();
+        mesh.RecalculateBounds();
+
+        var go = new GameObject("HollowCylinder");
+        var mf = go.AddComponent<MeshFilter>();
+        mf.sharedMesh = mesh;
+        var mr = go.AddComponent<MeshRenderer>();
+        mr.sharedMaterial = mat;
+        return go;
     }
 
     // ========================================
@@ -2354,24 +2481,17 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
-    // PAN0 h=0.08 w=0.37 - frying pan with hollow interior
+    // PAN0 h=0.08 w=0.37 - frying pan with truly hollow interior
     static int GeneratePan0()
     {
         var root = new GameObject("LowPoly_Pan0");
         var matOuter = GetMat("LP_Pan0_Outer", new Color(0.25f, 0.25f, 0.27f), 0.6f, 0.5f);
-        var matInner = GetMat("LP_Pan0_Inner", new Color(0.08f, 0.08f, 0.09f), 0.0f, 0.1f);
 
-        // Outer body
-        var pan = CreateCylinder(0.13f, 0.05f, 12, matOuter);
-        pan.transform.SetParent(root.transform);
-        pan.transform.localPosition = new Vector3(0, 0.025f, 0);
-        pan.gameObject.name = "Pan";
-
-        // Inner cylinder (dark interior) - protrudes 2mm above outer
-        var inner = CreateCylinder(0.11f, 0.042f, 12, matInner);
-        inner.transform.SetParent(root.transform);
-        inner.transform.localPosition = new Vector3(0, 0.030f, 0);
-        inner.gameObject.name = "InnerWall";
+        // Hollow cylinder body: outer r=0.13, inner r=0.11, h=0.05
+        var body = CreateHollowCylinder(0.13f, 0.11f, 0.05f, 12, matOuter);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = Vector3.zero;
+        body.name = "HollowBody";
 
         // Handle
         var handle = CreateBox(new Vector3(0.03f, 0.02f, 0.15f), matOuter);
@@ -2383,25 +2503,18 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
-    // PAN1 (pot/olla) h=0.12 w=0.40 - hollow interior visible
+    // PAN1 (pot/olla) h=0.12 w=0.40 - truly hollow interior
     static int GeneratePan1()
     {
         var root = new GameObject("LowPoly_Pan1");
         var matOuter = GetMat("LP_Pan1_Outer", new Color(0.45f, 0.45f, 0.47f), 0.6f, 0.5f);
-        var matInner = GetMat("LP_Pan1_Inner", new Color(0.08f, 0.08f, 0.09f), 0.0f, 0.1f);
         var matHandle = GetMat("LP_Pan1_Handle", new Color(0.20f, 0.20f, 0.22f), 0.7f, 0.4f);
 
-        // Outer body (solid cylinder, top at 0.10)
-        var outerWall = CreateCylinder(0.13f, 0.10f, 12, matOuter);
-        outerWall.transform.SetParent(root.transform);
-        outerWall.transform.localPosition = new Vector3(0, 0.05f, 0);
-        outerWall.gameObject.name = "OuterWall";
-
-        // Inner cylinder (dark interior) - protrudes 3mm above outer to be clearly visible
-        var innerWall = CreateCylinder(0.10f, 0.093f, 12, matInner);
-        innerWall.transform.SetParent(root.transform);
-        innerWall.transform.localPosition = new Vector3(0, 0.0565f, 0);
-        innerWall.gameObject.name = "InnerWall";
+        // Hollow cylinder body: outer r=0.13, inner r=0.105, h=0.10
+        var body = CreateHollowCylinder(0.13f, 0.105f, 0.10f, 12, matOuter);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = Vector3.zero;
+        body.name = "HollowBody";
 
         // 2 side handles
         for (int i = 0; i < 2; i++)
