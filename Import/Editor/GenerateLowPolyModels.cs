@@ -238,12 +238,12 @@ public class GenerateLowPolyModels : EditorWindow
     /// outerRadius/innerRadius define wall thickness, height is total height.
     /// Bottom is closed (disk), top is open to show interior.
     /// </summary>
-    static GameObject CreateHollowCylinder(float outerRadius, float innerRadius, float height, int sides, Material mat)
+    static GameObject CreateHollowCylinder(float outerRadius, float innerRadius, float height, int sides, Material mat, float bottomThickness = 0.005f)
     {
         var verts = new List<Vector3>();
         var tris = new List<int>();
 
-        // Generate ring vertices at bottom (y=0) and top (y=height)
+        // Generate ring vertices at bottom and top
         // Order: outerBottom, outerTop, innerBottom, innerTop
         for (int i = 0; i <= sides; i++)
         {
@@ -251,15 +251,15 @@ public class GenerateLowPolyModels : EditorWindow
             float cos = Mathf.Cos(angle);
             float sin = Mathf.Sin(angle);
 
-            verts.Add(new Vector3(cos * outerRadius, 0, sin * outerRadius));      // outer bottom
-            verts.Add(new Vector3(cos * outerRadius, height, sin * outerRadius));  // outer top
-            verts.Add(new Vector3(cos * innerRadius, 0, sin * innerRadius));       // inner bottom
-            verts.Add(new Vector3(cos * innerRadius, height, sin * innerRadius));  // inner top
+            verts.Add(new Vector3(cos * outerRadius, 0, sin * outerRadius));                    // outer bottom (y=0)
+            verts.Add(new Vector3(cos * outerRadius, height, sin * outerRadius));                // outer top
+            verts.Add(new Vector3(cos * innerRadius, bottomThickness, sin * innerRadius));       // inner bottom (raised)
+            verts.Add(new Vector3(cos * innerRadius, height, sin * innerRadius));                // inner top
         }
 
-        // Center vertex for bottom floor
+        // Center vertex for bottom floor (raised)
         int centerIdx = verts.Count;
-        verts.Add(new Vector3(0, 0, 0));
+        verts.Add(new Vector3(0, bottomThickness, 0));
 
         int vertsPerSlice = 4;
         for (int i = 0; i < sides; i++)
