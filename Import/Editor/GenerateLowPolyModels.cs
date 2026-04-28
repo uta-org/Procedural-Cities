@@ -1805,29 +1805,73 @@ public class GenerateLowPolyModels : EditorWindow
     static int GenerateLamppost()
     {
         var root = new GameObject("LowPoly_Lamppost");
-        var matMetal = GetMat("LP_Metal_Lamppost", new Color(0.2f, 0.2f, 0.22f), 0.5f, 0.4f);
-        var matLight = GetMat("LP_Light_Warm", new Color(0.95f, 0.9f, 0.7f));
-        // Pole
-        var pole = CreateCylinder(0.06f, 4.0f, 8, matMetal);
-        pole.transform.SetParent(root.transform);
-        pole.transform.localPosition = new Vector3(0, 2.0f, 0);
-        pole.gameObject.name = "Pole";
-        // Arm
-        var arm = CreateBox(new Vector3(0.04f, 0.04f, 0.6f), matMetal);
-        arm.transform.SetParent(root.transform);
-        arm.transform.localPosition = new Vector3(0, 4.1f, 0.3f);
-        arm.transform.localRotation = Quaternion.Euler(20, 0, 0);
-        arm.gameObject.name = "Arm";
-        // Light fixture
-        var light = CreateBox(new Vector3(0.2f, 0.08f, 0.35f), matLight);
-        light.transform.SetParent(root.transform);
-        light.transform.localPosition = new Vector3(0, 4.05f, 0.65f);
-        light.gameObject.name = "Light";
-        // Base
-        var basePart = CreateCylinder(0.15f, 0.15f, 8, matMetal);
-        basePart.transform.SetParent(root.transform);
-        basePart.transform.localPosition = new Vector3(0, 0.075f, 0);
-        basePart.gameObject.name = "Base";
+        var matPole = GetMat("LP_Lamppost_Pole", new Color(0.25f, 0.25f, 0.27f), 0.6f, 0.45f);
+        var matBase = GetMat("LP_Lamppost_Base", new Color(0.20f, 0.20f, 0.22f), 0.5f, 0.4f);
+        var matArm = GetMat("LP_Lamppost_Arm", new Color(0.28f, 0.28f, 0.30f), 0.55f, 0.4f);
+        var matHousing = GetMat("LP_Lamppost_Housing", new Color(0.35f, 0.35f, 0.38f), 0.5f, 0.35f);
+        var matLens = GetMat("LP_Lamppost_Lens", new Color(0.95f, 0.92f, 0.75f), 0.0f, 0.8f);
+
+        // Base - wider octagonal cylinder
+        var baseBottom = CreateCylinder(0.18f, 0.08f, 8, matBase);
+        baseBottom.transform.SetParent(root.transform);
+        baseBottom.transform.localPosition = new Vector3(0, 0.04f, 0);
+        baseBottom.gameObject.name = "BaseBottom";
+
+        var baseTop = CreateCylinder(0.14f, 0.06f, 8, matBase);
+        baseTop.transform.SetParent(root.transform);
+        baseTop.transform.localPosition = new Vector3(0, 0.11f, 0);
+        baseTop.gameObject.name = "BaseTop";
+
+        // Lower pole section (thicker)
+        var poleLower = CreateCylinder(0.055f, 1.5f, 8, matPole);
+        poleLower.transform.SetParent(root.transform);
+        poleLower.transform.localPosition = new Vector3(0, 0.89f, 0);
+        poleLower.gameObject.name = "PoleLower";
+
+        // Upper pole section (thinner, tapered)
+        var poleUpper = CreateCylinder(0.045f, 2.5f, 8, matPole);
+        poleUpper.transform.SetParent(root.transform);
+        poleUpper.transform.localPosition = new Vector3(0, 2.89f, 0);
+        poleUpper.gameObject.name = "PoleUpper";
+
+        // Curved gooseneck arm using segments
+        int armSegments = 8;
+        float armRadius = 0.55f;
+        float armCenterY = 4.14f;
+        for (int i = 0; i < armSegments; i++)
+        {
+            float t = (float)i / (armSegments - 1);
+            float angle = Mathf.Lerp(85f, 10f, t) * Mathf.Deg2Rad;
+            float z = Mathf.Cos(angle) * armRadius;
+            float y = Mathf.Sin(angle) * armRadius + armCenterY - armRadius;
+            float segAngle = Mathf.Lerp(85f, 10f, t);
+
+            var seg = CreateBox(new Vector3(0.035f, 0.14f, 0.035f), matArm);
+            seg.transform.SetParent(root.transform);
+            seg.transform.localPosition = new Vector3(0, y, z);
+            seg.transform.localRotation = Quaternion.Euler(segAngle - 90f, 0, 0);
+            seg.gameObject.name = $"Arm{i}";
+        }
+
+        // Light housing - angled box
+        var housing = CreateBox(new Vector3(0.22f, 0.06f, 0.38f), matHousing);
+        housing.transform.SetParent(root.transform);
+        housing.transform.localPosition = new Vector3(0, 3.62f, 0.54f);
+        housing.transform.localRotation = Quaternion.Euler(5f, 0, 0);
+        housing.gameObject.name = "Housing";
+
+        // Light lens (bottom of housing)
+        var lens = CreateBox(new Vector3(0.18f, 0.02f, 0.32f), matLens);
+        lens.transform.SetParent(root.transform);
+        lens.transform.localPosition = new Vector3(0, 3.58f, 0.54f);
+        lens.gameObject.name = "Lens";
+
+        // Small collar where pole meets arm
+        var collar = CreateCylinder(0.06f, 0.06f, 8, matBase);
+        collar.transform.SetParent(root.transform);
+        collar.transform.localPosition = new Vector3(0, 4.14f, 0);
+        collar.gameObject.name = "Collar";
+
         SavePrefab(root, "LowPoly_Lamppost");
         return 1;
     }
