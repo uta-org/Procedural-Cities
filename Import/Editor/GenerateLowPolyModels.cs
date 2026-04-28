@@ -1465,13 +1465,6 @@ public class GenerateLowPolyModels : EditorWindow
         var matGrass = GetMat("LP_Grass_Blade", new Color(0.30f, 0.65f, 0.18f));
         var matGrassDark = GetMat("LP_Grass_Dark", new Color(0.20f, 0.50f, 0.12f));
         var matGrassTip = GetMat("LP_Grass_Tip", new Color(0.45f, 0.75f, 0.25f));
-        var matSoil = GetMat("LP_Grass_Soil", new Color(0.35f, 0.25f, 0.15f));
-
-        // Small soil/dirt base
-        var soil = CreateCylinder(0.12f, 0.015f, 8, matSoil);
-        soil.transform.SetParent(root.transform);
-        soil.transform.localPosition = new Vector3(0, 0.0075f, 0);
-        soil.gameObject.name = "Soil";
 
         // Create grass blade clusters using thin prisms at varying angles
         // Each blade is a thin triangular prism leaning outward
@@ -1498,7 +1491,7 @@ public class GenerateLowPolyModels : EditorWindow
             float rad = angle * Mathf.Deg2Rad;
             float x = Mathf.Cos(rad) * r;
             float z = Mathf.Sin(rad) * r;
-            blade.transform.localPosition = new Vector3(x, h * 0.5f + 0.015f, z);
+            blade.transform.localPosition = new Vector3(x, h * 0.5f, z);
 
             // Tilt outward from center and rotate around Y
             blade.transform.localRotation = Quaternion.Euler(-tilt * Mathf.Cos(rad), angle + 90f, -tilt * Mathf.Sin(rad));
