@@ -1556,12 +1556,12 @@ public class GenerateLowPolyModels : EditorWindow
         knob.transform.localPosition = new Vector3(0, 0.2275f, 0);
         knob.gameObject.name = "LidKnob";
 
-        // Arched handle – smooth cylinder pipe
-        int handleSteps = 12;
-        float handleRadius = 0.07f;
-        float handleCenterY = 0.22f;
-        float hStartAngle = 30f;
-        float hEndAngle = 150f;
+        // Arched handle – smooth cylinder pipe (reaches from base to above lid)
+        int handleSteps = 14;
+        float handleRadius = 0.16f;
+        float handleCenterY = 0.10f;
+        float hStartAngle = -10f;
+        float hEndAngle = 190f;
         float handlePipeR = 0.008f;
 
         for (int i = 0; i < handleSteps; i++)
