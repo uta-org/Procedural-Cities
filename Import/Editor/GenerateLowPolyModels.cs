@@ -1462,17 +1462,49 @@ public class GenerateLowPolyModels : EditorWindow
     static int GenerateGrass()
     {
         var root = new GameObject("LowPoly_Grass");
-        var matGrass = GetMat("LP_Grass_Green", new Color(0.25f, 0.55f, 0.15f));
-        // Simple low triangular tufts using prisms
-        for (int i = 0; i < 3; i++)
+        var matGrass = GetMat("LP_Grass_Blade", new Color(0.30f, 0.65f, 0.18f));
+        var matGrassDark = GetMat("LP_Grass_Dark", new Color(0.20f, 0.50f, 0.12f));
+        var matGrassTip = GetMat("LP_Grass_Tip", new Color(0.45f, 0.75f, 0.25f));
+        var matSoil = GetMat("LP_Grass_Soil", new Color(0.35f, 0.25f, 0.15f));
+
+        // Small soil/dirt base
+        var soil = CreateCylinder(0.12f, 0.015f, 8, matSoil);
+        soil.transform.SetParent(root.transform);
+        soil.transform.localPosition = new Vector3(0, 0.0075f, 0);
+        soil.gameObject.name = "Soil";
+
+        // Create grass blade clusters using thin prisms at varying angles
+        // Each blade is a thin triangular prism leaning outward
+        int bladeIndex = 0;
+        float[] heights = { 0.10f, 0.14f, 0.12f, 0.08f, 0.13f, 0.11f, 0.15f, 0.09f, 0.12f, 0.10f, 0.14f, 0.07f };
+        float[] radii = { 0.00f, 0.03f, 0.05f, 0.04f, 0.06f, 0.02f, 0.04f, 0.07f, 0.03f, 0.05f, 0.06f, 0.01f };
+        float[] angles = { 0f, 30f, 60f, 100f, 140f, 175f, 210f, 250f, 280f, 315f, 345f, 55f };
+        float[] tilts = { 0f, 8f, 12f, 5f, 15f, 7f, 10f, 18f, 6f, 14f, 9f, 3f };
+
+        for (int i = 0; i < heights.Length; i++)
         {
-            var tuft = ShapeGenerator.GeneratePrism(PivotLocation.Center, new Vector3(0.08f, 0.14f, 0.04f));
-            tuft.GetComponent<MeshRenderer>().sharedMaterial = matGrass;
-            tuft.transform.SetParent(root.transform);
-            tuft.transform.localPosition = new Vector3(-0.05f + i * 0.05f, 0.07f, (i == 1 ? 0.03f : 0));
-            tuft.transform.localRotation = Quaternion.Euler(0, i * 40, 0);
-            tuft.gameObject.name = $"Tuft{i}";
+            float h = heights[i];
+            float r = radii[i];
+            float angle = angles[i];
+            float tilt = tilts[i];
+
+            // Alternate between main green and dark green for variation
+            Material mat = (i % 3 == 0) ? matGrassDark : (i % 3 == 1) ? matGrass : matGrassTip;
+
+            var blade = ShapeGenerator.GeneratePrism(PivotLocation.Center, new Vector3(0.015f, h, 0.008f));
+            blade.GetComponent<MeshRenderer>().sharedMaterial = mat;
+            blade.transform.SetParent(root.transform);
+
+            float rad = angle * Mathf.Deg2Rad;
+            float x = Mathf.Cos(rad) * r;
+            float z = Mathf.Sin(rad) * r;
+            blade.transform.localPosition = new Vector3(x, h * 0.5f + 0.015f, z);
+
+            // Tilt outward from center and rotate around Y
+            blade.transform.localRotation = Quaternion.Euler(-tilt * Mathf.Cos(rad), angle + 90f, -tilt * Mathf.Sin(rad));
+            blade.gameObject.name = $"Blade{bladeIndex++}";
         }
+
         SavePrefab(root, "LowPoly_Grass");
         return 1;
     }
