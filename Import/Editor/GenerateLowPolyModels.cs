@@ -338,48 +338,193 @@ public class GenerateLowPolyModels : EditorWindow
     static int GenerateOven()
     {
         var root = new GameObject("LowPoly_Oven");
-        var matBody = GetMat("LP_Appliance_White", new Color(0.9f, 0.9f, 0.88f));
-        var matDoor = GetMat("LP_Oven_Glass", new Color(0.15f, 0.12f, 0.1f), 0.1f, 0.8f);
-        var matKnob = GetMat("LP_Appliance_Silver", new Color(0.7f, 0.7f, 0.72f), 0.6f, 0.5f);
-        var matBurner = GetMat("LP_Metal_Black", new Color(0.1f, 0.1f, 0.1f), 0.5f, 0.3f);
+        var matBody   = GetMat("LP_Oven_Body",    new Color(0.88f, 0.88f, 0.86f), 0.15f, 0.4f);
+        var matDoor   = GetMat("LP_Oven_Door",    new Color(0.82f, 0.82f, 0.80f), 0.1f, 0.35f);
+        var matGlass  = GetMat("LP_Oven_Glass",   new Color(0.12f, 0.10f, 0.08f, 0.5f), 0.05f, 0.9f);
+        var matKnob   = GetMat("LP_Oven_Knob",    new Color(0.72f, 0.72f, 0.74f), 0.6f, 0.5f);
+        var matBurner = GetMat("LP_Oven_Burner",  new Color(0.08f, 0.08f, 0.08f), 0.5f, 0.3f);
+        var matInterior = GetMat("LP_Oven_Interior", new Color(0.18f, 0.18f, 0.20f), 0.3f, 0.2f);
+        var matElement = GetMat("LP_Oven_Element", new Color(0.6f, 0.15f, 0.05f), 0.4f, 0.3f);
+        var matTray   = GetMat("LP_Oven_Tray",    new Color(0.45f, 0.45f, 0.48f), 0.7f, 0.5f);
+        var matHandle = GetMat("LP_Oven_Handle",  new Color(0.65f, 0.65f, 0.68f), 0.7f, 0.55f);
 
-        // Main body
-        var body = CreateBox(new Vector3(0.6f, 0.85f, 0.6f), matBody);
+        // Main body shell (outer)
+        var body = CreateBox(new Vector3(0.60f, 0.85f, 0.60f), matBody);
         body.transform.SetParent(root.transform);
         body.transform.localPosition = new Vector3(0, 0.425f, 0);
         body.gameObject.name = "Body";
 
-        // Oven door window
-        var door = CreateBox(new Vector3(0.45f, 0.3f, 0.02f), matDoor);
-        door.transform.SetParent(root.transform);
-        door.transform.localPosition = new Vector3(0, 0.28f, 0.31f);
-        door.gameObject.name = "DoorWindow";
-
-        // Stovetop
-        var top = CreateBox(new Vector3(0.6f, 0.02f, 0.6f), matBody);
+        // Stovetop surface
+        var top = CreateBox(new Vector3(0.62f, 0.02f, 0.62f), matBody);
         top.transform.SetParent(root.transform);
         top.transform.localPosition = new Vector3(0, 0.86f, 0);
         top.gameObject.name = "Stovetop";
 
-        // Burners (4 cylinders)
+        // 4 Burners on stovetop
         for (int i = 0; i < 4; i++)
         {
             float x = (i % 2 == 0 ? -0.15f : 0.15f);
             float z = (i < 2 ? -0.15f : 0.15f);
-            var burner = CreateCylinder(0.08f, 0.015f, 12, matBurner);
+            var burner = CreateCylinder(0.08f, 0.012f, 12, matBurner);
             burner.transform.SetParent(root.transform);
             burner.transform.localPosition = new Vector3(x, 0.878f, z);
             burner.gameObject.name = $"Burner{i}";
+            // Burner ring
+            var ring = CreateCylinder(0.065f, 0.013f, 12, matBody);
+            ring.transform.SetParent(root.transform);
+            ring.transform.localPosition = new Vector3(x, 0.878f, z);
+            ring.gameObject.name = $"BurnerRing{i}";
         }
 
-        // Knobs (4)
-        for (int i = 0; i < 4; i++)
+        // Control panel area (strip above door) - faces -Z
+        var panel = CreateBox(new Vector3(0.58f, 0.12f, 0.02f), matBody);
+        panel.transform.SetParent(root.transform);
+        panel.transform.localPosition = new Vector3(0, 0.74f, -0.31f);
+        panel.gameObject.name = "ControlPanel";
+
+        // 5 Knobs on control panel
+        for (int i = 0; i < 5; i++)
         {
-            var knob = CreateCylinder(0.015f, 0.02f, 6, matKnob);
+            var knob = CreateCylinder(0.014f, 0.018f, 8, matKnob);
             knob.transform.SetParent(root.transform);
-            knob.transform.localPosition = new Vector3(-0.22f + i * 0.14f, 0.68f, 0.31f);
+            knob.transform.localPosition = new Vector3(-0.20f + i * 0.10f, 0.74f, -0.33f);
             knob.transform.localRotation = Quaternion.Euler(90, 0, 0);
             knob.gameObject.name = $"Knob{i}";
+        }
+
+        // Door frame (front face below control panel) - faces -Z
+        var door = CreateBox(new Vector3(0.56f, 0.55f, 0.02f), matDoor);
+        door.transform.SetParent(root.transform);
+        door.transform.localPosition = new Vector3(0, 0.38f, -0.30f);
+        door.gameObject.name = "Door";
+
+        // Door handle bar
+        var handleBar = CreateBox(new Vector3(0.32f, 0.02f, 0.02f), matHandle);
+        handleBar.transform.SetParent(root.transform);
+        handleBar.transform.localPosition = new Vector3(0, 0.62f, -0.34f);
+        handleBar.gameObject.name = "HandleBar";
+
+        // Handle supports
+        var hSupL = CreateBox(new Vector3(0.02f, 0.02f, 0.03f), matHandle);
+        hSupL.transform.SetParent(root.transform);
+        hSupL.transform.localPosition = new Vector3(-0.12f, 0.62f, -0.33f);
+        hSupL.gameObject.name = "HandleSupportL";
+
+        var hSupR = CreateBox(new Vector3(0.02f, 0.02f, 0.03f), matHandle);
+        hSupR.transform.SetParent(root.transform);
+        hSupR.transform.localPosition = new Vector3(0.12f, 0.62f, -0.33f);
+        hSupR.gameObject.name = "HandleSupportR";
+
+        // Glass window (semi-transparent dark)
+        var glass = CreateBox(new Vector3(0.42f, 0.32f, 0.015f), matGlass);
+        glass.transform.SetParent(root.transform);
+        glass.transform.localPosition = new Vector3(0, 0.36f, -0.315f);
+        glass.gameObject.name = "GlassWindow";
+
+        // ---- Interior (visible through glass) ----
+        // Interior back wall
+        var intBack = CreateBox(new Vector3(0.52f, 0.50f, 0.01f), matInterior);
+        intBack.transform.SetParent(root.transform);
+        intBack.transform.localPosition = new Vector3(0, 0.35f, 0.25f);
+        intBack.gameObject.name = "InteriorBack";
+
+        // Interior floor
+        var intFloor = CreateBox(new Vector3(0.52f, 0.01f, 0.50f), matInterior);
+        intFloor.transform.SetParent(root.transform);
+        intFloor.transform.localPosition = new Vector3(0, 0.10f, 0);
+        intFloor.gameObject.name = "InteriorFloor";
+
+        // Interior ceiling
+        var intCeil = CreateBox(new Vector3(0.52f, 0.01f, 0.50f), matInterior);
+        intCeil.transform.SetParent(root.transform);
+        intCeil.transform.localPosition = new Vector3(0, 0.60f, 0);
+        intCeil.gameObject.name = "InteriorCeiling";
+
+        // Interior side walls
+        var intLeft = CreateBox(new Vector3(0.01f, 0.50f, 0.50f), matInterior);
+        intLeft.transform.SetParent(root.transform);
+        intLeft.transform.localPosition = new Vector3(-0.26f, 0.35f, 0);
+        intLeft.gameObject.name = "InteriorLeft";
+
+        var intRight = CreateBox(new Vector3(0.01f, 0.50f, 0.50f), matInterior);
+        intRight.transform.SetParent(root.transform);
+        intRight.transform.localPosition = new Vector3(0.26f, 0.35f, 0);
+        intRight.gameObject.name = "InteriorRight";
+
+        // Bottom heating element (zigzag)
+        for (int i = 0; i < 5; i++)
+        {
+            float x = -0.18f + i * 0.09f;
+            var elem = CreateBox(new Vector3(0.08f, 0.015f, 0.015f), matElement);
+            elem.transform.SetParent(root.transform);
+            elem.transform.localPosition = new Vector3(x, 0.13f, 0);
+            elem.transform.localRotation = Quaternion.Euler(0, (i % 2 == 0 ? 15f : -15f), 0);
+            elem.gameObject.name = $"HeatElement{i}";
+        }
+
+        // Top heating element (broiler)
+        for (int i = 0; i < 4; i++)
+        {
+            float x = -0.14f + i * 0.09f;
+            var elem = CreateBox(new Vector3(0.08f, 0.012f, 0.012f), matElement);
+            elem.transform.SetParent(root.transform);
+            elem.transform.localPosition = new Vector3(x, 0.58f, 0);
+            elem.transform.localRotation = Quaternion.Euler(0, (i % 2 == 0 ? 12f : -12f), 0);
+            elem.gameObject.name = $"BroilElement{i}";
+        }
+
+        // Wire rack (middle shelf)
+        var rackFrame = CreateBox(new Vector3(0.46f, 0.008f, 0.42f), matTray);
+        rackFrame.transform.SetParent(root.transform);
+        rackFrame.transform.localPosition = new Vector3(0, 0.38f, 0);
+        rackFrame.gameObject.name = "Rack";
+
+        // Rack wire bars
+        for (int i = 0; i < 6; i++)
+        {
+            float z = -0.16f + i * 0.065f;
+            var wire = CreateBox(new Vector3(0.44f, 0.005f, 0.008f), matTray);
+            wire.transform.SetParent(root.transform);
+            wire.transform.localPosition = new Vector3(0, 0.385f, z);
+            wire.gameObject.name = $"RackWire{i}";
+        }
+
+        // Baking tray (lower shelf)
+        var trayBase = CreateBox(new Vector3(0.44f, 0.008f, 0.40f), matTray);
+        trayBase.transform.SetParent(root.transform);
+        trayBase.transform.localPosition = new Vector3(0, 0.22f, 0);
+        trayBase.gameObject.name = "TrayBase";
+
+        // Tray rim (4 sides)
+        var trayF = CreateBox(new Vector3(0.44f, 0.025f, 0.008f), matTray);
+        trayF.transform.SetParent(root.transform);
+        trayF.transform.localPosition = new Vector3(0, 0.235f, 0.20f);
+        trayF.gameObject.name = "TrayFront";
+
+        var trayB = CreateBox(new Vector3(0.44f, 0.025f, 0.008f), matTray);
+        trayB.transform.SetParent(root.transform);
+        trayB.transform.localPosition = new Vector3(0, 0.235f, -0.20f);
+        trayB.gameObject.name = "TrayBack";
+
+        var trayL = CreateBox(new Vector3(0.008f, 0.025f, 0.40f), matTray);
+        trayL.transform.SetParent(root.transform);
+        trayL.transform.localPosition = new Vector3(-0.22f, 0.235f, 0);
+        trayL.gameObject.name = "TrayLeft";
+
+        var trayR = CreateBox(new Vector3(0.008f, 0.025f, 0.40f), matTray);
+        trayR.transform.SetParent(root.transform);
+        trayR.transform.localPosition = new Vector3(0.22f, 0.235f, 0);
+        trayR.gameObject.name = "TrayRight";
+
+        // Feet (4 small cylinders)
+        for (int i = 0; i < 4; i++)
+        {
+            float x = (i % 2 == 0 ? -0.24f : 0.24f);
+            float z = (i < 2 ? -0.24f : 0.24f);
+            var foot = CreateCylinder(0.02f, 0.02f, 6, matBurner);
+            foot.transform.SetParent(root.transform);
+            foot.transform.localPosition = new Vector3(x, 0.01f, z);
+            foot.gameObject.name = $"Foot{i}";
         }
 
         SavePrefab(root, "LowPoly_Oven");
