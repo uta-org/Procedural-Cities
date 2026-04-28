@@ -1558,7 +1558,7 @@ public class GenerateLowPolyModels : EditorWindow
 
         // Arched handle – smooth cylinder pipe (attaches at upper body, arcs over lid)
         int handleSteps = 14;
-        float handleRadius = 0.10f;
+        float handleRadius = 0.08f;
         float handleCenterY = 0.15f;
         float hStartAngle = 20f;
         float hEndAngle = 160f;
