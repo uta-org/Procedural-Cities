@@ -515,38 +515,120 @@ public class GenerateLowPolyModels : EditorWindow
     static int GenerateFountain()
     {
         var root = new GameObject("LowPoly_Fountain");
-        var matStone = GetMat("LP_Stone_Gray", new Color(0.65f, 0.63f, 0.60f));
-        var matWater = GetMat("LP_Water", new Color(0.3f, 0.5f, 0.7f, 0.7f), 0f, 0.9f);
+        var matStone = GetMat("LP_Fountain_Stone", new Color(0.75f, 0.72f, 0.68f));
+        var matStoneDark = GetMat("LP_Fountain_Inner", new Color(0.55f, 0.52f, 0.48f));
+        var matWater = GetMat("LP_Fountain_Water", new Color(0.25f, 0.45f, 0.65f, 0.85f), 0f, 0.9f);
+        // Enable water emission for subtle glow
+        matWater.EnableKeyword("_EMISSION");
+        matWater.SetFloat("_UseEmission", 1f);
+        matWater.SetColor("_EmissionColor", new Color(0.15f, 0.25f, 0.4f, 1f));
+        matWater.SetFloat("_EmissionIntensity", 0.8f);
 
-        // Base pool (octagonal approximation - cylinder)
-        var pool = CreateCylinder(2.5f, 0.35f, 12, matStone);
-        pool.transform.SetParent(root.transform);
-        pool.transform.localPosition = new Vector3(0, 0.175f, 0);
-        pool.gameObject.name = "Pool";
+        // ── Base pool (bottom tier) ──
+        // Outer wall
+        var poolOuter = CreateCylinder(1.2f, 0.35f, 16, matStone);
+        poolOuter.transform.SetParent(root.transform);
+        poolOuter.transform.localPosition = new Vector3(0, 0.175f, 0);
+        poolOuter.gameObject.name = "PoolOuter";
 
-        // Water surface
-        var water = CreateCylinder(2.3f, 0.02f, 12, matWater);
-        water.transform.SetParent(root.transform);
-        water.transform.localPosition = new Vector3(0, 0.32f, 0);
-        water.gameObject.name = "Water";
+        // Pool inner (slightly inset, slightly shorter to create rim)
+        var poolInner = CreateCylinder(1.08f, 0.30f, 16, matStoneDark);
+        poolInner.transform.SetParent(root.transform);
+        poolInner.transform.localPosition = new Vector3(0, 0.18f, 0);
+        poolInner.gameObject.name = "PoolInner";
 
-        // Center pillar
-        var pillar = CreateCylinder(0.2f, 0.7f, 8, matStone);
-        pillar.transform.SetParent(root.transform);
-        pillar.transform.localPosition = new Vector3(0, 0.35f, 0);
-        pillar.gameObject.name = "Pillar";
+        // Water surface in pool
+        var water1 = CreateCylinder(1.05f, 0.02f, 16, matWater);
+        water1.transform.SetParent(root.transform);
+        water1.transform.localPosition = new Vector3(0, 0.30f, 0);
+        water1.gameObject.name = "WaterPool";
 
-        // Top basin
-        var topBasin = CreateCylinder(0.5f, 0.1f, 10, matStone);
+        // Pool base step (decorative ring at bottom)
+        var baseStep = CreateCylinder(1.3f, 0.06f, 16, matStone);
+        baseStep.transform.SetParent(root.transform);
+        baseStep.transform.localPosition = new Vector3(0, 0.03f, 0);
+        baseStep.gameObject.name = "BaseStep";
+
+        // ── Central pedestal ──
+        // Lower pedestal (wider base)
+        var pedBase = CreateCylinder(0.22f, 0.15f, 10, matStone);
+        pedBase.transform.SetParent(root.transform);
+        pedBase.transform.localPosition = new Vector3(0, 0.35f + 0.075f, 0);
+        pedBase.gameObject.name = "PedestalBase";
+
+        // Central column
+        var column = CreateCylinder(0.14f, 0.35f, 10, matStone);
+        column.transform.SetParent(root.transform);
+        column.transform.localPosition = new Vector3(0, 0.50f + 0.175f, 0);
+        column.gameObject.name = "Column";
+
+        // ── Middle basin (second tier) ──
+        // Basin bowl
+        var midBasin = CreateCylinder(0.48f, 0.10f, 12, matStone);
+        midBasin.transform.SetParent(root.transform);
+        midBasin.transform.localPosition = new Vector3(0, 0.88f, 0);
+        midBasin.gameObject.name = "MidBasin";
+
+        // Basin inner (dark inset)
+        var midInner = CreateCylinder(0.40f, 0.06f, 12, matStoneDark);
+        midInner.transform.SetParent(root.transform);
+        midInner.transform.localPosition = new Vector3(0, 0.89f, 0);
+        midInner.gameObject.name = "MidBasinInner";
+
+        // Water in middle basin
+        var water2 = CreateCylinder(0.38f, 0.02f, 12, matWater);
+        water2.transform.SetParent(root.transform);
+        water2.transform.localPosition = new Vector3(0, 0.91f, 0);
+        water2.gameObject.name = "WaterMid";
+
+        // Decorative lip ring
+        var midLip = CreateCylinder(0.50f, 0.03f, 12, matStone);
+        midLip.transform.SetParent(root.transform);
+        midLip.transform.localPosition = new Vector3(0, 0.85f, 0);
+        midLip.gameObject.name = "MidLip";
+
+        // ── Upper column ──
+        var upperCol = CreateCylinder(0.10f, 0.20f, 8, matStone);
+        upperCol.transform.SetParent(root.transform);
+        upperCol.transform.localPosition = new Vector3(0, 0.93f + 0.10f, 0);
+        upperCol.gameObject.name = "UpperColumn";
+
+        // ── Top basin (third tier) ──
+        var topBasin = CreateCylinder(0.28f, 0.07f, 10, matStone);
         topBasin.transform.SetParent(root.transform);
-        topBasin.transform.localPosition = new Vector3(0, 0.75f, 0);
+        topBasin.transform.localPosition = new Vector3(0, 1.16f, 0);
         topBasin.gameObject.name = "TopBasin";
 
-        // Top finial
-        var finial = CreateCylinder(0.08f, 0.25f, 6, matStone);
-        finial.transform.SetParent(root.transform);
-        finial.transform.localPosition = new Vector3(0, 0.925f, 0);
-        finial.gameObject.name = "Finial";
+        // Top basin inner
+        var topInner = CreateCylinder(0.22f, 0.04f, 10, matStoneDark);
+        topInner.transform.SetParent(root.transform);
+        topInner.transform.localPosition = new Vector3(0, 1.17f, 0);
+        topInner.gameObject.name = "TopBasinInner";
+
+        // Water in top basin
+        var water3 = CreateCylinder(0.20f, 0.015f, 10, matWater);
+        water3.transform.SetParent(root.transform);
+        water3.transform.localPosition = new Vector3(0, 1.185f, 0);
+        water3.gameObject.name = "WaterTop";
+
+        // Top lip ring
+        var topLip = CreateCylinder(0.30f, 0.025f, 10, matStone);
+        topLip.transform.SetParent(root.transform);
+        topLip.transform.localPosition = new Vector3(0, 1.14f, 0);
+        topLip.gameObject.name = "TopLip";
+
+        // ── Crown finial ──
+        // Spout nozzle
+        var spout = CreateCylinder(0.06f, 0.12f, 8, matStone);
+        spout.transform.SetParent(root.transform);
+        spout.transform.localPosition = new Vector3(0, 1.19f + 0.06f, 0);
+        spout.gameObject.name = "Spout";
+
+        // Top cap
+        var cap = CreateCylinder(0.09f, 0.03f, 8, matStone);
+        cap.transform.SetParent(root.transform);
+        cap.transform.localPosition = new Vector3(0, 1.32f, 0);
+        cap.gameObject.name = "Cap";
 
         SavePrefab(root, "LowPoly_Fountain");
         return 1;
