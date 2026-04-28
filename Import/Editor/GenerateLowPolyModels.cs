@@ -1834,22 +1834,37 @@ public class GenerateLowPolyModels : EditorWindow
         poleUpper.transform.localPosition = new Vector3(0, 2.89f, 0);
         poleUpper.gameObject.name = "PoleUpper";
 
-        // Curved gooseneck arm using segments
-        int armSegments = 8;
+        // Curved gooseneck arm – smooth cylinder pipe
+        int armSteps = 16;
         float armRadius = 0.55f;
         float armCenterY = 4.14f;
-        for (int i = 0; i < armSegments; i++)
-        {
-            float t = (float)i / (armSegments - 1);
-            float angle = Mathf.Lerp(85f, 10f, t) * Mathf.Deg2Rad;
-            float z = Mathf.Cos(angle) * armRadius;
-            float y = Mathf.Sin(angle) * armRadius + armCenterY - armRadius;
-            float segAngle = Mathf.Lerp(85f, 10f, t);
+        float startAngle = 85f;
+        float endAngle = 10f;
+        float pipeR = 0.03f;
 
-            var seg = CreateBox(new Vector3(0.035f, 0.14f, 0.035f), matArm);
+        for (int i = 0; i < armSteps; i++)
+        {
+            float t0 = (float)i / armSteps;
+            float t1 = (float)(i + 1) / armSteps;
+            float a0 = Mathf.Lerp(startAngle, endAngle, t0) * Mathf.Deg2Rad;
+            float a1 = Mathf.Lerp(startAngle, endAngle, t1) * Mathf.Deg2Rad;
+
+            float z0 = Mathf.Cos(a0) * armRadius;
+            float y0 = Mathf.Sin(a0) * armRadius + armCenterY - armRadius;
+            float z1 = Mathf.Cos(a1) * armRadius;
+            float y1 = Mathf.Sin(a1) * armRadius + armCenterY - armRadius;
+
+            float midZ = (z0 + z1) * 0.5f;
+            float midY = (y0 + y1) * 0.5f;
+            float dz = z1 - z0;
+            float dy = y1 - y0;
+            float segLen = Mathf.Sqrt(dz * dz + dy * dy) * 1.2f;
+            float rotX = Mathf.Atan2(dz, dy) * Mathf.Rad2Deg;
+
+            var seg = CreateCylinder(pipeR, segLen, 6, matArm);
             seg.transform.SetParent(root.transform);
-            seg.transform.localPosition = new Vector3(0, y, z);
-            seg.transform.localRotation = Quaternion.Euler(segAngle - 90f, 0, 0);
+            seg.transform.localPosition = new Vector3(0, midY, midZ);
+            seg.transform.localRotation = Quaternion.Euler(rotX, 0, 0);
             seg.gameObject.name = $"Arm{i}";
         }
 
