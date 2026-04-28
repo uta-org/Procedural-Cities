@@ -421,38 +421,70 @@ public class GenerateLowPolyModels : EditorWindow
     static int GenerateSink()
     {
         var root = new GameObject("LowPoly_Sink");
-        var matCeramic = GetMat("LP_Ceramic_White", new Color(0.92f, 0.92f, 0.90f), 0f, 0.7f);
-        var matChrome = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        var matCeramic = GetMat("LP_Sink_Ceramic", new Color(0.92f, 0.92f, 0.90f), 0f, 0.7f);
+        var matChrome = GetMat("LP_Sink_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        var matDrain = GetMat("LP_Sink_Drain", new Color(0.25f, 0.25f, 0.27f), 0.7f, 0.6f);
 
-        // Basin (outer box)
-        var basin = CreateBox(new Vector3(0.6f, 0.18f, 0.45f), matCeramic);
-        basin.transform.SetParent(root.transform);
-        basin.transform.localPosition = new Vector3(0, 0.76f, 0);
-        basin.gameObject.name = "Basin";
+        // Pedestal base (wider foot)
+        var pedBase = CreateBox(new Vector3(0.22f, 0.04f, 0.22f), matCeramic);
+        pedBase.transform.SetParent(root.transform);
+        pedBase.transform.localPosition = new Vector3(0, 0.02f, 0);
+        pedBase.gameObject.name = "PedestalBase";
 
-        // Basin inner (recessed - smaller, darker)
-        var inner = CreateBox(new Vector3(0.5f, 0.14f, 0.35f), GetMat("LP_Ceramic_Inner", new Color(0.85f, 0.85f, 0.83f)));
-        inner.transform.SetParent(root.transform);
-        inner.transform.localPosition = new Vector3(0, 0.78f, 0);
-        inner.gameObject.name = "BasinInner";
-
-        // Pedestal
-        var pedestal = CreateBox(new Vector3(0.2f, 0.67f, 0.2f), matCeramic);
+        // Pedestal column
+        var pedestal = CreateBox(new Vector3(0.16f, 0.63f, 0.16f), matCeramic);
         pedestal.transform.SetParent(root.transform);
-        pedestal.transform.localPosition = new Vector3(0, 0.335f, 0);
+        pedestal.transform.localPosition = new Vector3(0, 0.355f, 0);
         pedestal.gameObject.name = "Pedestal";
 
-        // Faucet base
-        var faucetBase = CreateCylinder(0.02f, 0.12f, 8, matChrome);
+        // Basin = hollow cylinder (the entire basin is a tube shape)
+        // outerR=0.25 gives ~0.50m diameter, innerR=0.21, height=0.18
+        var basin = CreateHollowCylinder(0.25f, 0.21f, 0.18f, 16, matCeramic, 0.01f);
+        basin.transform.SetParent(root.transform);
+        basin.transform.localPosition = new Vector3(0, 0.67f, 0);
+        basin.name = "Basin";
+
+        // Drain dot at basin bottom center
+        var drain = CreateCylinder(0.015f, 0.006f, 8, matDrain);
+        drain.transform.SetParent(root.transform);
+        drain.transform.localPosition = new Vector3(0, 0.685f, 0);
+        drain.gameObject.name = "Drain";
+
+        // Backsplash (small wall behind the basin)
+        var splash = CreateBox(new Vector3(0.48f, 0.12f, 0.025f), matCeramic);
+        splash.transform.SetParent(root.transform);
+        splash.transform.localPosition = new Vector3(0, 0.91f, -0.24f);
+        splash.gameObject.name = "Backsplash";
+
+        // Faucet base (vertical pipe behind basin)
+        var faucetBase = CreateCylinder(0.015f, 0.14f, 8, matChrome);
         faucetBase.transform.SetParent(root.transform);
-        faucetBase.transform.localPosition = new Vector3(0, 0.91f, -0.15f);
+        faucetBase.transform.localPosition = new Vector3(0, 0.92f, -0.15f);
         faucetBase.gameObject.name = "FaucetBase";
 
-        // Faucet spout
-        var spout = CreateBox(new Vector3(0.03f, 0.03f, 0.12f), matChrome);
+        // Faucet spout (horizontal, reaching over basin)
+        var spout = CreateBox(new Vector3(0.025f, 0.025f, 0.14f), matChrome);
         spout.transform.SetParent(root.transform);
-        spout.transform.localPosition = new Vector3(0, 0.96f, -0.09f);
+        spout.transform.localPosition = new Vector3(0, 0.98f, -0.08f);
         spout.gameObject.name = "FaucetSpout";
+
+        // Spout tip (angled down)
+        var tip = CreateBox(new Vector3(0.02f, 0.04f, 0.02f), matChrome);
+        tip.transform.SetParent(root.transform);
+        tip.transform.localPosition = new Vector3(0, 0.96f, -0.01f);
+        tip.gameObject.name = "FaucetTip";
+
+        // Left handle (hot)
+        var handleL = CreateCylinder(0.012f, 0.04f, 6, matChrome);
+        handleL.transform.SetParent(root.transform);
+        handleL.transform.localPosition = new Vector3(-0.06f, 0.91f, -0.18f);
+        handleL.gameObject.name = "HandleLeft";
+
+        // Right handle (cold)
+        var handleR = CreateCylinder(0.012f, 0.04f, 6, matChrome);
+        handleR.transform.SetParent(root.transform);
+        handleR.transform.localPosition = new Vector3(0.06f, 0.91f, -0.18f);
+        handleR.gameObject.name = "HandleRight";
 
         SavePrefab(root, "LowPoly_Sink");
         return 1;
