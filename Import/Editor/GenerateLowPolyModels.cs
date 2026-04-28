@@ -1529,28 +1529,65 @@ public class GenerateLowPolyModels : EditorWindow
     static int GenerateKettle()
     {
         var root = new GameObject("LowPoly_Kettle");
-        var matMetal = GetMat("LP_Metal_Kettle", new Color(0.7f, 0.7f, 0.72f), 0.8f, 0.7f);
-        // Body
-        var body = CreateCylinder(0.1f, 0.18f, 10, matMetal);
-        body.transform.SetParent(root.transform);
-        body.transform.localPosition = new Vector3(0, 0.09f, 0);
-        body.gameObject.name = "Body";
+        var matBody = GetMat("LP_Kettle_Body", new Color(0.72f, 0.72f, 0.75f), 0.8f, 0.7f);
+        var matLid = GetMat("LP_Kettle_Lid", new Color(0.65f, 0.65f, 0.68f), 0.75f, 0.65f);
+        var matHandle = GetMat("LP_Kettle_Handle", new Color(0.15f, 0.15f, 0.15f), 0.1f, 0.3f);
+
+        // Body - wider at bottom, narrower at top (two stacked cylinders)
+        var bodyLower = CreateCylinder(0.11f, 0.10f, 12, matBody);
+        bodyLower.transform.SetParent(root.transform);
+        bodyLower.transform.localPosition = new Vector3(0, 0.05f, 0);
+        bodyLower.gameObject.name = "BodyLower";
+
+        var bodyUpper = CreateCylinder(0.10f, 0.10f, 12, matBody);
+        bodyUpper.transform.SetParent(root.transform);
+        bodyUpper.transform.localPosition = new Vector3(0, 0.15f, 0);
+        bodyUpper.gameObject.name = "BodyUpper";
+
         // Lid
-        var lid = CreateCylinder(0.06f, 0.03f, 10, matMetal);
+        var lid = CreateCylinder(0.085f, 0.02f, 12, matLid);
         lid.transform.SetParent(root.transform);
-        lid.transform.localPosition = new Vector3(0, 0.2f, 0);
+        lid.transform.localPosition = new Vector3(0, 0.21f, 0);
         lid.gameObject.name = "Lid";
-        // Handle
-        var handle = CreateBox(new Vector3(0.02f, 0.08f, 0.08f), matMetal);
-        handle.transform.SetParent(root.transform);
-        handle.transform.localPosition = new Vector3(0, 0.22f, 0);
-        handle.gameObject.name = "Handle";
-        // Spout
-        var spout = CreateBox(new Vector3(0.03f, 0.06f, 0.06f), matMetal);
-        spout.transform.SetParent(root.transform);
-        spout.transform.localPosition = new Vector3(0.12f, 0.15f, 0);
-        spout.transform.localRotation = Quaternion.Euler(0, 0, -30);
-        spout.gameObject.name = "Spout";
+
+        // Lid knob
+        var knob = CreateCylinder(0.02f, 0.015f, 8, matHandle);
+        knob.transform.SetParent(root.transform);
+        knob.transform.localPosition = new Vector3(0, 0.2275f, 0);
+        knob.gameObject.name = "LidKnob";
+
+        // Arched handle - multiple small boxes forming an arc over the top
+        int handleSegments = 7;
+        float handleRadius = 0.07f;
+        float handleCenterY = 0.22f;
+        for (int i = 0; i < handleSegments; i++)
+        {
+            float t = (float)i / (handleSegments - 1);
+            float angle = Mathf.Lerp(30f, 150f, t) * Mathf.Deg2Rad;
+            float x = Mathf.Cos(angle) * handleRadius;
+            float y = Mathf.Sin(angle) * handleRadius + handleCenterY;
+            float segAngle = Mathf.Lerp(30f, 150f, t);
+
+            var seg = CreateBox(new Vector3(0.015f, 0.025f, 0.015f), matHandle);
+            seg.transform.SetParent(root.transform);
+            seg.transform.localPosition = new Vector3(0, y, x);
+            seg.transform.localRotation = Quaternion.Euler(segAngle - 90f, 0, 0);
+            seg.gameObject.name = $"Handle{i}";
+        }
+
+        // Spout - angled cylinder-like shape using boxes
+        var spoutBase = CreateBox(new Vector3(0.03f, 0.07f, 0.03f), matBody);
+        spoutBase.transform.SetParent(root.transform);
+        spoutBase.transform.localPosition = new Vector3(0.11f, 0.14f, 0);
+        spoutBase.transform.localRotation = Quaternion.Euler(0, 0, -25f);
+        spoutBase.gameObject.name = "SpoutBase";
+
+        var spoutTip = CreateBox(new Vector3(0.025f, 0.04f, 0.025f), matBody);
+        spoutTip.transform.SetParent(root.transform);
+        spoutTip.transform.localPosition = new Vector3(0.14f, 0.19f, 0);
+        spoutTip.transform.localRotation = Quaternion.Euler(0, 0, -15f);
+        spoutTip.gameObject.name = "SpoutTip";
+
         SavePrefab(root, "LowPoly_Kettle");
         return 1;
     }
