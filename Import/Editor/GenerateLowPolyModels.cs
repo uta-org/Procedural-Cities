@@ -1854,7 +1854,7 @@ public class GenerateLowPolyModels : EditorWindow
         float armRadius = 0.55f;
         float armCenterY = 4.14f;
         float startAngle = 85f;
-        float endAngle = 10f;
+        float endAngle = -5f;
         float pipeR = 0.03f;
 
         for (int i = 0; i < armSteps; i++)
@@ -1883,17 +1883,18 @@ public class GenerateLowPolyModels : EditorWindow
             seg.gameObject.name = $"Arm{i}";
         }
 
-        // Light housing - angled box
+        // Light housing - positioned at arm endpoint
+        // arm end at -5°: z=cos(-5)*0.55=0.548, y=sin(-5)*0.55+3.59=3.542
         var housing = CreateBox(new Vector3(0.22f, 0.06f, 0.38f), matHousing);
         housing.transform.SetParent(root.transform);
-        housing.transform.localPosition = new Vector3(0, 3.62f, 0.54f);
+        housing.transform.localPosition = new Vector3(0, 3.51f, 0.55f);
         housing.transform.localRotation = Quaternion.Euler(5f, 0, 0);
         housing.gameObject.name = "Housing";
 
         // Light lens (bottom of housing)
         var lens = CreateBox(new Vector3(0.18f, 0.02f, 0.32f), matLens);
         lens.transform.SetParent(root.transform);
-        lens.transform.localPosition = new Vector3(0, 3.58f, 0.54f);
+        lens.transform.localPosition = new Vector3(0, 3.47f, 0.55f);
         lens.gameObject.name = "Lens";
 
         // Small collar where pole meets arm
