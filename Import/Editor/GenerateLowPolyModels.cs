@@ -1116,37 +1116,86 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
-    // COMPUTERUSER h=0.75 w=1.43 (desk + monitor)
+    // COMPUTERUSER h=0.45 w=0.20 (desktop PC tower)
     static int GenerateComputerUser()
     {
         var root = new GameObject("LowPoly_ComputerUser");
-        var matDesk = GetMat("LP_Wood_Desk", new Color(0.5f, 0.38f, 0.24f));
-        var matFrame = GetMat("LP_TV_Frame", new Color(0.08f, 0.08f, 0.08f), 0.3f, 0.6f);
-        var matScreen = GetMat("LP_TV_Screen", new Color(0.05f, 0.08f, 0.12f), 0f, 0.9f);
-        // Desk top
-        var desk = CreateBox(new Vector3(1.4f, 0.04f, 0.7f), matDesk);
-        desk.transform.SetParent(root.transform);
-        desk.transform.localPosition = new Vector3(0, 0.73f, 0);
-        desk.gameObject.name = "DeskTop";
-        // Desk legs
+        var matCase = GetMat("LP_TV_Frame", new Color(0.08f, 0.08f, 0.08f), 0.3f, 0.6f);
+        var matFront = GetMat("LP_Plastic_LightGray", new Color(0.25f, 0.25f, 0.25f), 0.1f, 0.4f);
+        var matVent = GetMat("LP_Metal_DarkGray", new Color(0.12f, 0.12f, 0.12f), 0.4f, 0.3f);
+        var matLed = GetMat("LP_Light_Green", new Color(0.1f, 0.8f, 0.15f));
+        // Enable LED emission
+        matLed.EnableKeyword("_EMISSION");
+        matLed.SetFloat("_UseEmission", 1f);
+        matLed.SetColor("_EmissionColor", new Color(0.1f, 0.9f, 0.2f, 1f));
+        matLed.SetFloat("_EmissionIntensity", 3f);
+
+        float caseH = 0.42f, caseW = 0.18f, caseD = 0.40f;
+
+        // Main case body
+        var body = CreateBox(new Vector3(caseW, caseH, caseD), matCase);
+        body.transform.SetParent(root.transform);
+        body.transform.localPosition = new Vector3(0, caseH * 0.5f, 0);
+        body.gameObject.name = "Case";
+
+        // Front panel (slightly lighter)
+        var front = CreateBox(new Vector3(caseW - 0.01f, caseH - 0.02f, 0.005f), matFront);
+        front.transform.SetParent(root.transform);
+        front.transform.localPosition = new Vector3(0, caseH * 0.5f, -(caseD * 0.5f + 0.001f));
+        front.gameObject.name = "FrontPanel";
+
+        // Power button (small cylinder, top of front)
+        var pwrBtn = CreateCylinder(0.008f, 0.005f, 8, matVent);
+        pwrBtn.transform.SetParent(root.transform);
+        pwrBtn.transform.localPosition = new Vector3(0, caseH - 0.04f, -(caseD * 0.5f + 0.003f));
+        pwrBtn.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        pwrBtn.gameObject.name = "PowerButton";
+
+        // Power LED
+        var led = CreateBox(new Vector3(0.005f, 0.003f, 0.003f), matLed);
+        led.transform.SetParent(root.transform);
+        led.transform.localPosition = new Vector3(0, caseH - 0.06f, -(caseD * 0.5f + 0.003f));
+        led.gameObject.name = "PowerLED";
+
+        // DVD/Optical drive bay
+        var dvd = CreateBox(new Vector3(caseW * 0.75f, 0.025f, 0.005f), matVent);
+        dvd.transform.SetParent(root.transform);
+        dvd.transform.localPosition = new Vector3(0, caseH - 0.10f, -(caseD * 0.5f + 0.002f));
+        dvd.gameObject.name = "OpticalDrive";
+
+        // Front ventilation grille (lower)
+        var ventFront = CreateBox(new Vector3(caseW * 0.6f, 0.08f, 0.004f), matVent);
+        ventFront.transform.SetParent(root.transform);
+        ventFront.transform.localPosition = new Vector3(0, 0.08f, -(caseD * 0.5f + 0.002f));
+        ventFront.gameObject.name = "FrontVent";
+
+        // Side panel lines (2 subtle indentations)
+        for (int i = 0; i < 2; i++)
+        {
+            float side = (i == 0) ? 1f : -1f;
+            var sidePanel = CreateBox(new Vector3(0.003f, caseH - 0.06f, caseD - 0.06f), matVent);
+            sidePanel.transform.SetParent(root.transform);
+            sidePanel.transform.localPosition = new Vector3(side * (caseW * 0.5f + 0.001f), caseH * 0.5f, 0);
+            sidePanel.gameObject.name = $"SidePanel_{i}";
+        }
+
+        // Rear exhaust vent
+        var ventRear = CreateBox(new Vector3(caseW * 0.5f, 0.06f, 0.004f), matVent);
+        ventRear.transform.SetParent(root.transform);
+        ventRear.transform.localPosition = new Vector3(0, caseH - 0.06f, caseD * 0.5f + 0.002f);
+        ventRear.gameObject.name = "RearVent";
+
+        // Rubber feet (4 small pads)
         for (int i = 0; i < 4; i++)
         {
-            float x = (i % 2 == 0 ? -0.65f : 0.65f);
-            float z = (i < 2 ? -0.3f : 0.3f);
-            var leg = CreateBox(new Vector3(0.04f, 0.73f, 0.04f), matDesk);
-            leg.transform.SetParent(root.transform);
-            leg.transform.localPosition = new Vector3(x, 0.365f, z);
-            leg.gameObject.name = $"DeskLeg{i}";
+            float fx = (i % 2 == 0 ? -1f : 1f) * (caseW * 0.35f);
+            float fz = (i < 2 ? -1f : 1f) * (caseD * 0.35f);
+            var foot = CreateBox(new Vector3(0.02f, 0.008f, 0.02f), matVent);
+            foot.transform.SetParent(root.transform);
+            foot.transform.localPosition = new Vector3(fx, 0.004f, fz);
+            foot.gameObject.name = $"Foot_{i}";
         }
-        // Monitor
-        var mon = CreateBox(new Vector3(0.45f, 0.3f, 0.03f), matFrame);
-        mon.transform.SetParent(root.transform);
-        mon.transform.localPosition = new Vector3(0, 0.92f, -0.2f);
-        mon.gameObject.name = "Monitor";
-        var scr = CreateBox(new Vector3(0.4f, 0.25f, 0.005f), matScreen);
-        scr.transform.SetParent(root.transform);
-        scr.transform.localPosition = new Vector3(0, 0.92f, -0.182f);
-        scr.gameObject.name = "Screen";
+
         SavePrefab(root, "LowPoly_ComputerUser");
         return 1;
     }
