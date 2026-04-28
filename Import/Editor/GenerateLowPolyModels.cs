@@ -2371,28 +2371,44 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
-    // PAN1 h=0.10 w=0.40
+    // PAN1 (pot/olla) h=0.12 w=0.40 - hollow interior visible
     static int GeneratePan1()
     {
         var root = new GameObject("LowPoly_Pan1");
-        var matMetal = GetMat("LP_Metal_Pan", new Color(0.25f, 0.25f, 0.27f), 0.6f, 0.5f);
-        var pot = CreateCylinder(0.13f, 0.1f, 10, matMetal);
-        pot.transform.SetParent(root.transform);
-        pot.transform.localPosition = new Vector3(0, 0.05f, 0);
-        pot.gameObject.name = "Pot";
+        var matOuter = GetMat("LP_Pan1_Outer", new Color(0.45f, 0.45f, 0.47f), 0.6f, 0.5f);
+        var matInner = GetMat("LP_Pan1_Inner", new Color(0.08f, 0.08f, 0.09f), 0.0f, 0.1f);
+        var matHandle = GetMat("LP_Pan1_Handle", new Color(0.20f, 0.20f, 0.22f), 0.7f, 0.4f);
+
+        // Outer body (solid cylinder, top at 0.10)
+        var outerWall = CreateCylinder(0.13f, 0.10f, 12, matOuter);
+        outerWall.transform.SetParent(root.transform);
+        outerWall.transform.localPosition = new Vector3(0, 0.05f, 0);
+        outerWall.gameObject.name = "OuterWall";
+
+        // Inner cylinder (dark interior) - protrudes 2mm above outer to be visible
+        // bottom at 0.01 (floor thickness), top at 0.102
+        var innerWall = CreateCylinder(0.105f, 0.092f, 12, matInner);
+        innerWall.transform.SetParent(root.transform);
+        innerWall.transform.localPosition = new Vector3(0, 0.056f, 0);
+        innerWall.gameObject.name = "InnerWall";
+
         // 2 side handles
         for (int i = 0; i < 2; i++)
         {
-            var h = CreateBox(new Vector3(0.06f, 0.02f, 0.02f), matMetal);
-            h.transform.SetParent(root.transform);
-            h.transform.localPosition = new Vector3(i == 0 ? -0.16f : 0.16f, 0.08f, 0);
-            h.gameObject.name = $"Handle{i}";
+            float side = (i == 0 ? -1f : 1f);
+            // Handle bracket
+            var bracket = CreateBox(new Vector3(0.025f, 0.03f, 0.04f), matHandle);
+            bracket.transform.SetParent(root.transform);
+            bracket.transform.localPosition = new Vector3(side * 0.145f, 0.075f, 0);
+            bracket.gameObject.name = $"HandleBracket{i}";
+
+            // Handle grip
+            var grip = CreateBox(new Vector3(0.04f, 0.015f, 0.04f), matHandle);
+            grip.transform.SetParent(root.transform);
+            grip.transform.localPosition = new Vector3(side * 0.175f, 0.085f, 0);
+            grip.gameObject.name = $"HandleGrip{i}";
         }
-        // Lid
-        var lid = CreateCylinder(0.12f, 0.015f, 10, matMetal);
-        lid.transform.SetParent(root.transform);
-        lid.transform.localPosition = new Vector3(0, 0.11f, 0);
-        lid.gameObject.name = "Lid";
+
         SavePrefab(root, "LowPoly_Pan1");
         return 1;
     }
