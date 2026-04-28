@@ -2354,19 +2354,31 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
-    // PAN0 h=0.08 w=0.37
+    // PAN0 h=0.08 w=0.37 - frying pan with hollow interior
     static int GeneratePan0()
     {
         var root = new GameObject("LowPoly_Pan0");
-        var matMetal = GetMat("LP_Metal_Pan", new Color(0.25f, 0.25f, 0.27f), 0.6f, 0.5f);
-        var pan = CreateCylinder(0.13f, 0.05f, 10, matMetal);
+        var matOuter = GetMat("LP_Pan0_Outer", new Color(0.25f, 0.25f, 0.27f), 0.6f, 0.5f);
+        var matInner = GetMat("LP_Pan0_Inner", new Color(0.08f, 0.08f, 0.09f), 0.0f, 0.1f);
+
+        // Outer body
+        var pan = CreateCylinder(0.13f, 0.05f, 12, matOuter);
         pan.transform.SetParent(root.transform);
         pan.transform.localPosition = new Vector3(0, 0.025f, 0);
         pan.gameObject.name = "Pan";
-        var handle = CreateBox(new Vector3(0.03f, 0.02f, 0.15f), matMetal);
+
+        // Inner cylinder (dark interior) - protrudes 2mm above outer
+        var inner = CreateCylinder(0.11f, 0.042f, 12, matInner);
+        inner.transform.SetParent(root.transform);
+        inner.transform.localPosition = new Vector3(0, 0.030f, 0);
+        inner.gameObject.name = "InnerWall";
+
+        // Handle
+        var handle = CreateBox(new Vector3(0.03f, 0.02f, 0.15f), matOuter);
         handle.transform.SetParent(root.transform);
         handle.transform.localPosition = new Vector3(0, 0.03f, 0.2f);
         handle.gameObject.name = "Handle";
+
         SavePrefab(root, "LowPoly_Pan0");
         return 1;
     }
@@ -2385,11 +2397,10 @@ public class GenerateLowPolyModels : EditorWindow
         outerWall.transform.localPosition = new Vector3(0, 0.05f, 0);
         outerWall.gameObject.name = "OuterWall";
 
-        // Inner cylinder (dark interior) - protrudes 2mm above outer to be visible
-        // bottom at 0.01 (floor thickness), top at 0.102
-        var innerWall = CreateCylinder(0.105f, 0.092f, 12, matInner);
+        // Inner cylinder (dark interior) - protrudes 3mm above outer to be clearly visible
+        var innerWall = CreateCylinder(0.10f, 0.093f, 12, matInner);
         innerWall.transform.SetParent(root.transform);
-        innerWall.transform.localPosition = new Vector3(0, 0.056f, 0);
+        innerWall.transform.localPosition = new Vector3(0, 0.0565f, 0);
         innerWall.gameObject.name = "InnerWall";
 
         // 2 side handles
