@@ -1561,8 +1561,8 @@ public class GenerateLowPolyModels : EditorWindow
         float handleRadius = 0.07f;
         float handleCenterX = -0.09f;  // opposite to spout (+X)
         float handleCenterY = 0.12f;
-        float hStartAngle = 115f;
-        float hEndAngle = 245f;
+        float hStartAngle = 100f;
+        float hEndAngle = 260f;
 
         for (int i = 0; i < handleSteps; i++)
         {
