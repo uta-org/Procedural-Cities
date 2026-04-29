@@ -18,7 +18,7 @@ public static class DecimateTree
     // Target quality: 0.01 = keep 1% of triangles (301k -> ~3k)
     const float Quality = 0.01f;
 
-    [MenuItem("Procedural Cities/Decimate Tree")]
+    // [MenuItem("Procedural Cities/Decimate Tree")]
     static void Decimate()
     {
         var allAssets = AssetDatabase.LoadAllAssetsAtPath(TreeModelPath);

@@ -11,7 +11,7 @@ public static class RebuildOfficeChair
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";   // package materials (persistent)
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    [MenuItem("Procedural Cities/Rebuild Office Chair")]
+    // [MenuItem("Procedural Cities/Rebuild Office Chair")]
     static void Rebuild()
     {
         // Step 1: Regenerate the LowPoly model via reflection (private method)

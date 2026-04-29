@@ -61,7 +61,7 @@ namespace ProceduralCities.Import.Editor
         // ─────────────────────────────────────────────────────
         //  BAKE SCALES INTO MESH VERTICES
         // ─────────────────────────────────────────────────────
-        [MenuItem("Procedural Cities/Bake Scales Into Prefabs")]
+        // [MenuItem("Procedural Cities/Bake Scales Into Prefabs")]
         public static void BakeAll()
         {
             // Load JSON
@@ -232,13 +232,13 @@ namespace ProceduralCities.Import.Editor
         //  Run this after BakeAll, with PrefabOrientationShowcase
         //  or PrefabShowcase open.
         // ─────────────────────────────────────────────────────
-        [MenuItem("Procedural Cities/Reset Scene Scales to 1 (OrientationShowcase)")]
+        // [MenuItem("Procedural Cities/Reset Scene Scales to 1 (OrientationShowcase)")]
         public static void ResetOrientationShowcaseScales()
         {
             ResetSceneScales("OrientationShowcase");
         }
 
-        [MenuItem("Procedural Cities/Reset Scene Scales to 1 (PrefabShowcase)")]
+        // [MenuItem("Procedural Cities/Reset Scene Scales to 1 (PrefabShowcase)")]
         public static void ResetPrefabShowcaseScales()
         {
             ResetSceneScales("PrefabShowcase");
@@ -312,7 +312,7 @@ namespace ProceduralCities.Import.Editor
         //  reimport. This updates the ModelImporter.globalScale
         //  so the correct size persists.
         // ─────────────────────────────────────────────────────
-        [MenuItem("Procedural Cities/Fix Imported Model Scales (after Bake)")]
+        // [MenuItem("Procedural Cities/Fix Imported Model Scales (after Bake)")]
         public static void FixImportedModelScales()
         {
             var guids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabDir });
@@ -478,7 +478,7 @@ namespace ProceduralCities.Import.Editor
             { "Wardrobe",           2.00f },
         };
 
-        [MenuItem("Procedural Cities/Correct Prefab Proportions (Real-World Sizes)")]
+        // [MenuItem("Procedural Cities/Correct Prefab Proportions (Real-World Sizes)")]
         public static void CorrectPrefabProportions()
         {
             string jsonPath = FindJsonPath();

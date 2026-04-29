@@ -39,7 +39,7 @@ namespace ProceduralCities.Import.Editor
             public List<PrefabEntry> prefabs;
         }
 
-        [MenuItem("Procedural Cities/Restore Prefab Transforms (Showcase Scene)")]
+        // [MenuItem("Procedural Cities/Restore Prefab Transforms (Showcase Scene)")]
         public static void RestoreFromJson()
         {
             var root = GameObject.Find(ShowcaseRootName);

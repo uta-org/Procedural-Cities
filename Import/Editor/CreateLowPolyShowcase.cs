@@ -19,7 +19,7 @@ public class CreateLowPolyShowcase
     };
     static string ScenePath = "Assets/Scenes/LowPolyShowcase.unity";
 
-    [MenuItem("Procedural Cities/Create LowPoly Showcase Scene")]
+    // [MenuItem("Procedural Cities/Create LowPoly Showcase Scene")]
     static void Create()
     {
         // Create new scene

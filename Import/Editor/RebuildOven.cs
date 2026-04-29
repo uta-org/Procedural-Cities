@@ -11,7 +11,7 @@ public static class RebuildOven
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    [MenuItem("Procedural Cities/Rebuild Oven")]
+    // [MenuItem("Procedural Cities/Rebuild Oven")]
     static void Rebuild()
     {
         Debug.Log("[RebuildOven] Step 1: Regenerating LowPoly_Oven...");
