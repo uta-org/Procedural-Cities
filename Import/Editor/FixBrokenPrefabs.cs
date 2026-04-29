@@ -48,8 +48,8 @@ public static class FixBrokenPrefabs
         }
 
         Debug.Log($"[FixBrokenPrefabs] Fixed {fixed_}/6 prefabs.");
-        EditorUtility.DisplayDialog("Fix Broken Prefabs",
-            $"Fixed {fixed_}/6 prefabs.\nCheck console for details.", "OK");
+        // EditorUtility.DisplayDialog("Fix Broken Prefabs",
+        //     $"Fixed {fixed_}/6 prefabs.\nCheck console for details.", "OK");
     }
 
     static int RebuildPrefab(string name, List<MeshPart> parts, float labelHeight)

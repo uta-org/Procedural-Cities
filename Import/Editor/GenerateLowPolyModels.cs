@@ -73,14 +73,14 @@ public class GenerateLowPolyModels : EditorWindow
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log($"[LowPoly] Generated {total} low-poly models in {OutputFolder}");
-            EditorUtility.DisplayDialog("LowPoly Generator",
-                $"Successfully generated {total} low-poly models in:\n{OutputFolder}", "OK");
+            // EditorUtility.DisplayDialog("LowPoly Generator",
+            //     $"Successfully generated {total} low-poly models in:\n{OutputFolder}", "OK");
         }
         catch (System.Exception ex)
         {
             Debug.LogError($"[LowPoly] EXCEPTION: {ex.Message}\n{ex.StackTrace}");
-            EditorUtility.DisplayDialog("LowPoly Generator",
-                $"Error: {ex.Message}\nCheck console for details.", "OK");
+            // EditorUtility.DisplayDialog("LowPoly Generator",
+            //     $"Error: {ex.Message}\nCheck console for details.", "OK");
         }
         finally
         {

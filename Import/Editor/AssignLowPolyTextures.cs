@@ -293,8 +293,8 @@ public class AssignLowPolyTextures : Editor
         AssetDatabase.Refresh();
 
         Debug.Log($"[TexAssign] Done: {assigned} assigned, {skipped} shader-only, {notFound} not found");
-        EditorUtility.DisplayDialog("Assign LowPoly Textures",
-            $"Assigned: {assigned}\nShader-only: {skipped}\nNot found: {notFound}", "OK");
+        // EditorUtility.DisplayDialog("Assign LowPoly Textures",
+        //     $"Assigned: {assigned}\nShader-only: {skipped}\nNot found: {notFound}", "OK");
     }
 
     static void AssignTexture(Material mat, string property, TexAssignment assign, string mapType,

@@ -87,7 +87,7 @@ public static class FixAllBrokenPrefabs
             msg += $"\nFailed: {string.Join(", ", failedNames)}";
 
         Debug.Log($"[FixAll] {msg}");
-        EditorUtility.DisplayDialog("Fix All Broken Prefabs", msg, "OK");
+        // EditorUtility.DisplayDialog("Fix All Broken Prefabs", msg, "OK");
     }
 
     static bool HasValidMeshes(GameObject prefab)
