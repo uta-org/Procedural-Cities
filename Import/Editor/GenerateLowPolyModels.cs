@@ -3471,15 +3471,15 @@ public class GenerateLowPolyModels : EditorWindow
         var matLeaf = TreeLeafDark;
 
         // Trunk
-        var trunk = CreateCylinder(0.06f, 0.5f, 6, matTrunk);
+        var trunk = CreateCylinder(0.18f, 1.5f, 6, matTrunk);
         trunk.transform.SetParent(root.transform);
-        trunk.transform.localPosition = new Vector3(0, 0.25f, 0);
+        trunk.transform.localPosition = new Vector3(0, 0.75f, 0);
         trunk.gameObject.name = "Trunk";
 
         // 3 stacked cones (bottom to top: larger to smaller)
-        float[] coneR = { 0.45f, 0.35f, 0.25f };
-        float[] coneH = { 0.50f, 0.45f, 0.40f };
-        float[] coneY = { 0.45f, 0.75f, 1.05f };
+        float[] coneR = { 1.35f, 1.05f, 0.75f };
+        float[] coneH = { 1.50f, 1.35f, 1.20f };
+        float[] coneY = { 1.35f, 2.25f, 3.15f };
         for (int i = 0; i < 3; i++)
         {
             var cone = ShapeGenerator.GenerateCone(PivotLocation.Center, coneR[i], coneH[i], 7);
@@ -3501,23 +3501,23 @@ public class GenerateLowPolyModels : EditorWindow
         var matLeaf = TreeLeaf;
 
         // Trunk
-        var trunk = CreateCylinder(0.07f, 0.8f, 6, matTrunk);
+        var trunk = CreateCylinder(0.21f, 2.4f, 6, matTrunk);
         trunk.transform.SetParent(root.transform);
-        trunk.transform.localPosition = new Vector3(0, 0.4f, 0);
+        trunk.transform.localPosition = new Vector3(0, 1.2f, 0);
         trunk.gameObject.name = "Trunk";
 
         // Main canopy sphere
-        var canopy = ShapeGenerator.GenerateIcosahedron(PivotLocation.Center, 0.55f, 1);
+        var canopy = ShapeGenerator.GenerateIcosahedron(PivotLocation.Center, 1.65f, 1);
         canopy.GetComponent<MeshRenderer>().sharedMaterial = matLeaf;
         canopy.transform.SetParent(root.transform);
-        canopy.transform.localPosition = new Vector3(0, 1.15f, 0);
+        canopy.transform.localPosition = new Vector3(0, 3.45f, 0);
         canopy.gameObject.name = "Canopy";
 
         // Secondary smaller sphere for volume
-        var canopy2 = ShapeGenerator.GenerateIcosahedron(PivotLocation.Center, 0.38f, 1);
+        var canopy2 = ShapeGenerator.GenerateIcosahedron(PivotLocation.Center, 1.14f, 1);
         canopy2.GetComponent<MeshRenderer>().sharedMaterial = matLeaf;
         canopy2.transform.SetParent(root.transform);
-        canopy2.transform.localPosition = new Vector3(0.2f, 1.0f, 0.15f);
+        canopy2.transform.localPosition = new Vector3(0.6f, 3.0f, 0.45f);
         canopy2.gameObject.name = "Canopy1";
 
         SavePrefab(root, "LowPoly_Tree1");
@@ -3532,19 +3532,19 @@ public class GenerateLowPolyModels : EditorWindow
         var matLeaf = TreeLeafLight;
 
         // Trunk (thicker, shorter)
-        var trunk = CreateCylinder(0.09f, 0.6f, 6, matTrunk);
+        var trunk = CreateCylinder(0.27f, 1.8f, 6, matTrunk);
         trunk.transform.SetParent(root.transform);
-        trunk.transform.localPosition = new Vector3(0, 0.3f, 0);
+        trunk.transform.localPosition = new Vector3(0, 0.9f, 0);
         trunk.gameObject.name = "Trunk";
 
         // Wide canopy: 4 overlapping icosahedrons
         Vector3[] offsets = {
-            new Vector3(0, 0.95f, 0),
-            new Vector3(0.25f, 0.85f, 0.2f),
-            new Vector3(-0.22f, 0.88f, -0.15f),
-            new Vector3(-0.1f, 0.80f, 0.28f),
+            new Vector3(0, 2.85f, 0),
+            new Vector3(0.75f, 2.55f, 0.6f),
+            new Vector3(-0.66f, 2.64f, -0.45f),
+            new Vector3(-0.3f, 2.40f, 0.84f),
         };
-        float[] sizes = { 0.50f, 0.40f, 0.38f, 0.35f };
+        float[] sizes = { 1.50f, 1.20f, 1.14f, 1.05f };
         for (int i = 0; i < 4; i++)
         {
             var sphere = ShapeGenerator.GenerateIcosahedron(PivotLocation.Center, sizes[i], 1);
@@ -3565,23 +3565,23 @@ public class GenerateLowPolyModels : EditorWindow
         var matTrunk = TreeTrunk;
 
         // Trunk
-        var trunk = CreateCylinder(0.065f, 0.7f, 6, matTrunk);
+        var trunk = CreateCylinder(0.195f, 2.1f, 6, matTrunk);
         trunk.transform.SetParent(root.transform);
-        trunk.transform.localPosition = new Vector3(0, 0.35f, 0);
+        trunk.transform.localPosition = new Vector3(0, 1.05f, 0);
         trunk.gameObject.name = "Trunk";
 
         // Single large cone canopy (autumn yellow-orange)
-        var canopy = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.50f, 0.85f, 8);
+        var canopy = ShapeGenerator.GenerateCone(PivotLocation.Center, 1.50f, 2.55f, 8);
         canopy.GetComponent<MeshRenderer>().sharedMaterial = TreeLeafYellow;
         canopy.transform.SetParent(root.transform);
-        canopy.transform.localPosition = new Vector3(0, 0.65f + 0.425f, 0);
+        canopy.transform.localPosition = new Vector3(0, 1.95f + 1.275f, 0);
         canopy.gameObject.name = "Canopy";
 
         // Smaller orange accent cone on top
-        var top = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.28f, 0.45f, 7);
+        var top = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.84f, 1.35f, 7);
         top.GetComponent<MeshRenderer>().sharedMaterial = TreeLeafOrange;
         top.transform.SetParent(root.transform);
-        top.transform.localPosition = new Vector3(0, 1.15f + 0.225f, 0);
+        top.transform.localPosition = new Vector3(0, 3.45f + 0.675f, 0);
         top.gameObject.name = "CanopyTop";
 
         SavePrefab(root, "LowPoly_Tree3");
@@ -3596,22 +3596,22 @@ public class GenerateLowPolyModels : EditorWindow
         var matLeaf = TreeLeafDark;
 
         // Slim trunk
-        var trunk = CreateCylinder(0.05f, 0.6f, 6, matTrunk);
+        var trunk = CreateCylinder(0.15f, 1.8f, 6, matTrunk);
         trunk.transform.SetParent(root.transform);
-        trunk.transform.localPosition = new Vector3(0, 0.3f, 0);
+        trunk.transform.localPosition = new Vector3(0, 0.9f, 0);
         trunk.gameObject.name = "Trunk";
 
         // Tall narrow cylinder canopy
-        var body = CreateCylinder(0.18f, 1.1f, 7, matLeaf);
+        var body = CreateCylinder(0.54f, 3.3f, 7, matLeaf);
         body.transform.SetParent(root.transform);
-        body.transform.localPosition = new Vector3(0, 0.55f + 0.55f, 0);
+        body.transform.localPosition = new Vector3(0, 1.65f + 1.65f, 0);
         body.gameObject.name = "Canopy";
 
         // Cone tip on top
-        var tip = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.18f, 0.35f, 7);
+        var tip = ShapeGenerator.GenerateCone(PivotLocation.Center, 0.54f, 1.05f, 7);
         tip.GetComponent<MeshRenderer>().sharedMaterial = matLeaf;
         tip.transform.SetParent(root.transform);
-        tip.transform.localPosition = new Vector3(0, 1.1f + 0.35f + 0.175f, 0);
+        tip.transform.localPosition = new Vector3(0, 3.3f + 1.05f + 0.525f, 0);
         tip.gameObject.name = "CanopyTip";
 
         SavePrefab(root, "LowPoly_Tree4");
