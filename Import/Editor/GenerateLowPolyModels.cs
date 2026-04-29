@@ -47,7 +47,7 @@ public class GenerateLowPolyModels : EditorWindow
         GenerateKM_Dishwasher, GenerateKM_Hood, GenerateKM_Microwave,
         GenerateKM_ShelfOpen, GenerateKM_Island,
         // Trees
-        GenerateTree, GenerateTree1, GenerateTree2, GenerateTree3, GenerateTree4, GenerateTree5,
+        GenerateTree, GenerateTree1, GenerateTree2, GenerateTree3, GenerateTree4, GenerateTree5, GenerateTree6,
     };
 
     [MenuItem("Procedural Cities/Generate LowPoly Models")]
@@ -3686,6 +3686,62 @@ public class GenerateLowPolyModels : EditorWindow
         b6.gameObject.name = "Branch5";
 
         SavePrefab(root, "LowPoly_Tree5");
+        return 1;
+    }
+
+    // Tree6: palm tree — tall curved trunk with fan of flat cone fronds at top
+    static int GenerateTree6()
+    {
+        var root = new GameObject("LowPoly_Tree6");
+        var matTrunk = TreeTrunk;
+        var matLeaf = TreeLeaf;
+
+        // Trunk — tall and slim
+        var trunk = CreateCylinder(0.12f, 4.0f, 6, matTrunk);
+        trunk.transform.SetParent(root.transform);
+        trunk.transform.localPosition = new Vector3(0, 2.0f, 0);
+        trunk.gameObject.name = "Trunk";
+
+        // Upper trunk — slightly thinner continuation
+        var upperTrunk = CreateCylinder(0.09f, 1.2f, 6, matTrunk);
+        upperTrunk.transform.SetParent(root.transform);
+        upperTrunk.transform.localPosition = new Vector3(0, 4.6f, 0);
+        upperTrunk.gameObject.name = "UpperTrunk";
+
+        // Palm fronds — 6 flat cones radiating outward from top
+        float frondY = 5.0f;
+        float frondLen = 2.2f;
+        float frondRadius = 0.6f;
+        float[] angles = { 0f, 60f, 120f, 180f, 240f, 300f };
+        float[] tilts = { 35f, 30f, 40f, 32f, 38f, 28f };
+        for (int i = 0; i < 6; i++)
+        {
+            var frond = ShapeGenerator.GenerateCone(PivotLocation.Center, frondRadius, frondLen, 4);
+            frond.GetComponent<MeshRenderer>().sharedMaterial = matLeaf;
+            frond.transform.SetParent(root.transform);
+
+            // Position at top of trunk, then rotate outward
+            float rad = angles[i] * Mathf.Deg2Rad;
+            float offsetX = Mathf.Sin(rad) * 0.3f;
+            float offsetZ = Mathf.Cos(rad) * 0.3f;
+            frond.transform.localPosition = new Vector3(offsetX, frondY, offsetZ);
+            frond.transform.localRotation = Quaternion.Euler(tilts[i], angles[i], 0);
+            frond.gameObject.name = $"Frond{i}";
+        }
+
+        // Small coconut cluster — 3 tiny spheres
+        for (int i = 0; i < 3; i++)
+        {
+            float a = i * 120f * Mathf.Deg2Rad;
+            var coconut = ShapeGenerator.GenerateIcosahedron(PivotLocation.Center, 0.12f, 0);
+            coconut.GetComponent<MeshRenderer>().sharedMaterial = matTrunk;
+            coconut.transform.SetParent(root.transform);
+            coconut.transform.localPosition = new Vector3(
+                Mathf.Sin(a) * 0.15f, 5.05f, Mathf.Cos(a) * 0.15f);
+            coconut.gameObject.name = $"Coconut{i}";
+        }
+
+        SavePrefab(root, "LowPoly_Tree6");
         return 1;
     }
 }
