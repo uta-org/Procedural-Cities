@@ -2,7 +2,8 @@
     "name": "dev.z3nth10n.proceduralcities.import.editor",
     "rootNamespace": "",
     "references": [
-        "Unity.ProBuilder"
+        "Unity.ProBuilder",
+        "Whinarn.UnityMeshSimplifier.Runtime"
     ],
     "includePlatforms": [
         "Editor"
