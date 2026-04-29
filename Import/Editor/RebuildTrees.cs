@@ -15,12 +15,12 @@ public static class RebuildTrees
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    static readonly string[] TreeNames = { "Tree", "Tree1", "Tree2", "Tree3", "Tree4" };
+    static readonly string[] TreeNames = { "Tree", "Tree1", "Tree2", "Tree3", "Tree4", "Tree5" };
 
     [MenuItem("Procedural Cities/Rebuild Trees")]
     static void Rebuild()
     {
-        Debug.Log("[RebuildTrees] Regenerating all 5 Tree variants...");
+        Debug.Log("[RebuildTrees] Regenerating all 6 Tree variants...");
         var genType = typeof(GenerateLowPolyModels);
 
         var ensureFolders = genType.GetMethod("EnsureFolders",

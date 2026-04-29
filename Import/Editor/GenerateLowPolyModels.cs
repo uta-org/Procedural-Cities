@@ -47,7 +47,7 @@ public class GenerateLowPolyModels : EditorWindow
         GenerateKM_Dishwasher, GenerateKM_Hood, GenerateKM_Microwave,
         GenerateKM_ShelfOpen, GenerateKM_Island,
         // Trees
-        GenerateTree, GenerateTree1, GenerateTree2, GenerateTree3, GenerateTree4,
+        GenerateTree, GenerateTree1, GenerateTree2, GenerateTree3, GenerateTree4, GenerateTree5,
     };
 
     [MenuItem("Procedural Cities/Generate LowPoly Models")]
@@ -3622,6 +3622,70 @@ public class GenerateLowPolyModels : EditorWindow
         }
 
         SavePrefab(root, "LowPoly_Tree4");
+        return 1;
+    }
+
+    // Tree5: dead/dry tree — bare trunk with exposed branches, no leaves
+    static int GenerateTree5()
+    {
+        var root = new GameObject("LowPoly_Tree5");
+        var matTrunk = TreeTrunk;
+
+        // Main trunk — slightly tapered feel via thicker base
+        var trunk = CreateCylinder(0.18f, 3.0f, 6, matTrunk);
+        trunk.transform.SetParent(root.transform);
+        trunk.transform.localPosition = new Vector3(0, 1.5f, 0);
+        trunk.gameObject.name = "Trunk";
+
+        // Upper trunk (thinner continuation)
+        var upperTrunk = CreateCylinder(0.12f, 1.5f, 5, matTrunk);
+        upperTrunk.transform.SetParent(root.transform);
+        upperTrunk.transform.localPosition = new Vector3(0, 3.75f, 0);
+        upperTrunk.gameObject.name = "UpperTrunk";
+
+        // Branch 1 — lower right, angled out
+        var b1 = CreateCylinder(0.07f, 1.8f, 5, matTrunk);
+        b1.transform.SetParent(root.transform);
+        b1.transform.localPosition = new Vector3(0.6f, 2.4f, 0.2f);
+        b1.transform.localRotation = Quaternion.Euler(0, 0, -40f);
+        b1.gameObject.name = "Branch0";
+
+        // Branch 2 — lower left
+        var b2 = CreateCylinder(0.065f, 1.5f, 5, matTrunk);
+        b2.transform.SetParent(root.transform);
+        b2.transform.localPosition = new Vector3(-0.5f, 2.8f, -0.3f);
+        b2.transform.localRotation = Quaternion.Euler(0, 30f, 45f);
+        b2.gameObject.name = "Branch1";
+
+        // Branch 3 — mid right, shorter
+        var b3 = CreateCylinder(0.055f, 1.2f, 5, matTrunk);
+        b3.transform.SetParent(root.transform);
+        b3.transform.localPosition = new Vector3(0.45f, 3.5f, -0.15f);
+        b3.transform.localRotation = Quaternion.Euler(10f, -20f, -50f);
+        b3.gameObject.name = "Branch2";
+
+        // Branch 4 — upper left
+        var b4 = CreateCylinder(0.05f, 1.0f, 5, matTrunk);
+        b4.transform.SetParent(root.transform);
+        b4.transform.localPosition = new Vector3(-0.35f, 4.0f, 0.25f);
+        b4.transform.localRotation = Quaternion.Euler(-15f, 40f, 55f);
+        b4.gameObject.name = "Branch3";
+
+        // Branch 5 — top fork right
+        var b5 = CreateCylinder(0.045f, 0.9f, 5, matTrunk);
+        b5.transform.SetParent(root.transform);
+        b5.transform.localPosition = new Vector3(0.25f, 4.3f, 0.1f);
+        b5.transform.localRotation = Quaternion.Euler(5f, -10f, -35f);
+        b5.gameObject.name = "Branch4";
+
+        // Branch 6 — top fork left
+        var b6 = CreateCylinder(0.04f, 0.8f, 5, matTrunk);
+        b6.transform.SetParent(root.transform);
+        b6.transform.localPosition = new Vector3(-0.2f, 4.5f, -0.1f);
+        b6.transform.localRotation = Quaternion.Euler(0, 20f, 40f);
+        b6.gameObject.name = "Branch5";
+
+        SavePrefab(root, "LowPoly_Tree5");
         return 1;
     }
 }
