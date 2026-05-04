@@ -112,6 +112,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8744342182045935975}
+  - component: {fileID: 8341911367572781943}
   m_Layer: 0
   m_Name: OfficeWhiteboard
   m_TagString: Untagged
@@ -136,6 +137,21 @@ Transform:
   - {fileID: 4480882070898085734}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8341911367572781943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2660471966218923724}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
+  prefabName: OfficeWhiteboard
+  prefabIndex: 41
+  forwardAngleY: 0
 --- !u!1 &4135112907892653525
 GameObject:
   m_ObjectHideFlags: 0

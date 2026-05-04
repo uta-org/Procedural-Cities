@@ -99,6 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4021971328770465641}
+  - component: {fileID: 7465999896268475645}
   m_Layer: 0
   m_Name: Toaster
   m_TagString: Untagged
@@ -123,6 +124,21 @@ Transform:
   - {fileID: 3374339155295744786}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7465999896268475645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4021971328770465640}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
+  prefabName: Toaster
+  prefabIndex: 62
+  forwardAngleY: 0
 --- !u!1 &4885788581609777202
 GameObject:
   m_ObjectHideFlags: 0

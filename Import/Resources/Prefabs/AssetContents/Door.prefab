@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 470951064416387515}
+  - component: {fileID: 8497580683697150665}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -33,6 +34,21 @@ Transform:
   - {fileID: 2934905573908798064}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8497580683697150665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3999571296223342069}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
+  prefabName: Door
+  prefabIndex: 11
+  forwardAngleY: 0
 --- !u!1 &5240718356251183987
 GameObject:
   m_ObjectHideFlags: 0

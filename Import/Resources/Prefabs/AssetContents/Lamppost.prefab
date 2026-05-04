@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3965001442615977418}
+  - component: {fileID: 906812009986629448}
   m_Layer: 0
   m_Name: Lamppost
   m_TagString: Untagged
@@ -33,6 +34,21 @@ Transform:
   - {fileID: 5847824361481114100}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &906812009986629448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3556017314538891106}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
+  prefabName: Lamppost
+  prefabIndex: 31
+  forwardAngleY: 0
 --- !u!1 &3706047451206264266
 GameObject:
   m_ObjectHideFlags: 0

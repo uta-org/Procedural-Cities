@@ -112,6 +112,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9207526474868803022}
+  - component: {fileID: 9175482548821458715}
   m_Layer: 0
   m_Name: RooftopSolar
   m_TagString: Untagged
@@ -136,6 +137,21 @@ Transform:
   - {fileID: 2814357501159622386}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9175482548821458715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6257576625814358808}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
+  prefabName: RooftopSolar
+  prefabIndex: 48
+  forwardAngleY: 0
 --- !u!1 &6971175163959129963
 GameObject:
   m_ObjectHideFlags: 0

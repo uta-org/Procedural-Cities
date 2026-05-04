@@ -67,7 +67,8 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: a089c2bffc3145549894371abfddabda, type: 2}
-  - {fileID: 2100000, guid: 70be8955b186dca44a1bbfec98662f93, type: 2}
+  - {fileID: 2100000, guid: dbe4475edecb41a4ab9d8f67a02bae38, type: 2}
+  - {fileID: 2100000, guid: 412ff9d06f1f5fe479433207be4e2216, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -202,6 +203,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1052205667332165493}
+  - component: {fileID: 6889194542288884330}
   m_Layer: 0
   m_Name: Shelf2
   m_TagString: Untagged
@@ -226,3 +228,18 @@ Transform:
   - {fileID: 3083429678255442779}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6889194542288884330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5820243539835873003}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
+  prefabName: Shelf2
+  prefabIndex: 52
+  forwardAngleY: 0

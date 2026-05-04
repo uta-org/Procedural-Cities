@@ -68,8 +68,6 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: fdd7e0c129d8f7449b3604f49bf16619, type: 2}
   - {fileID: 2100000, guid: 86865ac0b001eaf4aab78fcefcf5ad6e, type: 2}
-  - {fileID: 2100000, guid: fa86e8a4cb39ff24aa06758c6a8ce707, type: 2}
-  - {fileID: 2100000, guid: 299461f4d3ec3a84a99a529e3615de22, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -204,6 +202,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5759833177896428416}
+  - component: {fileID: 4122857496094754684}
   m_Layer: 0
   m_Name: Bed
   m_TagString: Untagged
@@ -228,3 +227,18 @@ Transform:
   - {fileID: 8113061795259866273}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4122857496094754684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5021056030855792577}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
+  prefabName: Bed
+  prefabIndex: 1
+  forwardAngleY: 0

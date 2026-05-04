@@ -69,6 +69,7 @@ MeshRenderer:
   - {fileID: 2100000, guid: 78197dd1d4f0f134da040ee7bb6840c4, type: 2}
   - {fileID: 2100000, guid: 6fc2bac8ec1cc5140955f3c7a7797799, type: 2}
   - {fileID: 2100000, guid: 9d7b8a7e5d6d02c4b88051a0f0b3b1ce, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -203,6 +204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1932622020830482274}
+  - component: {fileID: 2889218573059443645}
   m_Layer: 0
   m_Name: Sink
   m_TagString: Untagged
@@ -227,3 +229,18 @@ Transform:
   - {fileID: 345225972204588553}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2889218573059443645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4112868777432229981}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
+  prefabName: Sink
+  prefabIndex: 56
+  forwardAngleY: 0
