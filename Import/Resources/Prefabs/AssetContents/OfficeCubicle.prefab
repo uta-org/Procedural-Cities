@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8123493480821640740}
   - component: {fileID: 5592945926779843655}
   - component: {fileID: 2167166005106757239}
+  - component: {fileID: 1312413779089447719}
   m_Layer: 0
   m_Name: officecubicle
   m_TagString: Untagged
@@ -90,6 +91,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1312413779089447719
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8070235623523166139}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: df4204cb454471f4f8136d5e2052991f, type: 2}
 --- !u!1 &9128224319286358590
 GameObject:
   m_ObjectHideFlags: 0

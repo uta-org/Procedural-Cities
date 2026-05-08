@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 2485961290352987028}
   - component: {fileID: 1571812388310844465}
   - component: {fileID: 3617732196900761851}
+  - component: {fileID: 3369272728998558096}
   m_Layer: 0
   m_Name: kitchen4
   m_TagString: Untagged
@@ -139,3 +140,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &3369272728998558096
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2969059849501724974}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: b60b5d4b9173cd943b2dd2f8d6ebe151, type: 2}

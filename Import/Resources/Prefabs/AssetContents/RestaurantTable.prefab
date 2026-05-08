@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 4221063952298930660}
   - component: {fileID: 6779756400087199811}
   - component: {fileID: 7581223971038974747}
+  - component: {fileID: 6178923439135102017}
   m_Layer: 0
   m_Name: restauranttable
   m_TagString: Untagged
@@ -138,3 +139,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &6178923439135102017
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4445401379851721134}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 8f5da81bf9448f342b9abe536b4557f2, type: 2}

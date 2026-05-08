@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 128461582021275867}
   - component: {fileID: 3920305090688630654}
   - component: {fileID: 1261940266486877108}
+  - component: {fileID: 1057594033986633034}
   m_Layer: 0
   m_Name: shelf2
   m_TagString: Untagged
@@ -91,6 +92,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1057594033986633034
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 757646577431603809}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: e2d7d7b7d6b8ca24082800edb9f7b171, type: 2}
 --- !u!1 &5820243539835873003
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7289217420465267748}
   - component: {fileID: 2645043023085727404}
   - component: {fileID: 3434887103992017034}
+  - component: {fileID: 1807082471250860564}
   m_Layer: 0
   m_Name: dispenser
   m_TagString: Untagged
@@ -92,6 +93,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1807082471250860564
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3298464738400720880}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 643fc6599632f864480d79f308db2b1d, type: 2}
 --- !u!1 &6753437848763555608
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3949150891842138220}
   - component: {fileID: 8732781558894318912}
   - component: {fileID: 8785874144607274813}
+  - component: {fileID: 2368654396482919015}
   m_Layer: 0
   m_Name: hanger1
   m_TagString: Untagged
@@ -90,6 +91,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &2368654396482919015
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6802108890452175917}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: c9f97a90eb224c74fa1bb14ed871f056, type: 2}
 --- !u!1 &8424254294928605300
 GameObject:
   m_ObjectHideFlags: 0

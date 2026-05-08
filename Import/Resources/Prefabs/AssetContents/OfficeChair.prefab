@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 7376419635673947965}
   - component: {fileID: 5818730412543669225}
   - component: {fileID: 2833760056795319329}
+  - component: {fileID: 1859096454726655031}
   m_Layer: 0
   m_Name: officechair
   m_TagString: Untagged
@@ -139,3 +140,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1859096454726655031
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228486720210950005}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 0d1ee768e5466c049ad93ed1ba939c5c, type: 2}
