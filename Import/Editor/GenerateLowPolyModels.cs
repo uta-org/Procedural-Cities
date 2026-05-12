@@ -25,7 +25,7 @@ public class GenerateLowPolyModels : EditorWindow
         GenerateDispenser, GenerateStair, GenerateFountain, GenerateWardrobe,
         GenerateShelf, GenerateFridge, GenerateToilet, GenerateKitchenCounter,
         GenerateHanger, GenerateMirror,
-        GenerateAwning, GenerateBed, GenerateBush, GenerateChair, GenerateChoppingBoard,
+        GenerateAwning, GenerateBalcony, GenerateBed, GenerateBush, GenerateChair, GenerateChoppingBoard,
         GenerateClock, GenerateComputer, GenerateComputerUser, GenerateCup,
         GenerateDoor, GenerateDoorFrame, GenerateElevator, GenerateFence,
         GenerateFireHydrant, GenerateGlass, GenerateGrass, GenerateHanger1,
@@ -1261,6 +1261,74 @@ public class GenerateLowPolyModels : EditorWindow
             rod.gameObject.name = $"Rod{i}";
         }
         SavePrefab(root, "LowPoly_Awning");
+        return 1;
+    }
+
+    // BALCONY – platform + railing/balustrade (unit size, scaled at runtime)
+    static int GenerateBalcony()
+    {
+        var root = new GameObject("LowPoly_Balcony");
+        var matConcrete = GetMat("LP_Concrete_LightGray", new Color(0.78f, 0.76f, 0.72f));
+        var matMetal = GetMat("LP_Metal_DarkGray", new Color(0.3f, 0.3f, 0.3f), 0.7f, 0.6f);
+
+        // Platform slab (1×0.08×1 — scaled to doorWidth × 1 × platformDepth at runtime)
+        var platform = CreateBox(new Vector3(1f, 0.08f, 1f), matConcrete);
+        platform.transform.SetParent(root.transform);
+        platform.transform.localPosition = new Vector3(0, -0.04f, 0);
+        platform.gameObject.name = "Platform";
+
+        // Front railing bar (horizontal)
+        var frontBar = CreateBox(new Vector3(1f, 0.04f, 0.04f), matMetal);
+        frontBar.transform.SetParent(root.transform);
+        frontBar.transform.localPosition = new Vector3(0, 1f, 0.48f);
+        frontBar.gameObject.name = "FrontRailTop";
+
+        // Front railing mid bar
+        var frontMidBar = CreateBox(new Vector3(1f, 0.03f, 0.03f), matMetal);
+        frontMidBar.transform.SetParent(root.transform);
+        frontMidBar.transform.localPosition = new Vector3(0, 0.5f, 0.48f);
+        frontMidBar.gameObject.name = "FrontRailMid";
+
+        // Front railing bottom bar
+        var frontBottomBar = CreateBox(new Vector3(1f, 0.03f, 0.03f), matMetal);
+        frontBottomBar.transform.SetParent(root.transform);
+        frontBottomBar.transform.localPosition = new Vector3(0, 0.15f, 0.48f);
+        frontBottomBar.gameObject.name = "FrontRailBottom";
+
+        // Left side railing
+        var leftBar = CreateBox(new Vector3(0.04f, 0.04f, 1f), matMetal);
+        leftBar.transform.SetParent(root.transform);
+        leftBar.transform.localPosition = new Vector3(-0.48f, 1f, 0);
+        leftBar.gameObject.name = "LeftRailTop";
+
+        // Right side railing
+        var rightBar = CreateBox(new Vector3(0.04f, 0.04f, 1f), matMetal);
+        rightBar.transform.SetParent(root.transform);
+        rightBar.transform.localPosition = new Vector3(0.48f, 1f, 0);
+        rightBar.gameObject.name = "RightRailTop";
+
+        // Vertical posts (4 corners)
+        for (int i = 0; i < 4; i++)
+        {
+            var x = (i % 2 == 0) ? -0.48f : 0.48f;
+            var z = (i < 2) ? -0.01f : 0.48f;
+            var post = CreateBox(new Vector3(0.03f, 1.04f, 0.03f), matMetal);
+            post.transform.SetParent(root.transform);
+            post.transform.localPosition = new Vector3(x, 0.5f, z);
+            post.gameObject.name = $"Post{i}";
+        }
+
+        // Vertical balusters along front railing (5 evenly spaced)
+        for (int i = 0; i < 5; i++)
+        {
+            var x = -0.4f + i * 0.2f;
+            var baluster = CreateBox(new Vector3(0.02f, 1.04f, 0.02f), matMetal);
+            baluster.transform.SetParent(root.transform);
+            baluster.transform.localPosition = new Vector3(x, 0.5f, 0.48f);
+            baluster.gameObject.name = $"Baluster{i}";
+        }
+
+        SavePrefab(root, "LowPoly_Balcony");
         return 1;
     }
 
