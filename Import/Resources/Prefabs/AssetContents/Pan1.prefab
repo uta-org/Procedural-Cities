@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1218667724157667196}
-  - component: {fileID: 8582555673960414322}
   m_Layer: 0
   m_Name: Pan1
   m_TagString: Untagged
@@ -33,21 +32,6 @@ Transform:
   - {fileID: 7563272989114725771}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8582555673960414322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1991228176635174342}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
-  prefabName: Pan1
-  prefabIndex: 44
-  forwardAngleY: 0
 --- !u!1 &9011288601309281965
 GameObject:
   m_ObjectHideFlags: 0

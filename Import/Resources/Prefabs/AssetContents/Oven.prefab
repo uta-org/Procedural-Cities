@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2149742751249671473}
-  - component: {fileID: 1555904340762920689}
   m_Layer: 0
   m_Name: Oven
   m_TagString: Untagged
@@ -33,21 +32,6 @@ Transform:
   - {fileID: 3583079130191544277}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1555904340762920689
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8401391584643148384}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
-  prefabName: Oven
-  prefabIndex: 42
-  forwardAngleY: 0
 --- !u!1 &8867417229163831480
 GameObject:
   m_ObjectHideFlags: 0

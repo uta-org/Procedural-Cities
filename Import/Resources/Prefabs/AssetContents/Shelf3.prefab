@@ -122,7 +122,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5918909483742520550}
-  - component: {fileID: 3236170186353522524}
   m_Layer: 0
   m_Name: Shelf3
   m_TagString: Untagged
@@ -146,18 +145,3 @@ Transform:
   - {fileID: 2103582172742032088}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3236170186353522524
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6156884247070228301}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
-  prefabName: Shelf3
-  prefabIndex: 53
-  forwardAngleY: 0

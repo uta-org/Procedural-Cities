@@ -124,7 +124,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 304387387822455501}
-  - component: {fileID: 3750078135325067905}
   m_Layer: 0
   m_Name: Dispenser
   m_TagString: Untagged
@@ -148,18 +147,3 @@ Transform:
   - {fileID: 7289217420465267748}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3750078135325067905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6753437848763555608}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f78b43d21c92d446a4ebf370071ed71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProceduralCities::PrefabOrientationMarker
-  prefabName: Dispenser
-  prefabIndex: 10
-  forwardAngleY: 0
