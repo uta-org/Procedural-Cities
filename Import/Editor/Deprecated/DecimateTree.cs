@@ -1,3 +1,4 @@
+#if HAS_UNITY_MESH_SIMPLIFIER
 using UnityEngine;
 using UnityEditor;
 using UnityMeshSimplifier;
@@ -150,3 +151,4 @@ public static class DecimateTree
         Debug.Log($"[DecimateTree] Rebuilt Tree.prefab with {meshes.Length} simplified meshes");
     }
 }
+#endif
