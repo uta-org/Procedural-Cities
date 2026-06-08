@@ -9,7 +9,7 @@ using System.Linq;
 /// Uses the corresponding LowPoly_*.prefab as source: instantiates it, extracts
 /// all MeshFilter+MeshRenderer children with their local transforms, combines
 /// meshes per-material group, saves as _Combined.asset, and rebuilds the prefab.
-/// Menu: Procedural Cities / Fix All Broken Prefabs
+/// Menu: Tools / Procedural Cities / Fix All Broken Prefabs
 /// </summary>
 public static class FixAllBrokenPrefabs
 {
@@ -18,7 +18,7 @@ public static class FixAllBrokenPrefabs
     const string PrefabDir  = PkgRoot + "/Resources/Prefabs/AssetContents";
     const string TreeModelPath = PkgRoot + "/Models/Tree/Tree N190616.3DS";
 
-    // [MenuItem("Procedural Cities/Fix All Broken Prefabs")]
+    // [MenuItem("Tools/Procedural Cities/Fix All Broken Prefabs")]
     static void FixAll()
     {
         var guids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabDir });
@@ -311,7 +311,7 @@ public static class FixAllBrokenPrefabs
     // ─────────────────────────────────────────────────────
     //  FIX LABELS (repair existing prefabs with wrong material)
     // ─────────────────────────────────────────────────────
-    // [MenuItem("Procedural Cities/Fix Prefab Labels")]
+    // [MenuItem("Tools/Procedural Cities/Fix Prefab Labels")]
     static void FixLabels()
     {
         var guids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabDir });

@@ -11,7 +11,7 @@ public static class RebuildClock
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    // [MenuItem("Procedural Cities/Rebuild Clock")]
+    // [MenuItem("Tools/Procedural Cities/Rebuild Clock")]
     static void Rebuild()
     {
         Debug.Log("[RebuildClock] Step 1: Regenerating LowPoly_Clock...");

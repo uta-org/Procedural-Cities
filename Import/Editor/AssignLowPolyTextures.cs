@@ -7,7 +7,7 @@ using System.Linq;
 /// <summary>
 /// Assigns downloaded PBR textures from ambientCG to LowPoly materials.
 /// Maps each material to a texture set + tint color.
-/// Menu: Procedural Cities / Assign LowPoly Textures
+/// Menu: Tools / Procedural Cities / Assign LowPoly Textures
 /// </summary>
 public class AssignLowPolyTextures : Editor
 {
@@ -178,7 +178,7 @@ public class AssignLowPolyTextures : Editor
         { "LP_Paint_Red",   Tex("", "", C(0.75f, 0.1f, 0.1f), 0, 0.3f) },
     };
 
-    [MenuItem("Procedural Cities/Assign LowPoly Textures")]
+    [MenuItem("Tools/Procedural Cities/Assign LowPoly Textures")]
     static void AssignAll()
     {
         var shader = Shader.Find(ShaderName);

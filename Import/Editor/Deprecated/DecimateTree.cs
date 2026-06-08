@@ -7,7 +7,7 @@ using System.Linq;
 /// <summary>
 /// Decimates the Tree 3DS model using UnityMeshSimplifier.
 /// Saves simplified meshes as .asset files and rebuilds the Tree.prefab.
-/// Menu: Procedural Cities / Decimate Tree
+/// Menu: Tools / Procedural Cities / Decimate Tree
 /// </summary>
 public static class DecimateTree
 {
@@ -19,7 +19,7 @@ public static class DecimateTree
     // Target quality: 0.01 = keep 1% of triangles (301k -> ~3k)
     const float Quality = 0.01f;
 
-    // [MenuItem("Procedural Cities/Decimate Tree")]
+    // [MenuItem("Tools/Procedural Cities/Decimate Tree")]
     static void Decimate()
     {
         var allAssets = AssetDatabase.LoadAllAssetsAtPath(TreeModelPath);

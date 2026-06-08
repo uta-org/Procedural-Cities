@@ -5,7 +5,7 @@ using System.Linq;
 
 /// <summary>
 /// Rebuilds all 5 Tree variants from LowPoly generators.
-/// Menu: Procedural Cities / Rebuild Trees
+/// Menu: Tools / Procedural Cities / Rebuild Trees
 /// </summary>
 public static class RebuildTrees
 {
@@ -17,7 +17,7 @@ public static class RebuildTrees
 
     static readonly string[] TreeNames = { "Tree", "Tree1", "Tree2", "Tree3", "Tree4", "Tree5", "Tree6" };
 
-    [MenuItem("Procedural Cities/Rebuild Trees")]
+    [MenuItem("Tools/Procedural Cities/Rebuild Trees")]
     static void Rebuild()
     {
         Debug.Log("[RebuildTrees] Regenerating all 7 Tree variants...");

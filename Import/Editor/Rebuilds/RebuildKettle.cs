@@ -11,7 +11,7 @@ public static class RebuildKettle
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    // [MenuItem("Procedural Cities/Rebuild Kettle")]
+    // [MenuItem("Tools/Procedural Cities/Rebuild Kettle")]
     static void Rebuild()
     {
         Debug.Log("[RebuildKettle] Step 1: Regenerating LowPoly_Kettle...");

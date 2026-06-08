@@ -8,7 +8,7 @@ using System.Linq;
 /// Forces replacement of prefabs that still use imported 3D model meshes (3DS/OBJ)
 /// with their LowPoly procedural versions. Unlike FixAllBrokenPrefabs, this does NOT
 /// skip prefabs with valid meshes — it overwrites them.
-/// Menu: Procedural Cities / Force Replace Imported Meshes
+/// Menu: Tools / Procedural Cities / Force Replace Imported Meshes
 /// </summary>
 public static class ForceReplaceImportedMeshes
 {
@@ -23,7 +23,7 @@ public static class ForceReplaceImportedMeshes
         "Cup", "ChoppingBoard", "Sofa"
     };
 
-    // [MenuItem("Procedural Cities/Force Replace Imported Meshes")]
+    // [MenuItem("Tools/Procedural Cities/Force Replace Imported Meshes")]
     static void Execute()
     {
         int replaced = 0;

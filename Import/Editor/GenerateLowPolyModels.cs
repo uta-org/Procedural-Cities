@@ -9,7 +9,7 @@ using System.Reflection;
 /// <summary>
 /// Generates low-poly versions of heavy FBX models using ProBuilder primitives.
 /// Targets models that were all-tris and couldn't be effectively decimated.
-/// Menu: Procedural Cities / Generate LowPoly Models
+/// Menu: Tools / Procedural Cities / Generate LowPoly Models
 /// </summary>
 public class GenerateLowPolyModels : EditorWindow
 {
@@ -50,7 +50,7 @@ public class GenerateLowPolyModels : EditorWindow
         GenerateTree, GenerateTree1, GenerateTree2, GenerateTree3, GenerateTree4, GenerateTree5, GenerateTree6,
     };
 
-    [MenuItem("Procedural Cities/Generate LowPoly Models")]
+    [MenuItem("Tools/Procedural Cities/Generate LowPoly Models")]
     static void Generate()
     {
         var generators = AllGenerators;

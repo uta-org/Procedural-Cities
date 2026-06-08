@@ -11,7 +11,7 @@ public static class RebuildSink
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    // [MenuItem("Procedural Cities/Rebuild Sink")]
+    // [MenuItem("Tools/Procedural Cities/Rebuild Sink")]
     static void Rebuild()
     {
         Debug.Log("[RebuildSink] Step 1: Regenerating LowPoly_Sink...");

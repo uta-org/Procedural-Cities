@@ -6,7 +6,7 @@ using System.Linq;
 /// <summary>
 /// Fixes 6 broken Prefab Variants whose FBX parents were deleted.
 /// Rebuilds them as standalone prefabs using existing LowPoly meshes.
-/// Menu: Procedural Cities / Fix Broken Prefabs
+/// Menu: Tools / Procedural Cities / Fix Broken Prefabs
 /// </summary>
 public static class FixBrokenPrefabs
 {
@@ -22,7 +22,7 @@ public static class FixBrokenPrefabs
         public string materialName;  // e.g. "LP_Glass_Clear"
     }
 
-    // [MenuItem("Procedural Cities/Fix Broken Prefabs")]
+    // [MenuItem("Tools/Procedural Cities/Fix Broken Prefabs")]
     static void Fix()
     {
         int fixed_ = 0;

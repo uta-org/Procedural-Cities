@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// Creates a showcase scene for all LowPoly prefabs.
-/// Menu: Procedural Cities / Create LowPoly Showcase Scene
+/// Menu: Tools / Procedural Cities / Create LowPoly Showcase Scene
 /// </summary>
 public class CreateLowPolyShowcase
 {
@@ -19,7 +19,7 @@ public class CreateLowPolyShowcase
     };
     static string ScenePath = "Assets/Scenes/LowPolyShowcase.unity";
 
-    // [MenuItem("Procedural Cities/Create LowPoly Showcase Scene")]
+    // [MenuItem("Tools/Procedural Cities/Create LowPoly Showcase Scene")]
     static void Create()
     {
         // Create new scene
