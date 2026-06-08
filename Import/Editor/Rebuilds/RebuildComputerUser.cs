@@ -11,7 +11,7 @@ public static class RebuildComputerUser
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    // [MenuItem("Tools/Procedural Cities/Rebuild ComputerUser")]
+    // [MenuItem("Tools/uzProceduralCities/Rebuild ComputerUser")]
     static void Rebuild()
     {
         Debug.Log("[RebuildComputerUser] Step 1: Regenerating LowPoly_ComputerUser...");

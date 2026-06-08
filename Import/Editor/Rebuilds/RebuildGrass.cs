@@ -11,7 +11,7 @@ public static class RebuildGrass
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    // [MenuItem("Tools/Procedural Cities/Rebuild Grass")]
+    // [MenuItem("Tools/uzProceduralCities/Rebuild Grass")]
     static void Rebuild()
     {
         Debug.Log("[RebuildGrass] Step 1: Regenerating LowPoly_Grass...");

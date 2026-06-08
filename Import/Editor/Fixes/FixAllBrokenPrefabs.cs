@@ -18,7 +18,7 @@ public static class FixAllBrokenPrefabs
     const string PrefabDir  = PkgRoot + "/Resources/Prefabs/AssetContents";
     const string TreeModelPath = PkgRoot + "/Models/Tree/Tree N190616.3DS";
 
-    // [MenuItem("Tools/Procedural Cities/Fix All Broken Prefabs")]
+    // [MenuItem("Tools/uzProceduralCities/Fix All Broken Prefabs")]
     static void FixAll()
     {
         var guids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabDir });
@@ -311,7 +311,7 @@ public static class FixAllBrokenPrefabs
     // ─────────────────────────────────────────────────────
     //  FIX LABELS (repair existing prefabs with wrong material)
     // ─────────────────────────────────────────────────────
-    // [MenuItem("Tools/Procedural Cities/Fix Prefab Labels")]
+    // [MenuItem("Tools/uzProceduralCities/Fix Prefab Labels")]
     static void FixLabels()
     {
         var guids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabDir });

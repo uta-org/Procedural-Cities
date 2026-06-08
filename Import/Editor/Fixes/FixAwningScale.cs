@@ -4,7 +4,7 @@ using System.Linq;
 
 public static class FixAwningScale
 {
-    // [MenuItem("Tools/Procedural Cities/Fix Awning Scale")]
+    // [MenuItem("Tools/uzProceduralCities/Fix Awning Scale")]
     static void Fix()
     {
         // The Awning_Combined.asset was generated from the LowPoly_Awning prefab

@@ -11,7 +11,7 @@ public static class RebuildLamp3
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    // [MenuItem("Tools/Procedural Cities/Rebuild Lamp3")]
+    // [MenuItem("Tools/uzProceduralCities/Rebuild Lamp3")]
     static void Rebuild()
     {
         Debug.Log("[RebuildLamp3] Step 1: Regenerating LowPoly_Lamp3...");

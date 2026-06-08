@@ -22,7 +22,7 @@ public static class FixBrokenPrefabs
         public string materialName;  // e.g. "LP_Glass_Clear"
     }
 
-    // [MenuItem("Tools/Procedural Cities/Fix Broken Prefabs")]
+    // [MenuItem("Tools/uzProceduralCities/Fix Broken Prefabs")]
     static void Fix()
     {
         int fixed_ = 0;

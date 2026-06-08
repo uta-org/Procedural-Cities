@@ -23,7 +23,7 @@ public static class ForceReplaceImportedMeshes
         "Cup", "ChoppingBoard", "Sofa"
     };
 
-    // [MenuItem("Tools/Procedural Cities/Force Replace Imported Meshes")]
+    // [MenuItem("Tools/uzProceduralCities/Force Replace Imported Meshes")]
     static void Execute()
     {
         int replaced = 0;

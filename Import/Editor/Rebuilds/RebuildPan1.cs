@@ -11,7 +11,7 @@ public static class RebuildPan1
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    // [MenuItem("Tools/Procedural Cities/Rebuild Pan1")]
+    // [MenuItem("Tools/uzProceduralCities/Rebuild Pan1")]
     static void Rebuild()
     {
         Debug.Log("[RebuildPan1] Step 1: Regenerating LowPoly_Pan1...");

@@ -11,7 +11,7 @@ public static class RebuildFountain
     const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
     const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    // [MenuItem("Tools/Procedural Cities/Rebuild Fountain")]
+    // [MenuItem("Tools/uzProceduralCities/Rebuild Fountain")]
     static void Rebuild()
     {
         Debug.Log("[RebuildFountain] Step 1: Regenerating LowPoly_Fountain...");

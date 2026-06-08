@@ -17,7 +17,7 @@ public static class RebuildTrees
 
     static readonly string[] TreeNames = { "Tree", "Tree1", "Tree2", "Tree3", "Tree4", "Tree5", "Tree6" };
 
-    [MenuItem("Tools/Procedural Cities/Rebuild Trees")]
+    [MenuItem("Tools/uzProceduralCities/Rebuild Trees")]
     static void Rebuild()
     {
         Debug.Log("[RebuildTrees] Regenerating all 7 Tree variants...");

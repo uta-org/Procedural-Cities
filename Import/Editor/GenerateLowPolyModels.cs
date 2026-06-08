@@ -50,7 +50,7 @@ public class GenerateLowPolyModels : EditorWindow
         GenerateTree, GenerateTree1, GenerateTree2, GenerateTree3, GenerateTree4, GenerateTree5, GenerateTree6,
     };
 
-    [MenuItem("Tools/Procedural Cities/Generate LowPoly Models")]
+    [MenuItem("Tools/uzProceduralCities/Generate LowPoly Models")]
     static void Generate()
     {
         var generators = AllGenerators;
