@@ -178,6 +178,7 @@ public class AssignLowPolyTextures : Editor
         { "LP_Paint_Red",   Tex("", "", C(0.75f, 0.1f, 0.1f), 0, 0.3f) },
     };
 
+    // ReSharper disable once UnusedMember.Local
     [MenuItem("Tools/uzProceduralCities/Assign LowPoly Textures")]
     static void AssignAll()
     {

@@ -17,6 +17,7 @@ public static class RebuildTrees
 
     static readonly string[] TreeNames = { "Tree", "Tree1", "Tree2", "Tree3", "Tree4", "Tree5", "Tree6" };
 
+    // ReSharper disable once UnusedMember.Local
     [MenuItem("Tools/uzProceduralCities/Rebuild Trees")]
     static void Rebuild()
     {

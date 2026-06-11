@@ -19,6 +19,7 @@ public class GenerateLowPolyModels : EditorWindow
 
 
 
+    // ReSharper disable once UnusedMember.Local
     [MenuItem("Tools/Procedural Cities/Generate LowPoly Models")]
     static void GenerateAll()
     {
