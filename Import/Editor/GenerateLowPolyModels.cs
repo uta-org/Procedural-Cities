@@ -15,46 +15,33 @@ public class GenerateLowPolyModels : EditorWindow
 {
     static string OutputFolder = "Assets/LowPoly";
     static string MatFolder = "Assets/LowPoly/Materials";
+    static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
 
-    // Cached materials
-    static Dictionary<string, Material> materials = new Dictionary<string, Material>();
 
-    static System.Func<int>[] AllGenerators => new System.Func<int>[]
+
+    [MenuItem("Tools/Procedural Cities/Generate LowPoly Models")]
+    static void GenerateAll()
     {
-        GenerateSofa, GenerateBench, GenerateSink, GenerateOven, GenerateTV,
-        GenerateDispenser, GenerateStair, GenerateFountain, GenerateWardrobe,
-        GenerateShelf, GenerateFridge, GenerateToilet, GenerateKitchenCounter,
-        GenerateHanger, GenerateMirror,
-        GenerateAwning, GenerateBalcony, GenerateBed, GenerateBush, GenerateChair, GenerateChoppingBoard,
-        GenerateClock, GenerateComputer, GenerateComputerUser, GenerateCup,
-        GenerateDoor, GenerateDoorFrame, GenerateElevator, GenerateFence,
-        GenerateFireHydrant, GenerateGlass, GenerateGrass, GenerateHanger1,
-        GenerateKettle, GenerateKitchen2, GenerateKitchen3, GenerateKitchen4,
-        GenerateLamp0, GenerateLamp1, GenerateLamp2, GenerateLamp3, GenerateLamp4,
-        GenerateLamppost, GenerateLargeTable, GenerateLocker, GenerateMirror1,
-        GenerateMirror2, GenerateOfficeChair, GenerateOfficeCubicle,
-        GenerateOfficeMeetingTable, GenerateOfficeTable, GenerateOfficeWhiteboard,
-        GeneratePan0, GeneratePan1, GenerateRestaurantChair, GenerateRestaurantTable,
-        GenerateRooftopAc, GenerateRooftopSolar, GenerateRubbishBin,
-        GenerateShelf1, GenerateShelf2, GenerateShelf3, GenerateShelf4, GenerateShelf5,
-        GenerateSmallTable, GenerateSofa1, GenerateStoreShelf, GenerateToaster,
-        GenerateToilet1, GenerateTrafficLight, GenerateTrashBox, GenerateTrashCan,
-        GenerateVase,
-        // Modular Kitchen (1x1x1 units, 7DTD-style)
-        GenerateKM_CabinetBase, GenerateKM_CabinetDrawer, GenerateKM_Sink,
-        GenerateKM_Stove, GenerateKM_Oven, GenerateKM_CabinetWall,
-        GenerateKM_CabinetCorner, GenerateKM_Countertop, GenerateKM_Fridge,
-        GenerateKM_Dishwasher, GenerateKM_Hood, GenerateKM_Microwave,
-        GenerateKM_ShelfOpen, GenerateKM_Island,
-        // Trees
-        GenerateTree, GenerateTree1, GenerateTree2, GenerateTree3, GenerateTree4, GenerateTree5, GenerateTree6,
-    };
+        var generators = new List<System.Func<int>>();
+        foreach (
+            var method in typeof(GenerateLowPolyModels).GetMethods(
+                BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly
+            )
+        )
+        {
+            if (!method.Name.StartsWith("Generate") || method.ReturnType != typeof(int))
+                continue;
+            if (method.GetParameters().Length != 0)
+                continue;
 
-    [MenuItem("Tools/uzProceduralCities/Generate LowPoly Models")]
-    static void Generate()
-    {
-        var generators = AllGenerators;
-        int count = generators.Length;
+            generators.Add(
+                (System.Func<int>)System.Delegate.CreateDelegate(typeof(System.Func<int>), method)
+            );
+        }
+
+        generators.Sort((left, right) => string.CompareOrdinal(left.Method.Name, right.Method.Name));
+        var count = generators.Count;
+
         try
         {
             Debug.Log($"[LowPoly] Starting generation of {count} models...");
