@@ -296,6 +296,8 @@ public class GenerateLowPolyModels : EditorWindow
     // SOFA (original: 105K verts) -> ~80 verts
     // Dimensions: h=0.85m w=1.40m (Sofa1)
     // ========================================
+    // ReSharper disable UnusedMember.Local
+    // GenerateAll discovers the non-public Generate* methods below via reflection.
     static int GenerateSofa()
     {
         var root = new GameObject("LowPoly_Sofa");
@@ -3800,4 +3802,5 @@ public class GenerateLowPolyModels : EditorWindow
         SavePrefab(root, "LowPoly_Tree6");
         return 1;
     }
+    // ReSharper restore UnusedMember.Local
 }
