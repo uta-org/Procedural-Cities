@@ -180,50 +180,6 @@ public class GenerateLowPolyModels : EditorWindow
     }
 
     /// <summary>
-    /// CSG boolean subtraction: carves `cutter` from `body`, returns a new GameObject with the result mesh.
-    /// Both input GameObjects are destroyed. Uses reflection to access ProBuilder's internal CSG.Subtract.
-    /// </summary>
-    static GameObject CsgSubtract(GameObject body, GameObject cutter, Material mat)
-    {
-        // Bake ProBuilder meshes to plain MeshFilter meshes
-        foreach (var pb in body.GetComponentsInChildren<ProBuilderMesh>())
-        {
-            pb.ToMesh();
-            pb.Refresh();
-        }
-        foreach (var pb in cutter.GetComponentsInChildren<ProBuilderMesh>())
-        {
-            pb.ToMesh();
-            pb.Refresh();
-        }
-
-        // Find CSG class via reflection (internal to Unity.ProBuilder.Csg)
-        var csgAssembly = Assembly.Load("Unity.ProBuilder.Csg");
-        var csgType = csgAssembly.GetType("UnityEngine.ProBuilder.Csg.CSG");
-        var subtractMethod = csgType.GetMethod("Subtract",
-            BindingFlags.Public | BindingFlags.Static,
-            null, new[] { typeof(GameObject), typeof(GameObject) }, null);
-
-        var model = subtractMethod.Invoke(null, new object[] { body, cutter });
-
-        // Get mesh from Model via explicit cast operator
-        var modelType = model.GetType();
-        var meshProp = modelType.GetProperty("mesh");
-        var resultMesh = (Mesh)meshProp.GetValue(model);
-
-        Object.DestroyImmediate(cutter);
-        Object.DestroyImmediate(body);
-
-        // Create clean result GameObject
-        var result = new GameObject("CsgResult");
-        var mf = result.AddComponent<MeshFilter>();
-        mf.sharedMesh = resultMesh;
-        var mr = result.AddComponent<MeshRenderer>();
-        mr.sharedMaterial = mat;
-        return result;
-    }
-
-    /// <summary>
     /// Creates a hollow cylinder (tube) mesh with open top.
     /// outerRadius/innerRadius define wall thickness, height is total height.
     /// Bottom is closed (disk), top is open to show interior.
