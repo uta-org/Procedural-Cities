@@ -254,6 +254,8 @@ public class GenerateLowPolyModels : EditorWindow
     // ========================================
     // ReSharper disable UnusedMember.Local
     // GenerateAll discovers the non-public Generate* methods below via reflection.
+    // @todo: future remove if isn't really used
+    #if false
     static int GenerateSofa()
     {
         var root = new GameObject("LowPoly_Sofa");
@@ -3758,5 +3760,6 @@ public class GenerateLowPolyModels : EditorWindow
         SavePrefab(root, "LowPoly_Tree6");
         return 1;
     }
+    #endif
     // ReSharper restore UnusedMember.Local
 }
