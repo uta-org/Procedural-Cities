@@ -179,7 +179,7 @@ public class AssignLowPolyTextures : Editor
     };
 
     // ReSharper disable once UnusedMember.Local
-    [MenuItem("Tools/uzProceduralCities/Assign LowPoly Textures")]
+    // [MenuItem("Tools/uzProceduralCities/Assign LowPoly Textures")]
     static void AssignAll()
     {
         var shader = Shader.Find(ShaderName);
