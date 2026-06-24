@@ -119,7 +119,6 @@ public class GenerateLowPolyModels : EditorWindow
     // ========================================
     // ReSharper disable UnusedMember.Local
     // GenerateAll discovers the non-public Generate* methods below via reflection.
-    // @todo: future remove if isn't really used
     #if false
     static int GenerateSofa()
     {
