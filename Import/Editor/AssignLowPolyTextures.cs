@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 /// <summary>
 /// Assigns downloaded PBR textures from ambientCG to LowPoly materials.
