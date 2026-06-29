@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
 
 /// <summary>
 /// Rebuilds all 5 Tree variants from LowPoly generators.
@@ -9,17 +9,17 @@ using System.Linq;
 /// </summary>
 public static class RebuildTrees
 {
-    const string PkgRoot = "Packages/dev.z3nth10n.proceduralcities.import";
-    const string LowPolyDir = "Assets/LowPoly";
-    const string CombinedDir = PkgRoot + "/Models/LowPoly";
-    const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
-    const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
+    private const string PkgRoot = "Packages/dev.z3nth10n.proceduralcities.import";
+    private const string LowPolyDir = "Assets/LowPoly";
+    private const string CombinedDir = PkgRoot + "/Models/LowPoly";
+    private const string PkgMatDir = PkgRoot + "/Models/LowPoly/Materials";
+    private const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
 
-    static readonly string[] TreeNames = { "Tree", "Tree1", "Tree2", "Tree3", "Tree4", "Tree5", "Tree6" };
+    private static readonly string[] TreeNames = { "Tree", "Tree1", "Tree2", "Tree3", "Tree4", "Tree5", "Tree6" };
 
     // ReSharper disable once UnusedMember.Local
     // [MenuItem("Tools/uzProceduralCities/Rebuild Trees")]
-    static void Rebuild()
+    private static void Rebuild()
     {
         Debug.Log("[RebuildTrees] Regenerating all 7 Tree variants...");
         var genType = typeof(GenerateLowPolyModels);
@@ -55,7 +55,7 @@ public static class RebuildTrees
         Debug.Log("[RebuildTrees] Done rebuilding all 5 Tree variants.");
     }
 
-    static void BuildCombinedPrefab(string treeName)
+    private static void BuildCombinedPrefab(string treeName)
     {
         string lowPolyPath = $"{LowPolyDir}/LowPoly_{treeName}.prefab";
         string combinedPath = $"{CombinedDir}/{treeName}_Combined.asset";
@@ -169,7 +169,7 @@ public static class RebuildTrees
         Debug.Log($"[RebuildTrees] {treeName}: saved prefab ({totalVerts} verts)");
     }
 
-    static void CollectMeshParts(Transform t, Matrix4x4 parentMatrix, List<(Mesh, Matrix4x4, Material[])> parts)
+    private static void CollectMeshParts(Transform t, Matrix4x4 parentMatrix, List<(Mesh, Matrix4x4, Material[])> parts)
     {
         var localMatrix = parentMatrix * Matrix4x4.TRS(t.localPosition, t.localRotation, t.localScale);
         var mf = t.GetComponent<MeshFilter>();

@@ -1,6 +1,6 @@
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
 /// <summary>
 /// Assigns downloaded PBR textures from ambientCG to LowPoly materials.
@@ -10,25 +10,25 @@ using System.Collections.Generic;
 public class AssignLowPolyTextures : Editor
 {
     // Base path for textures (relative to Assets or Packages)
-    static readonly string[] TextureSearchPaths = new[]
+    private static readonly string[] TextureSearchPaths = new[]
     {
         "Packages/dev.z3nth10n.proceduralcities.import/Textures/LowPoly",
         "Assets/Textures/LowPoly"
     };
 
-    static readonly string[] MaterialSearchPaths = new[]
+    private static readonly string[] MaterialSearchPaths = new[]
     {
         "Packages/dev.z3nth10n.proceduralcities.import/Models/LowPoly/Materials",
         "Assets/LowPoly/Materials"
     };
 
-    static string ShaderName = "Procedural Cities/LowPoly PBR";
+    private static string ShaderName = "Procedural Cities/LowPoly PBR";
 
     // =====================================================
     // TEXTURE SET MAPPING
     // Each entry: material name -> (ambientCG_ID, category, tintColor, metallic, smoothness, tiling, triplanar)
     // =====================================================
-    struct TexAssignment
+    private struct TexAssignment
     {
         public string textureId;    // e.g. "Wood051"
         public string category;     // e.g. "Wood"
@@ -42,21 +42,27 @@ public class AssignLowPolyTextures : Editor
         public float emissionIntensity;
     }
 
-    static TexAssignment Tex(string id, string cat, Color tint, float met = 0, float smooth = 0.3f,
+    private static TexAssignment Tex(string id, string cat, Color tint, float met = 0, float smooth = 0.3f,
         float tiling = 1f, bool triplanar = false, bool emission = false, Color? emColor = null, float emIntensity = 1f)
     {
         return new TexAssignment
         {
-            textureId = id, category = cat, tint = tint,
-            metallic = met, smoothness = smooth, tiling = tiling,
-            triplanar = triplanar, emission = emission,
-            emissionColor = emColor ?? Color.black, emissionIntensity = emIntensity
+            textureId = id,
+            category = cat,
+            tint = tint,
+            metallic = met,
+            smoothness = smooth,
+            tiling = tiling,
+            triplanar = triplanar,
+            emission = emission,
+            emissionColor = emColor ?? Color.black,
+            emissionIntensity = emIntensity
         };
     }
 
-    static Color C(float r, float g, float b) => new Color(r, g, b, 1);
+    private static Color C(float r, float g, float b) => new Color(r, g, b, 1);
 
-    static readonly Dictionary<string, TexAssignment> MaterialMap = new Dictionary<string, TexAssignment>
+    private static readonly Dictionary<string, TexAssignment> MaterialMap = new Dictionary<string, TexAssignment>
     {
         // ===== WOOD =====
         { "LP_Wood_Table",     Tex("Wood051", "Wood", C(0.85f, 0.78f, 0.65f), tiling: 2) },
@@ -178,7 +184,7 @@ public class AssignLowPolyTextures : Editor
 
     // ReSharper disable once UnusedMember.Local
     // [MenuItem("Tools/uzProceduralCities/Assign LowPoly Textures")]
-    static void AssignAll()
+    private static void AssignAll()
     {
         var shader = Shader.Find(ShaderName);
         if (shader == null)
@@ -259,10 +265,10 @@ public class AssignLowPolyTextures : Editor
             // Assign textures if we have a texture set
             if (!string.IsNullOrEmpty(assign.textureId))
             {
-                AssignTexture(mat, "_MainTex",      assign, "Color",       texCache);
-                AssignTexture(mat, "_BumpMap",       assign, "NormalGL",    texCache);
-                AssignTexture(mat, "_ParallaxMap",   assign, "Displacement", texCache);
-                AssignTexture(mat, "_OcclusionMap",  assign, "AmbientOcclusion", texCache);
+                AssignTexture(mat, "_MainTex", assign, "Color", texCache);
+                AssignTexture(mat, "_BumpMap", assign, "NormalGL", texCache);
+                AssignTexture(mat, "_ParallaxMap", assign, "Displacement", texCache);
+                AssignTexture(mat, "_OcclusionMap", assign, "AmbientOcclusion", texCache);
             }
 
             EditorUtility.SetDirty(mat);
@@ -296,7 +302,7 @@ public class AssignLowPolyTextures : Editor
         //     $"Assigned: {assigned}\nShader-only: {skipped}\nNot found: {notFound}", "OK");
     }
 
-    static void AssignTexture(Material mat, string property, TexAssignment assign, string mapType,
+    private static void AssignTexture(Material mat, string property, TexAssignment assign, string mapType,
         Dictionary<string, Texture2D> cache)
     {
         string key = $"{assign.category}/{assign.textureId}_{mapType}";
@@ -324,7 +330,7 @@ public class AssignLowPolyTextures : Editor
         }
     }
 
-    static Texture2D FindTexture(string textureId, string category, string mapType)
+    private static Texture2D FindTexture(string textureId, string category, string mapType)
     {
         // Try different naming patterns ambientCG uses
         string[] patterns = new[]

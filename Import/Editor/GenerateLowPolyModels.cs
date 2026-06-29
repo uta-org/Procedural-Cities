@@ -1,8 +1,8 @@
-using UnityEngine;
-using UnityEditor;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using UnityEditor;
+using UnityEngine;
 
 /// <summary>
 /// Generates low-poly versions of heavy FBX models using ProBuilder primitives.
@@ -11,15 +11,13 @@ using System.Reflection;
 /// </summary>
 public class GenerateLowPolyModels : EditorWindow
 {
-    static string OutputFolder = "Assets/LowPoly";
-    static string MatFolder = "Assets/LowPoly/Materials";
-    static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
-
-
+    private static string OutputFolder = "Assets/LowPoly";
+    private static string MatFolder = "Assets/LowPoly/Materials";
+    private static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
 
     // ReSharper disable once UnusedMember.Local
     [MenuItem("Tools/Procedural Cities/Generate LowPoly Models")]
-    static void GenerateAll()
+    private static void GenerateAll()
     {
         var generators = new List<System.Func<int>>();
         foreach (
@@ -74,7 +72,7 @@ public class GenerateLowPolyModels : EditorWindow
         }
     }
 
-    static void EnsureFolders()
+    private static void EnsureFolders()
     {
         // Delete stale mesh/prefab assets to prevent 0-vert corruption on re-run.
         // Materials are reused so we keep them.
@@ -101,10 +99,6 @@ public class GenerateLowPolyModels : EditorWindow
             AssetDatabase.CreateFolder("Assets/LowPoly", "Materials");
     }
 
-
-
-
-
     /// <summary>
     /// Creates a hollow cylinder (tube) mesh with open top.
     /// outerRadius/innerRadius define wall thickness, height is total height.
@@ -117,7 +111,7 @@ public class GenerateLowPolyModels : EditorWindow
     // ========================================
     // ReSharper disable UnusedMember.Local
     // GenerateAll discovers the non-public Generate* methods below via reflection.
-    #if false
+#if false
     static int GenerateSofa()
     {
         var root = new GameObject("LowPoly_Sofa");
@@ -3554,6 +3548,6 @@ public class GenerateLowPolyModels : EditorWindow
         SavePrefab(root, "LowPoly_Tree6");
         return 1;
     }
-    #endif
+#endif
     // ReSharper restore UnusedMember.Local
 }
