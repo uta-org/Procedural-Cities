@@ -4,9 +4,10 @@ using UnityEngine;
 /// <summary>
 /// Builds seven low-poly light fixtures for interior decoration: two short
 /// table lamps, two wall sconces, and three ceiling fixtures. Purely visual
-/// meshes for now — no Light component (added in a later phase alongside the
-/// on/off interaction). Deployed to Resources/Prefabs/AssetContents, same
-/// convention as the other Generate*Prop.cs scripts in this folder.
+/// meshes — the two table lamps get their toggleable focal Light component
+/// separately, from AddLampFocalLights.cs. Deployed to
+/// Resources/Prefabs/AssetContents, same convention as the other
+/// Generate*Prop.cs scripts in this folder.
 /// Menu: Tools / Procedural Cities / Generate Lamp Props
 /// </summary>
 public static class GenerateLampProps
