@@ -2,17 +2,23 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Commit 5 of the pendant-lamp bulb work: "la parte cilindrica la hagas
-/// hueca, y dentro del hueco del cilindro metras la esfera del bulbo de la
-/// bombilla" — the hanging ceiling lamp's shade was a solid capped cylinder
-/// (see GenerateLampProps.cs BuildCeilingPendant), so the bulb
-/// AddLampBulbs.cs adds inside it (commit 1: y=-0.53, just past the
-/// underside) was always going to be fully hidden or, at best, only barely
-/// visible peeking past the rim. Rebuilds "Shade" as an open tube (side
-/// wall only, no top/bottom caps, double-sided material) so it reads as a
-/// genuinely hollow shade, and moves the bulb anchor back inside it
+/// Commits 5-6 of the pendant-lamp bulb work. Commit 5: "la parte
+/// cilindrica la hagas hueca, y dentro del hueco del cilindro metras la
+/// esfera del bulbo de la bombilla" — the hanging ceiling lamp's shade was
+/// a solid capped cylinder (see GenerateLampProps.cs BuildCeilingPendant),
+/// so the bulb AddLampBulbs.cs adds inside it (commit 1: y=-0.53, just past
+/// the underside) was always going to be fully hidden or, at best, only
+/// barely visible peeking past the rim. Rebuilds "Shade" as an open tube
+/// (side wall only, no top/bottom caps, double-sided material) so it reads
+/// as a genuinely hollow shade, and moves the bulb anchor back inside it
 /// (y=-0.45, the shade's own centre) now that the interior is actually
 /// visible instead of solid.
+/// Commit 6: "a la lampara que cuelga le faltaria la tapa de arriba del
+/// cilindro para terminar" — an open tube alone has no top, so looking up
+/// from directly underneath shows straight through into the cord/canopy
+/// instead of a finished shade interior. Adds "ShadeTopCap", a flat
+/// annulus (a ring, not a solid disc — it needs a hole for the Cord to
+/// pass through) capping the tube's open top.
 /// Menu: Tools / Procedural Cities / Hollow Ceiling Pendant Shade
 /// </summary>
 public static class HollowCeilingPendantShade
@@ -25,6 +31,11 @@ public static class HollowCeilingPendantShade
     private const float ShadeHeight = 0.12f; // matches the old cylinder's halfHeight=0.06 * 2
     private const int ShadeSegments = 16;
     private static readonly Vector3 BulbAnchorInsideShade = new(0f, -0.45f, 0f);
+
+    // Cord radius is 0.006 (see GenerateLampProps.cs BuildCeilingPendant) --
+    // twice that leaves a small, visually-tidy clearance around it.
+    private const float CordHoleRadius = 0.012f;
+    private static readonly Vector3 ShadeTopCapLocalPos = new(0f, -0.45f + ShadeHeight * 0.5f, 0f);
 
     [MenuItem("Tools/Procedural Cities/Hollow Ceiling Pendant Shade")]
     public static void Generate()
@@ -71,8 +82,10 @@ public static class HollowCeilingPendantShade
             if (anchor != null)
                 anchor.localPosition = BulbAnchorInsideShade;
 
+            EnsureShadeTopCap(root, doubleSidedMat);
+
             PrefabUtility.SaveAsPrefabAsset(root, path);
-            Debug.Log("[HollowCeilingPendantShade] CeilingPendant's Shade is now an open tube; bulb anchor moved inside it.");
+            Debug.Log("[HollowCeilingPendantShade] CeilingPendant's Shade is now an open tube with a top cap; bulb anchor moved inside it.");
         }
         finally
         {
@@ -183,6 +196,103 @@ public static class HollowCeilingPendantShade
             triangles[ti + 3] = top1;
             triangles[ti + 4] = bot0;
             triangles[ti + 5] = bot1;
+        }
+
+        mesh.vertices = vertices;
+        mesh.normals = normals;
+        mesh.uv = uvs;
+        mesh.triangles = triangles;
+        mesh.RecalculateBounds();
+        mesh.RecalculateTangents();
+        return mesh;
+    }
+
+    /// <summary>
+    /// Adds (or repositions, if already present) "ShadeTopCap" — a flat
+    /// annulus closing the open tube's top, with a hole for the Cord to
+    /// pass through. Sibling of "Shade", not a child of it: the cap and the
+    /// tube wall are both flat/thin single-sided-ish surfaces that don't
+    /// need to share a transform, and keeping them separate objects means
+    /// re-running this method can freely replace one without touching the
+    /// other.
+    /// </summary>
+    private static void EnsureShadeTopCap(GameObject root, Material material)
+    {
+        var existing = root.transform.Find("ShadeTopCap");
+        var capGO = existing != null ? existing.gameObject : new GameObject("ShadeTopCap");
+        if (existing == null)
+        {
+            capGO.transform.SetParent(root.transform, false);
+            capGO.AddComponent<MeshFilter>();
+            capGO.AddComponent<MeshRenderer>();
+        }
+
+        capGO.transform.localPosition = ShadeTopCapLocalPos;
+        capGO.transform.localRotation = Quaternion.identity;
+        capGO.transform.localScale = Vector3.one;
+
+        capGO.GetComponent<MeshFilter>().sharedMesh =
+            GetOrCreateAnnulusMeshAsset(ShadeRadius, CordHoleRadius, ShadeSegments);
+        capGO.GetComponent<MeshRenderer>().sharedMaterial = material;
+    }
+
+    /// <summary>See GetOrCreateOpenTubeMeshAsset — same "persist before assigning" requirement.</summary>
+    private static Mesh GetOrCreateAnnulusMeshAsset(float outerRadius, float innerRadius, int segments)
+    {
+        var path = $"{MeshDir}/CeilingPendant_ShadeTopCap.asset";
+        var existing = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+        if (existing != null)
+            return existing;
+
+        var mesh = BuildAnnulusMesh(outerRadius, innerRadius, segments);
+        AssetDatabase.CreateAsset(mesh, path);
+        return mesh;
+    }
+
+    /// <summary>
+    /// A flat ring (outer radius to inner radius, normals down) — the
+    /// underside is what a viewer looking up through the shade's open
+    /// bottom sees, and the double-sided material makes it visible from
+    /// above too in case the canopy/cord gap ever lets daylight through.
+    /// </summary>
+    private static Mesh BuildAnnulusMesh(float outerRadius, float innerRadius, int segments)
+    {
+        var mesh = new Mesh { name = "Annulus" };
+        var ringVerts = segments + 1;
+        var vertices = new Vector3[ringVerts * 2];
+        var normals = new Vector3[ringVerts * 2];
+        var uvs = new Vector2[ringVerts * 2];
+
+        for (var i = 0; i <= segments; i++)
+        {
+            var angle = (float)i / segments * Mathf.PI * 2f;
+            var x = Mathf.Cos(angle);
+            var z = Mathf.Sin(angle);
+
+            vertices[i] = new Vector3(x * outerRadius, 0f, z * outerRadius);
+            vertices[ringVerts + i] = new Vector3(x * innerRadius, 0f, z * innerRadius);
+            normals[i] = Vector3.down;
+            normals[ringVerts + i] = Vector3.down;
+            uvs[i] = new Vector2((float)i / segments, 1f);
+            uvs[ringVerts + i] = new Vector2((float)i / segments, 0f);
+        }
+
+        var triangles = new int[segments * 6];
+        for (var i = 0; i < segments; i++)
+        {
+            var ti = i * 6;
+            var outer0 = i;
+            var outer1 = i + 1;
+            var inner0 = ringVerts + i;
+            var inner1 = ringVerts + i + 1;
+
+            triangles[ti + 0] = outer0;
+            triangles[ti + 1] = inner1;
+            triangles[ti + 2] = inner0;
+
+            triangles[ti + 3] = outer0;
+            triangles[ti + 4] = outer1;
+            triangles[ti + 5] = inner1;
         }
 
         mesh.vertices = vertices;
