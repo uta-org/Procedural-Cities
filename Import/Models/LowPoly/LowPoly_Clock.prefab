@@ -58,8 +58,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 731448365183633219}
-  - component: {fileID: 3746697436257899545}
-  - component: {fileID: 1629754102793495735}
   m_Layer: 0
   m_Name: MinuteHand
   m_TagString: Untagged
@@ -75,11 +73,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3635948299761927106}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.57357645, w: 0.81915206}
-  m_LocalPosition: {x: 0.02, y: 0.15, z: 0.026}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.15, z: 0.026}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 9111222333444558003}
   m_Father: {fileID: 3585217707173022}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &3746697436257899545
@@ -88,7 +87,7 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3635948299761927106}
+  m_GameObject: {fileID: 9111222333444558002}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -136,7 +135,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3635948299761927106}
+  m_GameObject: {fileID: 9111222333444558002}
   m_Mesh: {fileID: 4300000, guid: cfb5f0258472d1d4b982e2c343d60d79, type: 2}
 --- !u!1 &4193267590509838770
 GameObject:
@@ -147,8 +146,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2771333855893657754}
-  - component: {fileID: 4889722105644413761}
-  - component: {fileID: 3294771206438385425}
   m_Layer: 0
   m_Name: HourHand
   m_TagString: Untagged
@@ -164,11 +161,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4193267590509838770}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.18, z: 0.026}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.15, z: 0.026}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 9111222333444558001}
   m_Father: {fileID: 3585217707173022}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &4889722105644413761
@@ -177,7 +175,7 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4193267590509838770}
+  m_GameObject: {fileID: 9111222333444558000}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -225,7 +223,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4193267590509838770}
+  m_GameObject: {fileID: 9111222333444558000}
   m_Mesh: {fileID: 4300000, guid: fa4c8ca9a2c24c548a2eec769a1612aa, type: 2}
 --- !u!1 &5852757180484953145
 GameObject:
@@ -414,8 +412,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9111222333444555667}
-  - component: {fileID: 9111222333444555668}
-  - component: {fileID: 9111222333444555669}
   m_Layer: 0
   m_Name: SecondHand
   m_TagString: Untagged
@@ -432,10 +428,11 @@ Transform:
   m_GameObject: {fileID: 9111222333444555666}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.02, y: 0.15, z: 0.028}
-  m_LocalScale: {x: 0.4, y: 1.15, z: 0.4}
+  m_LocalPosition: {x: 0, y: 0.15, z: 0.028}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 9111222333444558005}
   m_Father: {fileID: 3585217707173022}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &9111222333444555668
@@ -444,7 +441,7 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9111222333444555666}
+  m_GameObject: {fileID: 9111222333444558004}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -492,7 +489,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9111222333444555666}
+  m_GameObject: {fileID: 9111222333444558004}
   m_Mesh: {fileID: 4300000, guid: cfb5f0258472d1d4b982e2c343d60d79, type: 2}
 --- !u!114 &9111222333444555670
 MonoBehaviour:
@@ -1578,3 +1575,102 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9111222333444556110}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &9111222333444558000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9111222333444558001}
+  - component: {fileID: 4889722105644413761}
+  - component: {fileID: 3294771206438385425}
+  m_Layer: 0
+  m_Name: HourHandMesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9111222333444558001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9111222333444558000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.03, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2771333855893657754}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9111222333444558002
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9111222333444558003}
+  - component: {fileID: 3746697436257899545}
+  - component: {fileID: 1629754102793495735}
+  m_Layer: 0
+  m_Name: MinuteHandMesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9111222333444558003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9111222333444558002}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.045, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 731448365183633219}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9111222333444558004
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9111222333444558005}
+  - component: {fileID: 9111222333444555668}
+  - component: {fileID: 9111222333444555669}
+  m_Layer: 0
+  m_Name: SecondHandMesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9111222333444558005
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9111222333444558004}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.05175, z: 0}
+  m_LocalScale: {x: 0.4, y: 1.15, z: 0.4}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9111222333444555667}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
