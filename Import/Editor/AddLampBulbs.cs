@@ -6,12 +6,15 @@ using UnityEngine;
 /// <summary>
 /// Phase 1 of the "make lamp light look like it comes from the lamp" fix
 /// (reported live: "las luces no parecen salir de la lampara en si").
-/// Adds a small bulb to each of the 8 lamp/fixture prefabs the lighting
-/// system uses — two overlapping spheres, "BulbOn" (white, lightly emissive)
-/// and "BulbOff" (dark grey), toggled by <c>LampFocalLight.SetOn</c> instead
-/// of swapping a shared material, so no runtime material reference lookup is
-/// needed. Positioned at the same anchor <c>AddLampFocalLights.cs</c> already
-/// computed for the fixture's Light component, so bulb and light coincide.
+/// Adds a small bulb to each of <see cref="TargetPrefabs"/> — two
+/// overlapping spheres, "BulbOn" (white, lightly emissive) and "BulbOff"
+/// (dark grey), toggled by <c>LampFocalLight.SetOn</c> instead of swapping
+/// a shared material, so no runtime material reference lookup is needed.
+/// Positioned at the same anchor <c>AddLampFocalLights.cs</c> already
+/// computed for the fixture's Light component (or a per-prefab override,
+/// see <see cref="AnchorPositionOverride"/>), so bulb and light coincide.
+/// <see cref="NoBulbPrefabs"/> — the flush-mounted ceiling fixtures — are
+/// explicitly stripped of any bulb instead.
 /// Phase 2 (a later pass) will adjust the Light itself so it visually reads
 /// as emanating from this bulb; this phase only adds the bulb + its two
 /// on/off colours.
@@ -27,7 +30,23 @@ public static class AddLampBulbs
     {
         "TableLampRound", "TableLampCone", "Lamp1",
         "WallSconceDrum", "WallSconceTorch",
-        "CeilingFlushDisc", "CeilingPendant", "CeilingPanel",
+        "CeilingPendant",
+    };
+
+    /// <summary>
+    /// Flush-mounted ceiling fixtures (round CeilingFlushDisc, square
+    /// CeilingPanel) — unlike the hanging CeilingPendant, there's no
+    /// hollow/shade for a bulb to sit inside, so one was never going to
+    /// read as anything but a stray sphere glued to the fixture's face.
+    /// Reported live: "de las lamparas de techo que no cuelgan las
+    /// cuadradas y redondas creo que tienen la bombilla, quitalas de ahi,
+    /// esas no necesitan bombilla". Their on/off feedback instead comes
+    /// from the diffuser's own colour swap — see AddLampBulbs' sibling
+    /// change to the Diffuser material.
+    /// </summary>
+    private static readonly string[] NoBulbPrefabs =
+    {
+        "CeilingFlushDisc", "CeilingPanel",
     };
 
     /// <summary>
@@ -63,9 +82,44 @@ public static class AddLampBulbs
                 touched++;
         }
 
+        var stripped = 0;
+        foreach (var prefabName in NoBulbPrefabs)
+        {
+            if (RemoveBulb(prefabName))
+                stripped++;
+        }
+
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log($"[AddLampBulbs] Added/verified a bulb on {touched}/{TargetPrefabs.Length} lamp prefabs.");
+        Debug.Log(
+            $"[AddLampBulbs] Added/verified a bulb on {touched}/{TargetPrefabs.Length} lamp prefabs, " +
+            $"removed it from {stripped}/{NoBulbPrefabs.Length} flush-mounted fixtures.");
+    }
+
+    private static bool RemoveBulb(string prefabName)
+    {
+        var path = FindPrefabPath(prefabName);
+        if (path == null)
+        {
+            Debug.LogWarning($"[AddLampBulbs] Prefab not found: {prefabName}");
+            return false;
+        }
+
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var anchor = root.transform.Find("BulbAnchor");
+            if (anchor == null)
+                return true; // nothing to remove.
+
+            Object.DestroyImmediate(anchor.gameObject, true);
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+            return true;
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
     }
 
     private static bool AddBulb(string prefabName, Material matOn, Material matOff)
