@@ -56,16 +56,16 @@ public static class AddLampBulbs
     /// sits at the combined canopy+cord+shade bounds centre (y=-0.26,
     /// biased upward by the cord's long vertical run — see
     /// GenerateLampProps.cs BuildCeilingPendant), which lands the bulb
-    /// next to the cord instead of hanging under the shade. Reported live:
-    /// "las bombillas no estan ubicadas exactamente debajo de la lampara
-    /// en si". The shade itself is centred at y=-0.45 and is a closed (not
-    /// hollow) cylinder down to y=-0.51 — anchoring inside that range hides
-    /// the bulb entirely, so it sits just past the shade's underside
-    /// instead, where it actually reads as hanging below the lamp.
+    /// next to the cord instead of inside the shade. Reported live: "las
+    /// bombillas no estan ubicadas exactamente debajo de la lampara en si".
+    /// The shade itself is centred at y=-0.45 — HollowCeilingPendantShade.cs
+    /// later rebuilds it as an open tube specifically so a bulb anchored
+    /// there ("dentro del hueco del cilindro") is actually visible instead
+    /// of hidden inside solid geometry.
     /// </summary>
     private static readonly Dictionary<string, Vector3> AnchorPositionOverride = new()
     {
-        { "CeilingPendant", new Vector3(0f, -0.53f, 0f) },
+        { "CeilingPendant", new Vector3(0f, -0.45f, 0f) },
     };
 
     [MenuItem("Tools/Procedural Cities/Add Lamp Bulbs")]
