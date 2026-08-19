@@ -89,11 +89,72 @@ public static class AddLampBulbs
                 stripped++;
         }
 
+        var matDiffuserOn = GetOrCreateMat("LP_Lamp_DiffuserOn", new Color(1f, 0.98f, 0.9f), emissive: true);
+        var diffuserSwapped = 0;
+        foreach (var prefabName in NoBulbPrefabs)
+        {
+            if (AddDiffuserOnOffVariant(prefabName, matDiffuserOn))
+                diffuserSwapped++;
+        }
+
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log(
             $"[AddLampBulbs] Added/verified a bulb on {touched}/{TargetPrefabs.Length} lamp prefabs, " +
-            $"removed it from {stripped}/{NoBulbPrefabs.Length} flush-mounted fixtures.");
+            $"removed it from {stripped}/{NoBulbPrefabs.Length} flush-mounted fixtures, " +
+            $"gave {diffuserSwapped}/{NoBulbPrefabs.Length} of those an on/off diffuser colour.");
+    }
+
+    /// <summary>
+    /// For fixtures with no bulb (<see cref="NoBulbPrefabs"/>), the on/off
+    /// state instead reads off the diffuser plate itself: duplicates the
+    /// existing "Diffuser" into "DiffuserOff" (unchanged — the current
+    /// LP_Lamp_ShadeWarm material) and "DiffuserOn" (a much lighter,
+    /// lightly emissive material), toggled together by
+    /// <c>LampFocalLight.SetOn</c> the same way BulbOn/BulbOff already are.
+    /// Reported live: the diffuser's current warm tone reads as a dull dark
+    /// orange under typical room ambient light and gives no visible "lit"
+    /// feedback — "necesito que esas lamparas cambien el color de la parte
+    /// anaranjada oscura por un color mucho mas claro cuando esten
+    /// encendidas".
+    /// </summary>
+    private static bool AddDiffuserOnOffVariant(string prefabName, Material matOn)
+    {
+        var path = FindPrefabPath(prefabName);
+        if (path == null)
+        {
+            Debug.LogWarning($"[AddLampBulbs] Prefab not found: {prefabName}");
+            return false;
+        }
+
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            if (root.transform.Find("DiffuserOn") != null)
+                return true; // already added (re-running the menu item).
+
+            var diffuserOff = root.transform.Find("Diffuser");
+            if (diffuserOff == null)
+            {
+                Debug.LogWarning($"[AddLampBulbs] {prefabName} has no 'Diffuser' child to duplicate.");
+                return false;
+            }
+
+            diffuserOff.name = "DiffuserOff";
+
+            var diffuserOnGO = Object.Instantiate(diffuserOff.gameObject, diffuserOff.parent);
+            diffuserOnGO.name = "DiffuserOn";
+            diffuserOnGO.GetComponent<MeshRenderer>().sharedMaterial = matOn;
+            diffuserOnGO.SetActive(false);
+            diffuserOff.gameObject.SetActive(true);
+
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+            return true;
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
     }
 
     private static bool RemoveBulb(string prefabName)
