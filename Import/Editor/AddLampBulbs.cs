@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -27,6 +28,25 @@ public static class AddLampBulbs
         "TableLampRound", "TableLampCone", "Lamp1",
         "WallSconceDrum", "WallSconceTorch",
         "CeilingFlushDisc", "CeilingPendant", "CeilingPanel",
+    };
+
+    /// <summary>
+    /// Per-prefab bulb anchor position, overriding the generic
+    /// FocalLight-derived one below. Only needed where that generic
+    /// position doesn't read as "under the lamp": CeilingPendant's Light
+    /// sits at the combined canopy+cord+shade bounds centre (y=-0.26,
+    /// biased upward by the cord's long vertical run — see
+    /// GenerateLampProps.cs BuildCeilingPendant), which lands the bulb
+    /// next to the cord instead of hanging under the shade. Reported live:
+    /// "las bombillas no estan ubicadas exactamente debajo de la lampara
+    /// en si". The shade itself is centred at y=-0.45 and is a closed (not
+    /// hollow) cylinder down to y=-0.51 — anchoring inside that range hides
+    /// the bulb entirely, so it sits just past the shade's underside
+    /// instead, where it actually reads as hanging below the lamp.
+    /// </summary>
+    private static readonly Dictionary<string, Vector3> AnchorPositionOverride = new()
+    {
+        { "CeilingPendant", new Vector3(0f, -0.53f, 0f) },
     };
 
     [MenuItem("Tools/Procedural Cities/Add Lamp Bulbs")]
@@ -60,13 +80,34 @@ public static class AddLampBulbs
         var root = PrefabUtility.LoadPrefabContents(path);
         try
         {
-            if (root.transform.Find("BulbAnchor") != null)
-                return true; // already added (re-running the menu item).
+            var hasOverride = AnchorPositionOverride.TryGetValue(prefabName, out var overridePos);
+            var existingAnchor = root.transform.Find("BulbAnchor");
 
-            var focalLight = root.GetComponentInChildren<Light>(true);
-            var anchorLocalPos = focalLight != null
-                ? focalLight.transform.localPosition
-                : ComputeLocalBounds(root).center;
+            if (existingAnchor != null)
+            {
+                if (!hasOverride)
+                    return true; // already added, nothing to correct.
+
+                if (existingAnchor.localPosition == overridePos)
+                    return true; // already at the right spot.
+
+                existingAnchor.localPosition = overridePos;
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+                return true;
+            }
+
+            Vector3 anchorLocalPos;
+            if (hasOverride)
+            {
+                anchorLocalPos = overridePos;
+            }
+            else
+            {
+                var focalLight = root.GetComponentInChildren<Light>(true);
+                anchorLocalPos = focalLight != null
+                    ? focalLight.transform.localPosition
+                    : ComputeLocalBounds(root).center;
+            }
 
             var anchor = new GameObject("BulbAnchor");
             anchor.transform.SetParent(root.transform, false);
