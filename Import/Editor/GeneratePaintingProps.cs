@@ -110,7 +110,19 @@ public static class GeneratePaintingProps
         Object.DestroyImmediate(picture.GetComponent<Collider>());
         picture.name = "Picture";
         picture.transform.SetParent(root.transform, false);
-        picture.transform.localPosition = new Vector3(0, 0, -0.016f);
+        // +Z (not -Z): the frame is mounted with its local +Z axis facing
+        // outward into the room (matches AttemptPlace's onWall rotation,
+        // which points the whole prop's +Z/forward away from the wall). A
+        // default Quad's face normal is -Z (Unity's CreatePrimitive
+        // convention), so it also needs the 180° yaw below — without it,
+        // the quad ends up sandwiched behind the frame's solid Cube AND
+        // facing away from the viewer, making the artwork invisible from
+        // every angle in the room. Reported live: paintings placed and
+        // correctly textured (confirmed via reflection) but rendering as a
+        // flat, featureless dark rectangle — the frame occluding a
+        // backwards, backward-facing canvas.
+        picture.transform.localPosition = new Vector3(0, 0, 0.016f);
+        picture.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
         picture.transform.localScale = new Vector3(PaintingSize, PaintingSize, 1f);
         picture.GetComponent<MeshRenderer>().sharedMaterial = matPicture;
 
