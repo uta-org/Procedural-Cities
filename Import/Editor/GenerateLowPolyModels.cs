@@ -12,7 +12,6 @@ using UnityEngine;
 public class GenerateLowPolyModels : EditorWindow
 {
     private static string OutputFolder = "Assets/LowPoly";
-    private static string MatFolder = "Assets/LowPoly/Materials";
     private static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
 
     // ReSharper disable once UnusedMember.Local
