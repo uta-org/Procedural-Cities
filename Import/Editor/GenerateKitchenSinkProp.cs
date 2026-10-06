@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Builds the kitchen sink module ("KitchenSink"): a base-cabinet counter
-/// module (same materials/proportions as Kitchen4) whose countertop
+/// module (same materials/proportions as Kitchen1) whose countertop
 /// has a rectangular basin sunk into it, taking almost the whole width and
 /// depth of the module and 0.20 m deep, with a chrome faucet. Replaces the
 /// bathroom pedestal "Sink" prefab that km_sink used to borrow.
@@ -21,7 +21,7 @@ public static class GenerateKitchenSinkProp
     private const string ModelDir = PkgRoot + "/Models/LowPoly";
     private const string MatDir = ModelDir + "/Materials";
 
-    // Module size (metres). Front is +Z, like Kitchen2/4.
+    // Module size (metres). Front is +Z, like Kitchen1 and Kitchen2.
     private const float Width = 0.90f;
     private const float Depth = 0.60f;
     private const float CounterTopY = 0.90f;

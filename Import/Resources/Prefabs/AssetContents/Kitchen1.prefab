@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 177231797814103814}
   m_Layer: 0
-  m_Name: Kitchen4
+  m_Name: Kitchen1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 3617732196900761851}
   - component: {fileID: 3369272728998558096}
   m_Layer: 0
-  m_Name: kitchen4
+  m_Name: kitchen1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -843,7 +843,7 @@ public class GenerateLowPolyModels : EditorWindow
 
     // ========================================
     // KITCHEN COUNTER (original: 305K/162K verts) -> ~80 verts
-    // Dimensions: h=0.90m w=2.17m (Kitchen4)
+    // Dimensions: h=0.90m w=2.17m (Kitchen1)
     // ========================================
     static int GenerateKitchenCounter()
     {
@@ -1716,6 +1716,37 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
+    // KITCHEN1 h=0.90 w=2.17 (base cabinet module)
+    static int GenerateKitchen1()
+    {
+        var root = new GameObject("LowPoly_Kitchen1");
+        var matCabinet = GetMat("LP_Cabinet_White", new Color(0.88f, 0.86f, 0.82f));
+        var matCounter = GetMat("LP_Granite", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
+        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
+        var matSink = GetMat("LP_Metal_Sink", new Color(0.7f, 0.7f, 0.72f), 0.7f, 0.7f);
+        var top = CreateBox(new Vector3(2.1f, 0.05f, 0.65f), matCounter);
+        top.transform.SetParent(root.transform);
+        top.transform.localPosition = new Vector3(0, 0.88f, 0);
+        top.gameObject.name = "Countertop";
+        var cab = CreateBox(new Vector3(2.1f, 0.82f, 0.6f), matCabinet);
+        cab.transform.SetParent(root.transform);
+        cab.transform.localPosition = new Vector3(0, 0.41f, 0);
+        cab.gameObject.name = "Cabinet";
+        for (int i = 0; i < 4; i++)
+        {
+            var h = CreateBox(new Vector3(0.02f, 0.08f, 0.02f), matHandle);
+            h.transform.SetParent(root.transform);
+            h.transform.localPosition = new Vector3(-0.65f + i * 0.43f, 0.45f, 0.31f);
+            h.gameObject.name = $"Handle{i}";
+        }
+        var sink = CreateBox(new Vector3(0.4f, 0.04f, 0.35f), matSink);
+        sink.transform.SetParent(root.transform);
+        sink.transform.localPosition = new Vector3(0.55f, 0.87f, 0);
+        sink.gameObject.name = "SinkBasin";
+        SavePrefab(root, "LowPoly_Kitchen1");
+        return 1;
+    }
+
     // KITCHEN2 h=2.20 w=0.91 (tall kitchen cabinet)
     static int GenerateKitchen2()
     {
@@ -1747,37 +1778,6 @@ public class GenerateLowPolyModels : EditorWindow
             h.gameObject.name = $"Handle{i}";
         }
         SavePrefab(root, "LowPoly_Kitchen2");
-        return 1;
-    }
-
-    // KITCHEN4 h=0.90 w=2.17
-    static int GenerateKitchen4()
-    {
-        var root = new GameObject("LowPoly_Kitchen4");
-        var matCabinet = GetMat("LP_Cabinet_White", new Color(0.88f, 0.86f, 0.82f));
-        var matCounter = GetMat("LP_Granite", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
-        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
-        var matSink = GetMat("LP_Metal_Sink", new Color(0.7f, 0.7f, 0.72f), 0.7f, 0.7f);
-        var top = CreateBox(new Vector3(2.1f, 0.05f, 0.65f), matCounter);
-        top.transform.SetParent(root.transform);
-        top.transform.localPosition = new Vector3(0, 0.88f, 0);
-        top.gameObject.name = "Countertop";
-        var cab = CreateBox(new Vector3(2.1f, 0.82f, 0.6f), matCabinet);
-        cab.transform.SetParent(root.transform);
-        cab.transform.localPosition = new Vector3(0, 0.41f, 0);
-        cab.gameObject.name = "Cabinet";
-        for (int i = 0; i < 4; i++)
-        {
-            var h = CreateBox(new Vector3(0.02f, 0.08f, 0.02f), matHandle);
-            h.transform.SetParent(root.transform);
-            h.transform.localPosition = new Vector3(-0.65f + i * 0.43f, 0.45f, 0.31f);
-            h.gameObject.name = $"Handle{i}";
-        }
-        var sink = CreateBox(new Vector3(0.4f, 0.04f, 0.35f), matSink);
-        sink.transform.SetParent(root.transform);
-        sink.transform.localPosition = new Vector3(0.55f, 0.87f, 0);
-        sink.gameObject.name = "SinkBasin";
-        SavePrefab(root, "LowPoly_Kitchen4");
         return 1;
     }
 
