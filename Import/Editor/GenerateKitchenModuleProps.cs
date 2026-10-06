@@ -227,9 +227,16 @@ public static class GenerateKitchenModuleProps
         const float basinDepth = 0.20f;      // top of the worktop to the basin floor
         const float basinFloor = 0.02f;
         const float basinHalfWidth = 0.40f;
-        const float basinHalfLength = 0.21f;
-        const float basinCentreZ = 0.03f;    // towards the front, leaving the back rim for the faucet
+        const float basinHalfLength = 0.19f;
+        const float basinCentreZ = 0.07f;    // towards the front, leaving the back rim for the faucet
         const float linerWall = 0.012f;
+        // The faucet stands this far in front of the module's back. A counter
+        // against a facade wall has its back 0.095 m inside the wall (the
+        // inner face of a facade is 0.25 m from the room edge, the counter is
+        // placed for the 0.125 m of a partition) and a closed window's sash
+        // sits on that face: a faucet nearer the back went into the wall or
+        // behind the window ("Se va un poco por detrás de la ventana").
+        const float faucetBackClearance = 0.13f;
 
         var basinBottom = CounterTopY - basinDepth;
         var floorBottom = basinBottom - basinFloor;
@@ -251,10 +258,11 @@ public static class GenerateKitchenModuleProps
         mb.Box(p.SinkMetal, new Vector3(-basinHalfWidth + linerWall, basinBottom, z1 - linerWall), new Vector3(basinHalfWidth - linerWall, CounterTopY, z1));
 
         // Faucet on the back rim: base, neck, spout over the basin, two taps.
-        var rimZ = (Back + z0) * 0.5f;
-        mb.Box(p.Chrome, new Vector3(-0.04f, CounterTopY, rimZ - 0.03f), new Vector3(0.04f, CounterTopY + 0.03f, rimZ + 0.03f));
+        var faucetBack = Back + faucetBackClearance;
+        var rimZ = faucetBack + 0.03f;
+        mb.Box(p.Chrome, new Vector3(-0.04f, CounterTopY, faucetBack), new Vector3(0.04f, CounterTopY + 0.03f, rimZ + 0.03f));
         mb.Box(p.Chrome, new Vector3(-0.012f, CounterTopY + 0.03f, rimZ - 0.012f), new Vector3(0.012f, CounterTopY + 0.24f, rimZ + 0.012f));
-        mb.Box(p.Chrome, new Vector3(-0.012f, CounterTopY + 0.21f, rimZ - 0.012f), new Vector3(0.012f, CounterTopY + 0.24f, rimZ + 0.17f));
+        mb.Box(p.Chrome, new Vector3(-0.012f, CounterTopY + 0.21f, rimZ - 0.012f), new Vector3(0.012f, CounterTopY + 0.24f, rimZ + 0.19f));
         foreach (var sx in new[] { -1f, 1f })
             mb.Box(p.Chrome, new Vector3(sx * 0.10f - 0.015f, CounterTopY, rimZ - 0.015f), new Vector3(sx * 0.10f + 0.015f, CounterTopY + 0.05f, rimZ + 0.015f));
         return mb;
