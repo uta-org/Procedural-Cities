@@ -11,7 +11,7 @@ using UnityEngine;
 /// Output: Models/LowPoly/KitchenSink_Combined.asset (4 submeshes) and
 /// Resources/Prefabs/AssetContents/KitchenSink.prefab (root "KitchenSink",
 /// child "kitchen_sink" with MeshFilter/MeshRenderer/convex MeshCollider,
-/// same structure as Kitchen2.prefab).
+/// same structure as KitchenTallCabinet.prefab).
 /// Menu: Tools / Procedural Cities / Generate Kitchen Sink Prop
 /// </summary>
 public static class GenerateKitchenSinkProp
@@ -21,7 +21,7 @@ public static class GenerateKitchenSinkProp
     private const string ModelDir = PkgRoot + "/Models/LowPoly";
     private const string MatDir = ModelDir + "/Materials";
 
-    // Module size (metres). Front is +Z, like Kitchen1 and Kitchen2.
+    // Module size (metres). Front is +Z, like Kitchen1 and KitchenTallCabinet.
     private const float Width = 0.90f;
     private const float Depth = 0.60f;
     private const float CounterTopY = 0.90f;
@@ -148,12 +148,12 @@ public static class GenerateKitchenSinkProp
         AssetDatabase.DeleteAsset(meshPath);
         AssetDatabase.CreateAsset(mesh, meshPath);
 
-        // Prefab: duplicate Kitchen2.prefab (same structure), then repoint mesh + materials.
+        // Prefab: duplicate KitchenTallCabinet.prefab (same structure), then repoint mesh + materials.
         var prefabPath = $"{PrefabDir}/KitchenSink.prefab";
         AssetDatabase.DeleteAsset(prefabPath);
-        if (!AssetDatabase.CopyAsset($"{PrefabDir}/Kitchen2.prefab", prefabPath))
+        if (!AssetDatabase.CopyAsset($"{PrefabDir}/KitchenTallCabinet.prefab", prefabPath))
         {
-            Debug.LogError("[GenerateKitchenSinkProp] Could not duplicate Kitchen2.prefab.");
+            Debug.LogError("[GenerateKitchenSinkProp] Could not duplicate KitchenTallCabinet.prefab.");
             return;
         }
 

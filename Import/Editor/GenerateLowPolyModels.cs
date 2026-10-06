@@ -1747,10 +1747,10 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
-    // KITCHEN2 h=2.20 w=0.91 (tall kitchen cabinet)
-    static int GenerateKitchen2()
+    // KITCHEN TALL CABINET h=2.20 w=0.91 (base cabinet, countertop and wall cabinet in one piece)
+    static int GenerateKitchenTallCabinet()
     {
-        var root = new GameObject("LowPoly_Kitchen2");
+        var root = new GameObject("LowPoly_KitchenTallCabinet");
         var matCabinet = GetMat("LP_Cabinet_White", new Color(0.88f, 0.86f, 0.82f));
         var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
         var matCounter = GetMat("LP_Granite", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
@@ -1777,7 +1777,7 @@ public class GenerateLowPolyModels : EditorWindow
             h.transform.localPosition = new Vector3(i == 0 ? -0.1f : 0.1f, i == 0 ? 0.5f : 1.6f, i == 0 ? 0.31f : 0.06f);
             h.gameObject.name = $"Handle{i}";
         }
-        SavePrefab(root, "LowPoly_Kitchen2");
+        SavePrefab(root, "LowPoly_KitchenTallCabinet");
         return 1;
     }
 
