@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Builds the kitchen counter modules, one family with one footprint: every
-/// floor module is 1.04 m wide, 0.65 m deep and 0.90 m to the worktop, with
+/// floor module is 1.00 m wide, 0.65 m deep and 0.90 m to the worktop, with
 /// flat sides and a worktop that overhangs the front only, so any of them
 /// side by side read as one counter ("deberian tener todos los modulos la
 /// misma anchura").
@@ -12,7 +12,7 @@ using UnityEngine;
 ///  - KitchenSink: the same cabinet with a 0.20 m deep basin and a faucet.
 ///  - KitchenOven: cooker, an oven under a four-burner hob.
 ///  - KitchenDishwasher: dishwasher under the worktop.
-///  - KitchenHood: extractor hood, 1.04 m wide, hung over the cooker.
+///  - KitchenHood: extractor hood, 1.00 m wide, hung over the cooker.
 /// Output per module: Models/LowPoly/&lt;Name&gt;_Combined.asset (one submesh per
 /// material) and Resources/Prefabs/AssetContents/&lt;Name&gt;.prefab (root
 /// "&lt;Name&gt;", one child with MeshFilter/MeshRenderer/convex MeshCollider).
@@ -27,7 +27,7 @@ public static class GenerateKitchenModuleProps
     private const string MatDir = ModelDir + "/Materials";
 
     // Shared module size (metres). Front is +Z, the back (-Z) stands against the wall.
-    private const float Width = 1.04f;
+    private const float Width = 1.00f;
     private const float Depth = 0.65f;
     private const float CounterTopY = 0.90f;
     private const float CounterThickness = 0.05f;
