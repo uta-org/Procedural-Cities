@@ -1750,32 +1750,6 @@ public class GenerateLowPolyModels : EditorWindow
         return 1;
     }
 
-    // KITCHEN3 h=0.90 w=1.59
-    static int GenerateKitchen3()
-    {
-        var root = new GameObject("LowPoly_Kitchen3");
-        var matCabinet = GetMat("LP_Cabinet_White", new Color(0.88f, 0.86f, 0.82f));
-        var matCounter = GetMat("LP_Granite", new Color(0.35f, 0.33f, 0.3f), 0.1f, 0.6f);
-        var matHandle = GetMat("LP_Chrome", new Color(0.75f, 0.75f, 0.78f), 0.85f, 0.8f);
-        var top = CreateBox(new Vector3(1.5f, 0.05f, 0.65f), matCounter);
-        top.transform.SetParent(root.transform);
-        top.transform.localPosition = new Vector3(0, 0.88f, 0);
-        top.gameObject.name = "Countertop";
-        var cab = CreateBox(new Vector3(1.5f, 0.82f, 0.6f), matCabinet);
-        cab.transform.SetParent(root.transform);
-        cab.transform.localPosition = new Vector3(0, 0.41f, 0);
-        cab.gameObject.name = "Cabinet";
-        for (int i = 0; i < 3; i++)
-        {
-            var h = CreateBox(new Vector3(0.02f, 0.08f, 0.02f), matHandle);
-            h.transform.SetParent(root.transform);
-            h.transform.localPosition = new Vector3(-0.42f + i * 0.42f, 0.45f, 0.31f);
-            h.gameObject.name = $"Handle{i}";
-        }
-        SavePrefab(root, "LowPoly_Kitchen3");
-        return 1;
-    }
-
     // KITCHEN4 h=0.90 w=2.17
     static int GenerateKitchen4()
     {
