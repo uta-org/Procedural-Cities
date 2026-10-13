@@ -39,10 +39,6 @@ TEXTURE_SETS = [
     ("Fabric061",    "Fabric"),     # Soft cushion/pillow
     ("Fabric066",    "Fabric"),     # Office upholstery
 
-    # Concrete & Stone
-    ("Concrete034",  "Stone"),      # Smooth concrete
-    ("Concrete042A", "Stone"),      # Rough stone
-
     # Ceramic & Tiles
     ("Tiles107",     "Ceramic"),    # White ceramic tile
     ("Tiles074",     "Ceramic"),    # Granite-like tile
@@ -52,7 +48,6 @@ TEXTURE_SETS = [
     ("Plastic010",   "Plastic"),    # Matte plastic (appliances)
 
     # Ground / Nature
-    ("Ground037",    "Nature"),     # Grass
     ("Bark012",      "Nature"),     # Tree bark / leaves
 ]
 
