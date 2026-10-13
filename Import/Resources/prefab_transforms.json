@@ -21,10 +21,6 @@
             "forwardAngleY": 0.0
         },
         {
-            "name": "ChoppingBoard",
-            "forwardAngleY": 0.0
-        },
-        {
             "name": "Clock",
             "forwardAngleY": 0.0
         },
@@ -37,23 +33,7 @@
             "forwardAngleY": 0.0
         },
         {
-            "name": "Cup",
-            "forwardAngleY": 0.0
-        },
-        {
             "name": "Dispenser",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Door",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "DoorFrame",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Elevator",
             "forwardAngleY": 0.0
         },
         {
@@ -73,23 +53,7 @@
             "forwardAngleY": 0.0
         },
         {
-            "name": "Glass",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Grass",
-            "forwardAngleY": 0.0
-        },
-        {
             "name": "Hanger",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Hanger1",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Kettle",
             "forwardAngleY": 0.0
         },
         {
@@ -109,18 +73,6 @@
             "forwardAngleY": 0.0
         },
         {
-            "name": "Lamp2",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Lamp3",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Lamp4",
-            "forwardAngleY": 0.0
-        },
-        {
             "name": "Lamppost",
             "forwardAngleY": 0.0
         },
@@ -134,10 +86,6 @@
         },
         {
             "name": "Mirror",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Mirror1",
             "forwardAngleY": 0.0
         },
         {
@@ -165,18 +113,6 @@
             "forwardAngleY": 0.0
         },
         {
-            "name": "Oven",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Pan0",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Pan1",
-            "forwardAngleY": 0.0
-        },
-        {
             "name": "RestaurantChair",
             "forwardAngleY": 0.0
         },
@@ -185,39 +121,11 @@
             "forwardAngleY": 0.0
         },
         {
-            "name": "RooftopAc",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "RooftopSolar",
-            "forwardAngleY": 0.0
-        },
-        {
             "name": "RubbishBin",
             "forwardAngleY": 0.0
         },
         {
             "name": "Shelf",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Shelf1",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Shelf2",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Shelf3",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Shelf4",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Shelf5",
             "forwardAngleY": 0.0
         },
         {
@@ -233,14 +141,6 @@
             "forwardAngleY": 0.0
         },
         {
-            "name": "Sofa1",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Stair",
-            "forwardAngleY": 0.0
-        },
-        {
             "name": "StoreShelf",
             "forwardAngleY": 0.0
         },
@@ -250,10 +150,6 @@
         },
         {
             "name": "Toilet",
-            "forwardAngleY": 0.0
-        },
-        {
-            "name": "Toilet1",
             "forwardAngleY": 0.0
         },
         {
