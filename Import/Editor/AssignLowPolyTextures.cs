@@ -78,7 +78,6 @@ using UnityEngine;
 //         { "LP_Wood_Frame",     Tex("Wood049", "Wood", C(0.7f, 0.5f, 0.3f), tiling: 2) },
 //         { "LP_Wood_Wardrobe",  Tex("Wood049", "Wood", C(0.72f, 0.52f, 0.38f), tiling: 1.5f) },
 //         { "LP_Wood_Bed",       Tex("Wood066", "Wood", C(0.78f, 0.6f, 0.42f), tiling: 1.5f) },
-//         { "KM_ShelfWood",      Tex("Wood066", "Wood", C(0.85f, 0.7f, 0.5f), tiling: 2) },
 
 //         // ===== METAL =====
 //         { "LP_Chrome",           Tex("Metal032", "Metal", C(0.9f, 0.9f, 0.92f), 0.85f, 0.8f, 2) },
@@ -86,15 +85,11 @@ using UnityEngine;
 //         { "LP_Metal_Kettle",     Tex("Metal032", "Metal", C(0.85f, 0.85f, 0.87f), 0.8f, 0.7f, 2) },
 //         { "LP_Metal_Sink",       Tex("Metal032", "Metal", C(0.85f, 0.85f, 0.87f), 0.7f, 0.7f, 2) },
 //         { "LP_Appliance_Silver", Tex("Metal032", "Metal", C(0.85f, 0.85f, 0.87f), 0.6f, 0.5f, 1.5f) },
-//         { "KM_Handle",           Tex("Metal032", "Metal", C(0.85f, 0.85f, 0.87f), 0.85f, 0.8f, 3) },
-//         { "KM_Metal",            Tex("Metal032", "Metal", C(0.8f, 0.8f, 0.82f), 0.7f, 0.6f, 2) },
-//         { "KM_FilterGrille",     Tex("Metal032", "Metal", C(0.7f, 0.7f, 0.72f), 0.6f, 0.4f, 4) },
 //         { "LP_Metal_Black",      Tex("Metal049A", "Metal", C(0.3f, 0.3f, 0.3f), 0.5f, 0.3f, 2) },
 //         { "LP_Metal_Pan",        Tex("Metal049A", "Metal", C(0.5f, 0.5f, 0.52f), 0.6f, 0.5f, 3) },
 //         { "LP_Metal_Lamppost",   Tex("Metal049A", "Metal", C(0.4f, 0.4f, 0.42f), 0.5f, 0.4f, 1.5f) },
 //         { "LP_Metal_DarkGray",   Tex("Metal049A", "Metal", C(0.5f, 0.5f, 0.5f), 0.7f, 0.6f, 2) },
 //         { "KM_Burner",           Tex("Metal049A", "Metal", C(0.45f, 0.45f, 0.48f), 0.5f, 0.4f, 4) },
-//         { "KM_StoveSurface",     Tex("Metal049A", "Metal", C(0.15f, 0.15f, 0.15f), 0.3f, 0.7f, 2) },
 //         { "LP_Metal_AC",         Tex("Metal048A", "Metal", C(0.8f, 0.82f, 0.85f), 0.4f, 0.3f, 2) },
 //         { "LP_Metal_Elevator",   Tex("Metal048A", "Metal", C(0.8f, 0.8f, 0.82f), 0.6f, 0.5f, 1) },
 //         { "LP_Metal_Locker",     Tex("Metal048A", "Metal", C(0.7f, 0.72f, 0.75f), 0.4f, 0.3f, 1.5f) },
@@ -126,7 +121,6 @@ using UnityEngine;
 //         // ===== GRANITE / COUNTERTOP =====
 //         { "LP_Granite",        Tex("Tiles074", "Ceramic", C(0.6f, 0.58f, 0.55f), 0.1f, 0.6f, 2) },
 //         { "KM_Countertop",     Tex("Tiles074", "Ceramic", C(0.6f, 0.58f, 0.55f), 0.1f, 0.6f, 2) },
-//         { "KM_DarkInterior",   Tex("Tiles074", "Ceramic", C(0.35f, 0.33f, 0.3f), 0, 0.3f, 2) },
 
 //         // ===== PLASTIC =====
 //         { "LP_Plastic_White",     Tex("Plastic006", "Plastic", C(0.92f, 0.92f, 0.9f), 0, 0.3f, 2) },
@@ -138,8 +132,6 @@ using UnityEngine;
 //         // ===== APPLIANCE / CABINET (white painted) =====
 //         { "LP_Appliance_White",  Tex("Plastic010", "Plastic", C(0.95f, 0.95f, 0.93f), 0, 0.35f, 1.5f) },
 //         { "LP_Cabinet_White",    Tex("Plastic010", "Plastic", C(0.92f, 0.9f, 0.87f), 0, 0.3f, 1.5f) },
-//         { "KM_Cabinet_Body",     Tex("Plastic010", "Plastic", C(0.92f, 0.9f, 0.87f), 0, 0.3f, 1.5f) },
-//         { "KM_FridgeBody",       Tex("Plastic010", "Plastic", C(0.95f, 0.95f, 0.96f), 0.3f, 0.5f, 1.5f) },
 
 //         // ===== NATURE =====
 //         { "LP_Grass_Green",  Tex("Ground037", "Nature", C(0.5f, 0.85f, 0.35f), tiling: 1, triplanar: true) },
@@ -148,7 +140,6 @@ using UnityEngine;
 //         // ===== SPECIAL - keep flat color, just switch shader =====
 //         // Glass
 //         { "LP_Glass_Clear",  Tex("", "", C(0.85f, 0.9f, 0.92f), 0.1f, 0.9f) },
-//         { "KM_Glass",        Tex("", "", C(0.7f, 0.75f, 0.8f), 0.1f, 0.85f) },
 //         { "LP_Oven_Glass",   Tex("", "", C(0.15f, 0.12f, 0.1f), 0.1f, 0.8f) },
 
 //         // Mirror
@@ -161,8 +152,6 @@ using UnityEngine;
 //         { "LP_TV_Frame",  Tex("", "", C(0.08f, 0.08f, 0.08f), 0.3f, 0.6f) },
 //         { "LP_TV_Screen",  Tex("", "", C(0.1f, 0.15f, 0.2f), 0, 0.9f, emission: true,
 //             emColor: new Color(0.1f, 0.15f, 0.25f), emIntensity: 0.5f) },
-//         { "KM_Display",    Tex("", "", C(0.1f, 0.3f, 0.1f), 0, 0.3f, emission: true,
-//             emColor: new Color(0.1f, 0.4f, 0.1f), emIntensity: 0.8f) },
 
 //         // Emissive lights
 //         { "LP_Light_Warm",   Tex("", "", C(0.95f, 0.9f, 0.7f), 0, 0.3f, emission: true,
@@ -173,8 +162,6 @@ using UnityEngine;
 //             emColor: new Color(1f, 0.1f, 0.1f), emIntensity: 2f) },
 //         { "LP_Light_Yellow", Tex("", "", C(0.9f, 0.8f, 0.1f), 0, 0.3f, emission: true,
 //             emColor: new Color(1f, 0.85f, 0.1f), emIntensity: 2f) },
-//         { "KM_LightStrip",   Tex("", "", C(0.95f, 0.92f, 0.8f), 0, 0.3f, emission: true,
-//             emColor: new Color(1f, 0.95f, 0.8f), emIntensity: 1.5f) },
 
 //         // Whiteboard / clock / solar
 //         { "LP_Whiteboard",  Tex("", "", C(0.96f, 0.96f, 0.95f), 0, 0.7f) },
