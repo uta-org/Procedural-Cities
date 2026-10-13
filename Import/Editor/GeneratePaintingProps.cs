@@ -6,8 +6,9 @@ using UnityEngine;
 /// is a wooden frame (backing box) + a Quad textured with a real, public-
 /// domain artwork cropped to a 128x128 square (Van Gogh, Hokusai, Monet,
 /// Hiroshige, Turner — all authors died 70-100+ years ago, safely public
-/// domain worldwide; see Import/Models/LowPoly/Textures/PaintingsOriginal
-/// for the un-cropped source downloads and their Wikimedia Commons origin).
+/// domain worldwide; see Import/Models/LowPoly/Textures/PaintingsOriginal~
+/// for the un-cropped source downloads from Wikimedia Commons, kept out of
+/// Unity's import by the trailing ~).
 /// The 128x128 crops live in Import/Models/LowPoly/Textures/Paintings128 and
 /// are picked up by Unity's normal PNG importer — this script only sets their
 /// import settings and builds/deploys the frame prefabs to
@@ -57,7 +58,7 @@ public static class GeneratePaintingProps
         if (tex == null)
         {
             Debug.LogError($"[GeneratePaintingProps] Missing texture at {texPath} — run the Wikimedia "
-                + "Commons download + resize step first (see PaintingsOriginal/Paintings128 folders).");
+                + "Commons download + resize step first (see the PaintingsOriginal~ and Paintings128 folders).");
             return;
         }
 
