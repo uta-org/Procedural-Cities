@@ -2,18 +2,21 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds five low-poly wall paintings for hallway decoration. Each painting
-/// is a wooden frame (backing box) + a Quad textured with a real, public-
-/// domain artwork cropped to a 128x128 square (Van Gogh, Hokusai, Monet,
-/// Hiroshige, Turner — all authors died 70-100+ years ago, safely public
-/// domain worldwide; see Import/Models/LowPoly/Textures/PaintingsOriginal~
-/// for the un-cropped source downloads from Wikimedia Commons, kept out of
-/// Unity's import by the trailing ~).
-/// The 128x128 crops live in Import/Models/LowPoly/Textures/Paintings128 and
-/// are picked up by Unity's normal PNG importer — this script only sets their
-/// import settings and builds/deploys the frame prefabs to
-/// Resources/Prefabs/AssetContents (same convention as the other
-/// Generate*Prop.cs scripts in this folder).
+/// Builds the low-poly wall paintings: a wooden frame (backing box) + a Quad
+/// textured with a real, public-domain artwork (every author died 100+ years
+/// ago; the files are marked public domain on Wikimedia Commons). The
+/// un-cropped downloads are kept in
+/// Import/Models/LowPoly/Textures/PaintingsOriginal~ (out of Unity's import by
+/// the trailing ~); the crops, cut to each painting's format, live in
+/// Import/Models/LowPoly/Textures/Paintings and are picked up by Unity's normal
+/// PNG importer — this script only sets their import settings and
+/// builds/deploys the frame prefabs to Resources/Prefabs/AssetContents (same
+/// convention as the other Generate*Prop.cs scripts in this folder).
+/// Formats are in units of the original painting (a 0.48 m frame, a 128 px
+/// texture): 1x1 ("64x64"), 2x2, 4x4, 1x2 and 2x4 (portrait), 2x1 and 4x2
+/// (landscape), at least three artworks each; the runtime's PaintingCatalog
+/// lists the same ids and formats. New prefabs also need an entry (address =
+/// prefab name) in the main project's Remote Addressables group.
 /// Menu: Tools / Procedural Cities / Generate Painting Props
 /// </summary>
 public static class GeneratePaintingProps
@@ -21,18 +24,55 @@ public static class GeneratePaintingProps
     private const string PkgRoot = "Packages/dev.z3nth10n.proceduralcities.import";
     private const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
     private const string MatDir = PkgRoot + "/Models/LowPoly/Materials";
-    private const string TexDir = PkgRoot + "/Models/LowPoly/Textures/Paintings128";
+    private const string TexDir = PkgRoot + "/Models/LowPoly/Textures/Paintings";
 
-    private const float PaintingSize = 0.42f;
-    private const float FrameSize = 0.48f;
+    /// <summary>Frame side of a 1-unit painting (m).</summary>
+    private const float UnitFrameSize = 0.48f;
 
-    private static readonly (string prefab, string texFile)[] Paintings =
+    /// <summary>Wooden border around the picture, each side (m).</summary>
+    private const float FrameBorder = 0.03f;
+
+    /// <summary>Frame depth (m).</summary>
+    private const float FrameDepth = 0.03f;
+
+    /// <summary>How far in front of the frame's centre the picture sits (m): just past its face.</summary>
+    private const float PictureOffset = 0.016f;
+
+    /// <summary>Texture pixels per unit of painting (the original 128 px crops).</summary>
+    private const int PixelsPerUnit = 128;
+
+    private static readonly (string prefab, string texFile, int width, int height)[] Paintings =
     {
-        ("Painting1", "painting1_starry_night_128"),
-        ("Painting2", "painting2_great_wave_128"),
-        ("Painting3", "painting3_impression_sunrise_128"),
-        ("Painting4", "painting4_hiroshige_128"),
-        ("Painting5", "painting5_fighting_temeraire_128"),
+        // 1x1 ("64x64"), the original five.
+        ("Painting1", "painting1_starry_night", 1, 1),
+        ("Painting2", "painting2_great_wave", 1, 1),
+        ("Painting3", "painting3_impression_sunrise", 1, 1),
+        ("Painting4", "painting4_hiroshige", 1, 1),
+        ("Painting5", "painting5_fighting_temeraire", 1, 1),
+        // 2x2 ("128x128").
+        ("Painting6", "painting6_klimt_the_kiss", 2, 2),
+        ("Painting7", "painting7_vermeer_pearl_earring", 2, 2),
+        ("Painting8", "painting8_van_gogh_sunflowers", 2, 2),
+        // 4x4 ("256x256").
+        ("Painting9", "painting9_monet_water_lilies", 4, 4),
+        ("Painting10", "painting10_hokusai_red_fuji", 4, 4),
+        ("Painting11", "painting11_klimt_farm_garden", 4, 4),
+        // 1x2 ("64x128").
+        ("Painting12", "painting12_mucha_spring", 1, 2),
+        ("Painting13", "painting13_mucha_summer", 1, 2),
+        ("Painting14", "painting14_mucha_autumn", 1, 2),
+        // 2x4 ("128x256").
+        ("Painting15", "painting15_mucha_winter", 2, 4),
+        ("Painting16", "painting16_hiroshige_plum_garden", 2, 4),
+        ("Painting17", "painting17_hokusai_kirifuri_waterfall", 2, 4),
+        // 2x1 ("128x64").
+        ("Painting18", "painting18_korin_irises_left", 2, 1),
+        ("Painting19", "painting19_korin_irises_right", 2, 1),
+        ("Painting20", "painting20_friedrich_monk_by_the_sea", 2, 1),
+        // 4x2 ("256x128").
+        ("Painting21", "painting21_bierstadt_sierra_nevada", 4, 2),
+        ("Painting22", "painting22_bruegel_hunters_in_the_snow", 4, 2),
+        ("Painting23", "painting23_moran_grand_canyon_yellowstone", 4, 2),
     };
 
     [MenuItem("Tools/Procedural Cities/Generate Painting Props")]
@@ -42,23 +82,23 @@ public static class GeneratePaintingProps
 
         var matFrame = GetSharedMat("LP_Painting_Frame", new Color(0.24f, 0.15f, 0.08f), 0.05f, 0.25f);
 
-        foreach (var (prefabName, texFile) in Paintings)
-            SaveOne(prefabName, texFile, matFrame);
+        foreach (var (prefabName, texFile, width, height) in Paintings)
+            SaveOne(prefabName, texFile, width, height, matFrame);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log($"[GeneratePaintingProps] Saved {Paintings.Length} painting prefabs under {PrefabDir}");
     }
 
-    private static void SaveOne(string prefabName, string texFile, Material matFrame)
+    private static void SaveOne(string prefabName, string texFile, int width, int height, Material matFrame)
     {
         var texPath = $"{TexDir}/{texFile}.png";
-        ConfigureImport(texPath);
+        ConfigureImport(texPath, PixelsPerUnit * Mathf.Max(width, height));
         var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
         if (tex == null)
         {
-            Debug.LogError($"[GeneratePaintingProps] Missing texture at {texPath} — run the Wikimedia "
-                + "Commons download + resize step first (see the PaintingsOriginal~ and Paintings128 folders).");
+            Debug.LogError($"[GeneratePaintingProps] Missing texture at {texPath} — crop it from the Wikimedia "
+                + "Commons download first (see the PaintingsOriginal~ and Paintings folders).");
             return;
         }
 
@@ -76,27 +116,34 @@ public static class GeneratePaintingProps
         matPicture.mainTexture = tex;
         EditorUtility.SetDirty(matPicture);
 
-        var root = BuildFrame(prefabName, matFrame, matPicture);
+        var frame = new Vector2(UnitFrameSize * width, UnitFrameSize * height);
+        var root = BuildFrame(prefabName, frame, matFrame, matPicture);
         PrefabUtility.SaveAsPrefabAsset(root, $"{PrefabDir}/{prefabName}.prefab");
         Object.DestroyImmediate(root);
     }
 
-    private static void ConfigureImport(string texPath)
+    /// <summary>
+    /// Import settings by size: the original 128 px crops stay uncompressed and
+    /// without mipmaps; larger ones are compressed and mipmapped (seen from
+    /// across a room, they would shimmer).
+    /// </summary>
+    private static void ConfigureImport(string texPath, int maxSize)
     {
         var importer = AssetImporter.GetAtPath(texPath) as TextureImporter;
         if (importer == null)
             return;
 
+        var large = maxSize > PixelsPerUnit;
         importer.textureType = TextureImporterType.Default;
         importer.filterMode = FilterMode.Bilinear;
-        importer.mipmapEnabled = false;
-        importer.maxTextureSize = 128;
-        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.mipmapEnabled = large;
+        importer.maxTextureSize = maxSize;
+        importer.textureCompression = large ? TextureImporterCompression.CompressedHQ : TextureImporterCompression.Uncompressed;
         importer.wrapMode = TextureWrapMode.Clamp;
         importer.SaveAndReimport();
     }
 
-    private static GameObject BuildFrame(string rootName, Material matFrame, Material matPicture)
+    private static GameObject BuildFrame(string rootName, Vector2 frame, Material matFrame, Material matPicture)
     {
         var root = new GameObject(rootName);
 
@@ -104,7 +151,7 @@ public static class GeneratePaintingProps
         Object.DestroyImmediate(backing.GetComponent<Collider>());
         backing.name = "Frame";
         backing.transform.SetParent(root.transform, false);
-        backing.transform.localScale = new Vector3(FrameSize, FrameSize, 0.03f);
+        backing.transform.localScale = new Vector3(frame.x, frame.y, FrameDepth);
         backing.GetComponent<MeshRenderer>().sharedMaterial = matFrame;
 
         var picture = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -122,13 +169,13 @@ public static class GeneratePaintingProps
         // correctly textured (confirmed via reflection) but rendering as a
         // flat, featureless dark rectangle — the frame occluding a
         // backwards, backward-facing canvas.
-        picture.transform.localPosition = new Vector3(0, 0, 0.016f);
+        picture.transform.localPosition = new Vector3(0, 0, PictureOffset);
         picture.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        picture.transform.localScale = new Vector3(PaintingSize, PaintingSize, 1f);
+        picture.transform.localScale = new Vector3(frame.x - FrameBorder * 2f, frame.y - FrameBorder * 2f, 1f);
         picture.GetComponent<MeshRenderer>().sharedMaterial = matPicture;
 
         var collider = root.AddComponent<BoxCollider>();
-        collider.size = new Vector3(FrameSize, FrameSize, 0.05f);
+        collider.size = new Vector3(frame.x, frame.y, 0.05f);
 
         return root;
     }
