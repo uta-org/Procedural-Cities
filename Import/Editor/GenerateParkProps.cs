@@ -9,7 +9,8 @@ using UnityEngine.Rendering;
 /// 0.4 m high"; "a playground: benches, a swing, a slide, bins and five more models"):
 /// three weeds, three bushes, three flowers, the fence, a park litter bin, a swing, a slide,
 /// a seesaw, a spring rider, a sandbox, a climbing frame and a merry-go-round; and the
-/// fountain at the centre of a cross park's plaza ("a circle with a fountain in the middle").
+/// fountain at the centre of a cross park's plaza ("a circle with a fountain in the middle"),
+/// and the stone edge of a pond ("water with a stone edge").
 /// Each prop is one mesh with a submesh per material, built from its own flat-shaded boxes,
 /// prisms and low spheres (Unity's sphere primitive has 515 vertices, too many for props
 /// placed by the thousand), saved under Models/LowPoly/Park, with its prefab in
@@ -369,6 +370,14 @@ public static class GenerateParkProps
             }
 
             Save("ParkFountain", b, new Vector3(4.4f, 0.56f, 4.4f));
+        }
+
+        // ── Pond edge: a 2 m stone curb, laid end to end round the water ──
+        {
+            var b = new MeshBuilder();
+            b.Box(stone, new Vector3(0f, 0.1f, 0f), new Vector3(2f, 0.2f, 0.34f), Quaternion.identity);
+            b.Box(stoneLight, new Vector3(0f, 0.22f, 0f), new Vector3(2f, 0.04f, 0.4f), Quaternion.identity);
+            Save("ParkPondEdge", b, new Vector3(2f, 0.24f, 0.4f));
         }
 
         AssetDatabase.SaveAssets();
