@@ -10,8 +10,8 @@ using UnityEngine;
 /// <list type="bullet">
 /// <item><c>StoreCounterGate</c>: 1.08 m opening (the StoreCounter module), 1.00 m tall,
 /// the counter's woods.</item>
-/// <item><c>RestaurantBarGate</c>: 1.03 m opening (between the 1.07 m wide bar modules laid
-/// every 1.05 m), 1.10 m tall up to the bar's edge, the bar's dark wood and edge.</item>
+/// <item><c>RestaurantBarGate</c>: 1.05 m opening (between the bar modules laid every 1.05 m,
+/// each rendered as wide), 1.10 m tall up to the bar's edge, the bar's dark wood and edge.</item>
 /// </list>
 /// Each prefab: root (pivot on the floor, centre of the opening; +Z is the
 /// customers' side like the counter modules, -Z the staff side) with
@@ -74,7 +74,7 @@ public static class GenerateCounterGateProps
     {
         new("StoreCounterGate", 1.08f, 1.00f,
             $"{MatDir}/LP_Wood_Bench.mat", $"{MatDir}/LP_Wood_Wardrobe.mat", $"{MatDir}/LP_Wood_Dark.mat"),
-        new("RestaurantBarGate", 1.03f, 1.10f,
+        new("RestaurantBarGate", 1.05f, 1.10f,
             $"{MatDir}/LP_Wood_Dark.mat", $"{MatDir}/LP_Wood_Dark.mat", $"{ProjectMatDir}/BarCounterEdge.mat"),
     };
 
