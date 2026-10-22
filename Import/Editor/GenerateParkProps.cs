@@ -8,7 +8,8 @@ using UnityEngine.Rendering;
 /// and flowers of three kinds each, low-poly models first"; "a wrought-iron fence about
 /// 0.4 m high"; "a playground: benches, a swing, a slide, bins and five more models"):
 /// three weeds, three bushes, three flowers, the fence, a park litter bin, a swing, a slide,
-/// a seesaw, a spring rider, a sandbox, a climbing frame and a merry-go-round.
+/// a seesaw, a spring rider, a sandbox, a climbing frame and a merry-go-round; and the
+/// fountain at the centre of a cross park's plaza ("a circle with a fountain in the middle").
 /// Each prop is one mesh with a submesh per material, built from its own flat-shaded boxes,
 /// prisms and low spheres (Unity's sphere primitive has 515 vertices, too many for props
 /// placed by the thousand), saved under Models/LowPoly/Park, with its prefab in
@@ -25,7 +26,13 @@ public static class GenerateParkProps
     private const string MeshDir = PkgRoot + "/Models/LowPoly/Park";
 
     [MenuItem("Tools/Procedural Cities/Generate Park Props")]
-    public static void Generate()
+    public static void Generate() => Generate(null);
+
+    /// <summary>
+    /// Builds the park props, saving only those named in <paramref name="only"/> when it is
+    /// given: saving a prefab again rewrites it, so adding a prop leaves the others alone.
+    /// </summary>
+    public static void Generate(ICollection<string> only)
     {
         EnsureFolder(PkgRoot + "/Models/LowPoly", "Materials");
         EnsureFolder(PkgRoot + "/Models/LowPoly", "Park");
@@ -52,10 +59,16 @@ public static class GenerateParkProps
         var timber = GetMat("LP_Park_Timber", new Color(0.55f, 0.36f, 0.20f), 0f, 0.2f);
         var sand = GetMat("LP_Park_Sand", new Color(0.90f, 0.80f, 0.56f), 0f, 0.05f);
         var darkMetal = GetMat("LP_Park_DarkMetal", new Color(0.22f, 0.23f, 0.25f), 0.7f, 0.45f);
+        var stone = GetMat("LP_Park_Stone", new Color(0.70f, 0.68f, 0.63f), 0f, 0.25f);
+        var stoneLight = GetMat("LP_Park_StoneLight", new Color(0.84f, 0.82f, 0.76f), 0f, 0.3f);
+        var water = GetMat("LP_Park_Water", new Color(0.22f, 0.52f, 0.76f), 0f, 0.9f);
+        var waterFoam = GetMat("LP_Park_WaterFoam", new Color(0.72f, 0.87f, 0.96f), 0f, 0.8f);
 
         var built = new List<string>();
         void Save(string name, MeshBuilder b, Vector3? colliderSize = null, bool shadows = true)
         {
+            if (only != null && !only.Contains(name))
+                return;
             SaveProp(name, b, colliderSize, shadows);
             built.Add(name);
         }
@@ -317,6 +330,45 @@ public static class GenerateParkProps
                 b.Strut(playYellow, yaw * new Vector3(0f, 0.75f, 0.6f), new Vector3(0f, 0.85f, 0f), 0.025f, 5);
             }
             Save("ParkMerryGoRound", b, new Vector3(2f, 0.9f, 2f));
+        }
+
+        // ── Fountain: an octagonal stone basin, a pedestal with two bowls, a jet ──
+        {
+            var b = new MeshBuilder();
+            const float wallRadius = 2.05f, wallHeight = 0.5f, wallThickness = 0.3f;
+            var wallLength = 2f * (wallRadius + wallThickness * 0.5f) * Mathf.Tan(Mathf.PI / 8f);
+            for (var i = 0; i < 8; i++)
+            {
+                var angle = i * 45f;
+                var dir = Quaternion.Euler(0f, -angle, 0f) * Vector3.right;
+                var along = Quaternion.Euler(0f, -90f - angle, 0f);
+                b.Box(stone, dir * wallRadius + Vector3.up * (wallHeight * 0.5f), new Vector3(wallLength, wallHeight, wallThickness), along);
+                b.Box(stoneLight, dir * wallRadius + Vector3.up * (wallHeight + 0.03f), new Vector3(wallLength + 0.06f, 0.06f, wallThickness + 0.08f), along);
+            }
+
+            // The prism's corners sit at 0, 45... degrees: turned 22.5 its sides face the walls.
+            var flats = Quaternion.Euler(0f, 22.5f, 0f);
+            b.Prism(water, new Vector3(0f, 0.38f, 0f), wallRadius / Mathf.Cos(Mathf.PI / 8f) - 0.1f, 0.04f, 8, flats, caps: true);
+            b.Prism(stone, new Vector3(0f, 0.5f, 0f), 0.55f, 0.24f, 8, flats, caps: true);
+            b.Prism(stone, new Vector3(0f, 0.9f, 0f), 0.3f, 0.6f, 8, flats, caps: true);
+            b.Prism(stone, new Vector3(0f, 1.25f, 0f), 0.3f, 0.12f, 10, Quaternion.identity, caps: true, topScale: 2.9f);
+            b.Prism(stoneLight, new Vector3(0f, 1.36f, 0f), 0.9f, 0.1f, 10, Quaternion.identity, caps: true);
+            b.Prism(water, new Vector3(0f, 1.42f, 0f), 0.8f, 0.03f, 10, Quaternion.identity, caps: true);
+            b.Prism(stone, new Vector3(0f, 1.72f, 0f), 0.14f, 0.6f, 8, Quaternion.identity, caps: true);
+            b.Prism(stone, new Vector3(0f, 2.04f, 0f), 0.14f, 0.08f, 8, Quaternion.identity, caps: true, topScale: 3.2f);
+            b.Prism(stoneLight, new Vector3(0f, 2.12f, 0f), 0.46f, 0.08f, 8, Quaternion.identity, caps: true);
+            b.Prism(water, new Vector3(0f, 2.165f, 0f), 0.38f, 0.02f, 8, Quaternion.identity, caps: true);
+            b.Sphere(stoneLight, new Vector3(0f, 2.28f, 0f), new Vector3(0.11f, 0.13f, 0.11f), 4, 6);
+            b.Prism(waterFoam, new Vector3(0f, 2.62f, 0f), 0.05f, 0.56f, 6, Quaternion.identity, caps: true, topScale: 0.35f);
+            // Water falling from each bowl's rim into the one below.
+            for (var i = 0; i < 6; i++)
+            {
+                var yaw = Quaternion.Euler(0f, i * 60f + 30f, 0f);
+                b.Strut(waterFoam, yaw * new Vector3(0f, 2.14f, 0.47f), yaw * new Vector3(0f, 1.44f, 0.62f), 0.03f, 4);
+                b.Strut(waterFoam, yaw * new Vector3(0f, 1.38f, 0.92f), yaw * new Vector3(0f, 0.4f, 1.25f), 0.035f, 4);
+            }
+
+            Save("ParkFountain", b, new Vector3(4.4f, 0.56f, 4.4f));
         }
 
         AssetDatabase.SaveAssets();
