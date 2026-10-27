@@ -1,0 +1,25 @@
+Litter atlas: sources and licences
+==================================
+
+LitterAtlas.png is built by Import/Editor/build_litter_atlas.py from the sources that
+Import/Editor/download_litter_textures.py downloads (into Sources~, not versioned), plus painted
+cells (labels, bands, stripes) drawn by the script itself.
+
+Source                                              Used for                          Licence
+ambientCG Cardboard004                              cardboard box, clean              CC0 1.0
+ambientCG Cardboard001                              cardboard box, worn               CC0 1.0
+ambientCG Paper003                                  paper ball, cups                  CC0 1.0
+ambientCG Foil003                                   can rims and ends                 CC0 1.0
+ambientCG Plastic013A                               plastic bags                      CC0 1.0
+ambientCG Plastic012A                               black bin bag                     CC0 1.0
+ambientCG Rubber004                                 tyre                              CC0 1.0
+ambientCG Fabric036                                 mattress cover                    CC0 1.0
+ambientCG Wood051 (Textures/LowPoly/Wood)           broken chair                      CC0 1.0
+Il Secolo, 17 April 1912, front page                newspaper, newsprint paper ball   Public domain
+The Times Dispatch, 16 April 1912, front page       newspaper                         Public domain
+
+ambientCG pages:  https://ambientcg.com/view?id=<id>  (licence: https://docs.ambientcg.com/license/)
+Il Secolo:        https://commons.wikimedia.org/wiki/File:Il_secolo_-_17_aprile_1912.jpg
+Times Dispatch:   https://commons.wikimedia.org/wiki/File:TheTimesDispatch-Titanic-1912-4-16.jpg
+
+No attribution is required for any of them; they are credited here anyway.

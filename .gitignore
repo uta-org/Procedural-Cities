@@ -5,3 +5,6 @@ City.VC.VC.db
 City.VC.VC.opendb
 Binaries
 .vs
+
+# Litter texture sources (download_litter_textures.py rebuilds them)
+Import/Textures/Litter/Sources~/
