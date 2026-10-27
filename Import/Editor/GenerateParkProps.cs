@@ -21,8 +21,8 @@ using UnityEngine.Rendering;
 /// </summary>
 public static class GenerateParkProps
 {
-    private const string PkgRoot = "Packages/dev.z3nth10n.proceduralcities.import";
-    private const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
+    internal const string PkgRoot = "Packages/dev.z3nth10n.proceduralcities.import";
+    internal const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
     private const string MatDir = PkgRoot + "/Models/LowPoly/Materials";
     private const string MeshDir = PkgRoot + "/Models/LowPoly/Park";
 
@@ -385,11 +385,14 @@ public static class GenerateParkProps
         Debug.Log($"[GenerateParkProps] Saved {built.Count} park prefabs under {PrefabDir}: {string.Join(", ", built)}");
     }
 
-    /// <summary>Saves the prop's mesh and its prefab (one renderer, a material per submesh).</summary>
-    private static void SaveProp(string name, MeshBuilder builder, Vector3? colliderSize, bool shadows)
+    /// <summary>
+    /// Saves the prop's mesh (under <paramref name="meshDir"/>, the park props' folder by default)
+    /// and its prefab (one renderer, a material per submesh).
+    /// </summary>
+    internal static void SaveProp(string name, MeshBuilder builder, Vector3? colliderSize, bool shadows, string meshDir = MeshDir)
     {
         var mesh = builder.Build(name, out var materials);
-        var meshPath = $"{MeshDir}/{name}.asset";
+        var meshPath = $"{meshDir}/{name}.asset";
         var existing = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
         if (existing != null)
         {
@@ -417,13 +420,13 @@ public static class GenerateParkProps
         Object.DestroyImmediate(root);
     }
 
-    private static void EnsureFolder(string parent, string name)
+    internal static void EnsureFolder(string parent, string name)
     {
         if (!AssetDatabase.IsValidFolder($"{parent}/{name}"))
             AssetDatabase.CreateFolder(parent, name);
     }
 
-    private static Material GetMat(string name, Color color, float metallic, float smoothness)
+    internal static Material GetMat(string name, Color color, float metallic, float smoothness)
     {
         var path = $"{MatDir}/{name}.mat";
         var existing = AssetDatabase.LoadAssetAtPath<Material>(path);
@@ -444,7 +447,7 @@ public static class GenerateParkProps
     /// Flat-shaded mesh builder: every triangle has its own three vertices and face
     /// normal (the low-poly look), grouped into one submesh per material.
     /// </summary>
-    private sealed class MeshBuilder
+    internal sealed class MeshBuilder
     {
         private readonly List<Vector3> _vertices = new();
         private readonly List<Vector3> _normals = new();
