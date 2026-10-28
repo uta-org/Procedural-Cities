@@ -13,6 +13,13 @@ using UnityEngine;
 ///  - KitchenOven: cooker, an oven under a four-burner hob.
 ///  - KitchenDishwasher: dishwasher under the worktop.
 ///  - KitchenHood: extractor hood, 1.00 m wide, hung over the cooker.
+/// The restaurant kitchen family (P27.7, its own menu item) keeps the same
+/// footprint in stainless steel: RestaurantRange (range with a backguard),
+/// RestaurantPrep (prep counter on legs with an undershelf), RestaurantSink
+/// (two basins), RestaurantDishwasher, RestaurantFridge (0.70 x 2.00 m
+/// reach-in), RestaurantShelf (wall shelf with pots, in place of the upper
+/// cabinet), RestaurantHood; and KitchenVent, a wall vent grille for every
+/// kitchen.
 /// Output per module: Models/LowPoly/&lt;Name&gt;_Combined.asset (one submesh per
 /// material) and Resources/Prefabs/AssetContents/&lt;Name&gt;.prefab (root
 /// "&lt;Name&gt;", one child with MeshFilter/MeshRenderer/convex MeshCollider).
@@ -180,6 +187,262 @@ public static class GenerateKitchenModuleProps
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+    }
+
+    [MenuItem("Tools/Procedural Cities/Generate Restaurant Kitchen Props")]
+    public static void GenerateRestaurant()
+    {
+        var p = new Palette
+        {
+            Cabinet = Load("LP_Cabinet_White"),
+            Granite = Load("LP_Granite"),
+            Chrome = Load("LP_Chrome"),
+            SinkMetal = Load("LP_Metal_Sink"),
+            Steel = Load("LP_Appliance_Silver"),
+            Black = Load("LP_Plastic_Black"),
+            Glass = Load("LP_Oven_Glass"),
+            Burner = Load("KM_Burner"),
+            Knob = Load("LP_Oven_Knob"),
+            Dark = Load("LP_Metal_DarkGray"),
+        };
+        if (!p.Complete)
+        {
+            Debug.LogError("[GenerateKitchenModuleProps] Missing LP_* / KM_* materials.");
+            return;
+        }
+
+        Save("RestaurantRange", "restaurant_range", BuildRestaurantRange(p));
+        Save("RestaurantPrep", "restaurant_prep", BuildRestaurantPrep(p));
+        Save("RestaurantSink", "restaurant_sink", BuildRestaurantSink(p));
+        Save("RestaurantDishwasher", "restaurant_dishwasher", BuildRestaurantDishwasher(p));
+        Save("RestaurantFridge", "restaurant_fridge", BuildRestaurantFridge(p));
+        Save("RestaurantShelf", "restaurant_shelf", BuildRestaurantShelf(p));
+        Save("RestaurantHood", "restaurant_hood", BuildRestaurantHood(p));
+        Save("KitchenVent", "kitchen_vent", BuildKitchenVent(p));
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
+    /// <summary>
+    /// Range: a stainless oven base, four heavy burners on cast grates and a
+    /// backguard along the back, 0.25 m over the worktop (it never stands under a
+    /// window: a cooker is a tall piece).
+    /// </summary>
+    private static MeshBuilder BuildRestaurantRange(Palette p)
+    {
+        var mb = new MeshBuilder();
+        Carcass(mb, p, p.Steel, BodyTop);
+        Worktop(mb, p.Steel);
+        foreach (var sx in new[] { -1f, 1f })
+        {
+            foreach (var z in new[] { -0.12f, 0.15f })
+            {
+                mb.Box(p.Dark, new Vector3(sx * 0.24f - 0.13f, CounterTopY, z - 0.12f), new Vector3(sx * 0.24f + 0.13f, CounterTopY + 0.012f, z + 0.12f));
+                mb.Disc(p.Burner, sx * 0.24f, z, CounterTopY + 0.012f, CounterTopY + 0.03f, 0.09f);
+            }
+        }
+
+        mb.Box(p.Steel, new Vector3(-Hw, CounterTopY, Back), new Vector3(Hw, CounterTopY + 0.25f, Back + 0.06f));
+
+        // Six knobs on a steel strip, then the oven door and its bar handle.
+        const float stripBottom = 0.72f;
+        mb.Box(p.Dark, new Vector3(-Hw + 0.02f, stripBottom, BodyFront), new Vector3(Hw - 0.02f, BodyTop - 0.01f, BodyFront + PanelRelief));
+        for (var i = 0; i < 6; i++)
+        {
+            var x = -0.375f + i * 0.15f;
+            mb.Box(p.Knob, new Vector3(x - 0.025f, 0.755f, BodyFront + PanelRelief), new Vector3(x + 0.025f, 0.805f, BodyFront + PanelRelief + 0.025f));
+        }
+
+        mb.Box(p.Steel, new Vector3(-Hw + 0.04f, 0.16f, BodyFront), new Vector3(Hw - 0.04f, 0.69f, BodyFront + PanelRelief));
+        mb.Box(p.Chrome, new Vector3(-0.40f, 0.61f, BodyFront + PanelRelief + 0.02f), new Vector3(0.40f, 0.64f, BodyFront + PanelRelief + 0.04f));
+        foreach (var sx in new[] { -1f, 1f })
+            mb.Box(p.Chrome, new Vector3(sx * 0.38f - 0.012f, 0.61f, BodyFront + PanelRelief), new Vector3(sx * 0.38f + 0.012f, 0.64f, BodyFront + PanelRelief + 0.02f));
+        return mb;
+    }
+
+    /// <summary>Prep counter: a stainless top on four legs with an undershelf; nothing over the worktop.</summary>
+    private static MeshBuilder BuildRestaurantPrep(Palette p)
+    {
+        const float leg = 0.04f;
+        var mb = new MeshBuilder();
+        Worktop(mb, p.SinkMetal);
+        mb.Box(p.Steel, new Vector3(-Hw, BodyTop - 0.06f, Back), new Vector3(Hw, BodyTop, Back + 0.03f));
+        foreach (var sx in new[] { -1f, 1f })
+        {
+            foreach (var z in new[] { Back + 0.02f, BodyFront - 0.06f })
+                mb.Box(p.Steel, new Vector3(sx * (Hw - 0.03f) - leg * 0.5f, 0f, z), new Vector3(sx * (Hw - 0.03f) + leg * 0.5f, BodyTop, z + leg));
+        }
+
+        mb.Box(p.SinkMetal, new Vector3(-Hw + 0.03f, 0.18f, Back + 0.02f), new Vector3(Hw - 0.03f, 0.20f, BodyFront - 0.02f));
+        // A stack of trays and two containers on the undershelf.
+        mb.Box(p.Dark, new Vector3(-0.38f, 0.20f, -0.20f), new Vector3(-0.02f, 0.30f, 0.18f));
+        mb.Disc(p.Steel, 0.18f, 0.0f, 0.20f, 0.38f, 0.10f);
+        mb.Disc(p.Steel, 0.36f, 0.05f, 0.20f, 0.32f, 0.08f);
+        return mb;
+    }
+
+    /// <summary>Sink: a stainless cabinet with two basins and the faucet on the back rim (as the home sink: 0.24 m high, clear of a window).</summary>
+    private static MeshBuilder BuildRestaurantSink(Palette p)
+    {
+        const float basinDepth = 0.22f;
+        const float basinFloor = 0.02f;
+        const float basinHalfLength = 0.19f;
+        const float basinCentreZ = 0.07f;
+        const float linerWall = 0.012f;
+        const float faucetBackClearance = 0.13f;
+
+        var basinBottom = CounterTopY - basinDepth;
+        var floorBottom = basinBottom - basinFloor;
+        var z0 = basinCentreZ - basinHalfLength;
+        var z1 = basinCentreZ + basinHalfLength;
+
+        var mb = new MeshBuilder();
+        Carcass(mb, p, p.Steel, floorBottom);
+        // Rim: sides, middle divider, back and front, up to the worktop.
+        foreach (var y in new[] { (floorBottom, BodyTop, p.Steel, BodyFront), (BodyTop, CounterTopY, p.SinkMetal, Front) })
+        {
+            mb.Box(y.Item3, new Vector3(-Hw, y.Item1, Back), new Vector3(-0.44f, y.Item2, y.Item4));
+            mb.Box(y.Item3, new Vector3(0.44f, y.Item1, Back), new Vector3(Hw, y.Item2, y.Item4));
+            mb.Box(y.Item3, new Vector3(-0.02f, y.Item1, z0), new Vector3(0.02f, y.Item2, z1));
+            mb.Box(y.Item3, new Vector3(-0.44f, y.Item1, Back), new Vector3(0.44f, y.Item2, z0));
+            mb.Box(y.Item3, new Vector3(-0.44f, y.Item1, z1), new Vector3(0.44f, y.Item2, y.Item4));
+        }
+
+        foreach (var sx in new[] { -1f, 1f })
+        {
+            var inner = sx * 0.02f;
+            var outer = sx * 0.44f;
+            var xa = Mathf.Min(inner, outer);
+            var xb = Mathf.Max(inner, outer);
+            mb.Box(p.SinkMetal, new Vector3(xa, floorBottom, z0), new Vector3(xb, basinBottom, z1));
+            mb.Box(p.SinkMetal, new Vector3(xa, basinBottom, z0), new Vector3(xa + linerWall, CounterTopY, z1));
+            mb.Box(p.SinkMetal, new Vector3(xb - linerWall, basinBottom, z0), new Vector3(xb, CounterTopY, z1));
+            mb.Box(p.SinkMetal, new Vector3(xa, basinBottom, z0), new Vector3(xb, CounterTopY, z0 + linerWall));
+            mb.Box(p.SinkMetal, new Vector3(xa, basinBottom, z1 - linerWall), new Vector3(xb, CounterTopY, z1));
+        }
+
+        // Doors under the basins, then the faucet: base, neck and a spout reaching both basins.
+        mb.Box(p.Steel, new Vector3(-Hw + 0.02f, ToeKickHeight + 0.03f, BodyFront), new Vector3(Hw - 0.02f, floorBottom - 0.03f, BodyFront + PanelRelief));
+        mb.Box(p.Chrome, new Vector3(-0.38f, (ToeKickHeight + floorBottom) * 0.5f - 0.015f, BodyFront + PanelRelief + 0.02f), new Vector3(0.38f, (ToeKickHeight + floorBottom) * 0.5f + 0.015f, BodyFront + PanelRelief + 0.04f));
+        var faucetBack = Back + faucetBackClearance;
+        var rimZ = faucetBack + 0.03f;
+        mb.Box(p.Chrome, new Vector3(-0.05f, CounterTopY, faucetBack), new Vector3(0.05f, CounterTopY + 0.03f, rimZ + 0.03f));
+        mb.Disc(p.Chrome, 0f, rimZ, CounterTopY + 0.03f, CounterTopY + 0.24f, 0.015f, 8);
+        mb.Box(p.Chrome, new Vector3(-0.012f, CounterTopY + 0.21f, rimZ - 0.012f), new Vector3(0.012f, CounterTopY + 0.24f, rimZ + 0.22f));
+        return mb;
+    }
+
+    /// <summary>Commercial dishwasher under a stainless worktop: steel door, handle and a display.</summary>
+    private static MeshBuilder BuildRestaurantDishwasher(Palette p)
+    {
+        var mb = new MeshBuilder();
+        Carcass(mb, p, p.Steel, BodyTop);
+        Worktop(mb, p.SinkMetal);
+        const float stripBottom = 0.75f;
+        mb.Box(p.Dark, new Vector3(-Hw + 0.02f, stripBottom, BodyFront), new Vector3(Hw - 0.02f, BodyTop - 0.01f, BodyFront + PanelRelief));
+        mb.Box(p.Black, new Vector3(0.12f, 0.775f, BodyFront + PanelRelief), new Vector3(0.30f, 0.815f, BodyFront + PanelRelief + 0.004f));
+        for (var i = 0; i < 2; i++)
+        {
+            var x = 0.36f + i * 0.06f;
+            mb.Box(p.Chrome, new Vector3(x - 0.018f, 0.785f, BodyFront + PanelRelief), new Vector3(x + 0.018f, 0.805f, BodyFront + PanelRelief + 0.006f));
+        }
+
+        mb.Box(p.Steel, new Vector3(-Hw + 0.02f, ToeKickHeight + 0.02f, BodyFront), new Vector3(Hw - 0.02f, stripBottom - 0.01f, BodyFront + PanelRelief));
+        mb.Box(p.Chrome, new Vector3(-0.40f, 0.66f, BodyFront + PanelRelief + 0.02f), new Vector3(0.40f, 0.69f, BodyFront + PanelRelief + 0.04f));
+        foreach (var sx in new[] { -1f, 1f })
+            mb.Box(p.Chrome, new Vector3(sx * 0.38f - 0.012f, 0.66f, BodyFront + PanelRelief), new Vector3(sx * 0.38f + 0.012f, 0.69f, BodyFront + PanelRelief + 0.02f));
+        return mb;
+    }
+
+    /// <summary>Reach-in fridge, 0.70 m wide and 2.00 m tall: stainless, two stacked doors, a grille on top.</summary>
+    private static MeshBuilder BuildRestaurantFridge(Palette p)
+    {
+        const float hw = 0.35f;
+        const float height = 2.00f;
+        const float grille = 0.16f;
+        var mb = new MeshBuilder();
+        mb.Box(p.Dark, new Vector3(-hw, 0f, Back), new Vector3(hw, 0.08f, Front - 0.05f));
+        mb.Box(p.Steel, new Vector3(-hw, 0.08f, Back), new Vector3(hw, height, Front - 0.03f));
+        mb.Box(p.Dark, new Vector3(-hw + 0.03f, height - grille, Front - 0.03f), new Vector3(hw - 0.03f, height - 0.03f, Front - 0.03f + PanelRelief));
+        var split = 0.08f + (height - grille - 0.08f) * 0.5f;
+        foreach (var (y0, y1) in new[] { (0.11f, split - 0.01f), (split + 0.01f, height - grille - 0.02f) })
+        {
+            mb.Box(p.Steel, new Vector3(-hw + 0.02f, y0, Front - 0.03f), new Vector3(hw - 0.02f, y1, Front - 0.03f + PanelRelief));
+            mb.Box(p.Chrome, new Vector3(hw - 0.08f, y0 + 0.10f, Front - 0.03f + PanelRelief), new Vector3(hw - 0.06f, y1 - 0.10f, Front - 0.03f + PanelRelief + 0.025f));
+        }
+
+        return mb;
+    }
+
+    /// <summary>
+    /// Wall shelf in place of an upper cabinet (1.00 m wide, 0.716 m tall, 0.36 m
+    /// deep, pivot at its bottom centre): two stainless shelves on brackets, with pots
+    /// and pans on them.
+    /// </summary>
+    private static MeshBuilder BuildRestaurantShelf(Palette p)
+    {
+        const float halfDepth = 0.18f;
+        const float height = 0.716f;
+        var mb = new MeshBuilder();
+        foreach (var y in new[] { 0.0f, 0.42f })
+            mb.Box(p.SinkMetal, new Vector3(-Hw, y, -halfDepth), new Vector3(Hw, y + 0.03f, halfDepth));
+        foreach (var sx in new[] { -0.45f, 0.45f })
+            mb.Box(p.Dark, new Vector3(sx - 0.015f, -0.0f, -halfDepth), new Vector3(sx + 0.015f, height, -halfDepth + 0.03f));
+        // Lower shelf: two pots; upper shelf: a stack of pans and a jar.
+        mb.Disc(p.Steel, -0.22f, 0.0f, 0.03f, 0.25f, 0.13f);
+        mb.Disc(p.Steel, 0.20f, 0.0f, 0.03f, 0.19f, 0.11f);
+        mb.Disc(p.Dark, -0.25f, 0.0f, 0.45f, 0.53f, 0.14f);
+        mb.Disc(p.Dark, -0.25f, 0.0f, 0.53f, 0.60f, 0.12f);
+        mb.Disc(p.Steel, 0.22f, 0.0f, 0.45f, 0.66f, 0.08f);
+        return mb;
+    }
+
+    /// <summary>
+    /// Restaurant hood: a stainless canopy as wide as a module with its grease
+    /// filters and a chimney against the wall; pivot at the canopy underside, back
+    /// at Z = -0.195 (the home hood's frame).
+    /// </summary>
+    private static MeshBuilder BuildRestaurantHood(Palette p)
+    {
+        const float halfDepth = 0.195f;
+        const float canopyHeight = 0.16f;
+        const float height = 0.54f;
+        var mb = new MeshBuilder();
+        mb.Box(p.Steel, new Vector3(-Hw, 0f, -halfDepth), new Vector3(Hw, canopyHeight, halfDepth));
+        for (var i = 0; i < 3; i++)
+        {
+            var x = -0.32f + i * 0.32f;
+            mb.Box(p.Dark, new Vector3(x - 0.14f, -0.006f, -halfDepth + 0.04f), new Vector3(x + 0.14f, 0f, halfDepth - 0.04f));
+        }
+
+        mb.Box(p.Steel, new Vector3(-0.22f, canopyHeight, -halfDepth), new Vector3(0.22f, height, 0.04f));
+        return mb;
+    }
+
+    /// <summary>
+    /// Kitchen vent: a wall grille 0.40 x 0.25 m with five slats, 0.04 m proud of the
+    /// wall; pivot at its bottom centre on the wall face (back at Z = 0).
+    /// </summary>
+    private static MeshBuilder BuildKitchenVent(Palette p)
+    {
+        const float hw = 0.20f;
+        const float height = 0.25f;
+        const float depth = 0.04f;
+        const float frame = 0.025f;
+        var mb = new MeshBuilder();
+        mb.Box(p.Dark, new Vector3(-hw + frame, frame, 0f), new Vector3(hw - frame, height - frame, depth * 0.4f));
+        mb.Box(p.Steel, new Vector3(-hw, 0f, 0f), new Vector3(hw, frame, depth));
+        mb.Box(p.Steel, new Vector3(-hw, height - frame, 0f), new Vector3(hw, height, depth));
+        mb.Box(p.Steel, new Vector3(-hw, frame, 0f), new Vector3(-hw + frame, height - frame, depth));
+        mb.Box(p.Steel, new Vector3(hw - frame, frame, 0f), new Vector3(hw, height - frame, depth));
+        for (var i = 0; i < 5; i++)
+        {
+            var y = frame + 0.01f + i * 0.038f;
+            mb.Box(p.Steel, new Vector3(-hw + frame, y, depth * 0.3f), new Vector3(hw - frame, y + 0.012f, depth * 0.9f));
+        }
+
+        return mb;
     }
 
     /// <summary>Toe kick and body up to <paramref name="bodyTop"/>, full width.</summary>
