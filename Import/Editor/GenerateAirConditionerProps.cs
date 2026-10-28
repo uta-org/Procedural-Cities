@@ -8,7 +8,9 @@ using UnityEngine;
 /// air outlet and louvre along the bottom of its front; and AirConditionerOutdoor, the
 /// outdoor unit 0.80 x 0.55 x 0.28 m, pivot on its bottom face at the centre, front +Z,
 /// light-grey casing, a dark fan grille with a cross guard on the front and two wall
-/// brackets under it. Output: Models/LowPoly/&lt;name&gt;_Combined.asset and
+/// brackets under it; and CeilingVent (P37.4), an office ceiling diffuser 0.60 m square,
+/// its top face at the pivot (it hangs from the slab like the ceiling panels), a white frame
+/// round three nested darker rings. Output: Models/LowPoly/&lt;name&gt;_Combined.asset and
 /// Resources/Prefabs/AssetContents/&lt;name&gt;.prefab (GUIDs kept on rebuild).
 /// Menu: Tools / Procedural Cities / Generate Air Conditioner Props
 /// </summary>
@@ -28,6 +30,7 @@ public static class GenerateAirConditionerProps
 
         BuildIndoor(white, dark);
         BuildOutdoor(casing, dark);
+        BuildCeilingVent(white, LowPolyBoxMesh.GetMat("LP_Vent_Grille", new Color(0.62f, 0.64f, 0.66f), 0.2f, 0.3f));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -45,6 +48,25 @@ public static class GenerateAirConditionerProps
         };
         var mesh = LowPolyBoxMesh.SaveMesh(LowPolyBoxMesh.Combine("AirConditionerIndoor_Combined", parts, out var materials));
         LowPolyBoxMesh.SavePrefab("AirConditionerIndoor", "indoor", mesh, materials, mesh.bounds.center, mesh.bounds.size);
+    }
+
+    private static void BuildCeilingVent(Material frame, Material grille)
+    {
+        const float side = 0.60f;
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            // Frame flush with the ceiling, then rings stepping down and in.
+            LowPolyBoxMesh.Part.FromMinMax(frame, new Vector3(-side * 0.5f, -0.012f, -side * 0.5f), new Vector3(side * 0.5f, 0f, side * 0.5f)),
+        };
+        for (var i = 1; i <= 3; i++)
+        {
+            var half = side * 0.5f - i * 0.065f;
+            parts.Add(LowPolyBoxMesh.Part.FromMinMax(i % 2 == 1 ? grille : frame,
+                new Vector3(-half, -0.012f - i * 0.008f, -half), new Vector3(half, -0.012f - (i - 1) * 0.008f, half)));
+        }
+
+        var mesh = LowPolyBoxMesh.SaveMesh(LowPolyBoxMesh.Combine("CeilingVent_Combined", parts, out var materials));
+        LowPolyBoxMesh.SavePrefab("CeilingVent", "vent", mesh, materials, mesh.bounds.center, mesh.bounds.size);
     }
 
     private static void BuildOutdoor(Material casing, Material dark)
