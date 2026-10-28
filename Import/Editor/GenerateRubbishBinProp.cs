@@ -141,7 +141,7 @@ public static class GenerateRubbishBinProp
             return existing;
 
         var shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-        var mat = new Material(shader) { name = name, color = color };
+        var mat = new Material(shader) { name = name, color = color, enableInstancing = true }; // drawn instanced at range
         if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", metallic);
         if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", smoothness);
         else if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", smoothness);

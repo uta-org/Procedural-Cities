@@ -127,7 +127,8 @@ public static class LowPolyBoxMesh
         var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (mat != null)
             return mat;
-        mat = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = name };
+        // Instanced: a piece placed outdoors is drawn with RenderMeshInstanced at range (P37 outdoor units).
+        mat = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = name, enableInstancing = true };
         mat.SetColor("_BaseColor", color);
         mat.SetFloat("_Metallic", metallic);
         mat.SetFloat("_Smoothness", smoothness);
