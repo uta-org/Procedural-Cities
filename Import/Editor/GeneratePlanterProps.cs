@@ -34,9 +34,19 @@ public static class GeneratePlanterProps
         SaveBoth("PlanterTallPalm", () => BuildTallPalm("PlanterTallPalm", matPot, matTrunk, matLeafBright, matLeafDark));
         SaveBoth("PlanterTable", () => BuildTablePlanter("PlanterTable", matPot, matLeafBright, matLeafDark));
 
+        // P38: the medium floor pot and the medium and large vases (the small ones are
+        // PlanterTable and Vase, the large pots the two tall planters).
+        var matCeramic = GetMat("LP_Vase_Ceramic", new Color(0.86f, 0.84f, 0.78f), 0f, 0.6f);
+        var matCeramicBlue = GetMat("LP_Vase_CeramicBlue", new Color(0.22f, 0.36f, 0.58f), 0f, 0.6f);
+        var matPetalRed = GetMat("LP_Flower_Red", new Color(0.78f, 0.16f, 0.18f), 0f, 0.3f);
+        var matPetalYellow = GetMat("LP_Flower_Yellow", new Color(0.95f, 0.80f, 0.20f), 0f, 0.3f);
+        SaveBoth("PlanterMedium", () => BuildMediumPlanter("PlanterMedium", matPot, matLeafBright, matLeafDark));
+        SaveBoth("VaseMedium", () => BuildMediumVase("VaseMedium", matCeramicBlue, matLeafDark, matPetalRed, matPetalYellow));
+        SaveBoth("VaseLarge", () => BuildLargeVase("VaseLarge", matCeramic, matCeramicBlue));
+
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log($"[GeneratePlanterProps] Saved 3 planter prefabs under {PrefabDir}");
+        Debug.Log($"[GeneratePlanterProps] Saved 6 planter and vase prefabs under {PrefabDir}");
     }
 
     private static void SaveBoth(string shortName, System.Func<GameObject> build)
@@ -134,6 +144,73 @@ public static class GeneratePlanterProps
         }
 
         AddCollider(root, potTop + 0.08f, 0.10f);
+        return root;
+    }
+
+    // ── Medium floor pot (P38): about 0.6 m, a low round bush ───────────
+    private static GameObject BuildMediumPlanter(string rootName, Material matPot, Material leafA, Material leafB)
+    {
+        var root = new GameObject(rootName);
+        var potTop = BuildPot(root.transform, matPot, 0.15f, 0.26f);
+
+        var offsets = new[]
+        {
+            new Vector3(0f, 0.10f, 0f),
+            new Vector3(0.09f, 0.16f, 0.04f),
+            new Vector3(-0.08f, 0.18f, -0.05f),
+            new Vector3(0.02f, 0.24f, 0.07f),
+        };
+        var radii = new[] { 0.15f, 0.12f, 0.12f, 0.10f };
+        var mats = new[] { leafA, leafB, leafA, leafB };
+        for (var i = 0; i < offsets.Length; i++)
+        {
+            AddSphere($"Leaf{i}", root.transform, mats[i],
+                new Vector3(offsets[i].x, potTop + offsets[i].y, offsets[i].z), radii[i]);
+        }
+
+        AddCollider(root, potTop * 0.5f + 0.12f, 0.17f);
+        return root;
+    }
+
+    // ── Medium vase (P38): about 0.45 m with flowers, for furniture tops ─
+    private static GameObject BuildMediumVase(string rootName, Material matVase, Material stem, Material petalA, Material petalB)
+    {
+        var root = new GameObject(rootName);
+        AddCylinder("Foot", root.transform, matVase, new Vector3(0, 0.01f, 0), 0.05f, 0.01f);
+        AddSphere("Belly", root.transform, matVase, new Vector3(0, 0.10f, 0), 0.08f);
+        AddCylinder("Neck", root.transform, matVase, new Vector3(0, 0.20f, 0), 0.035f, 0.04f);
+        AddCylinder("Lip", root.transform, matVase, new Vector3(0, 0.245f, 0), 0.045f, 0.008f);
+
+        // Five stems fanning out of the neck, a flower head on each.
+        for (var i = 0; i < 5; i++)
+        {
+            var angle = i * 72f;
+            var tilt = i == 0 ? 0f : 18f;
+            var dir = Quaternion.Euler(0, angle, 0) * Quaternion.Euler(tilt, 0, 0) * Vector3.up;
+            var length = 0.16f + (i % 2) * 0.03f;
+            var stemGo = AddCylinder($"Stem{i}", root.transform, stem, Vector3.zero, 0.004f, length * 0.5f);
+            stemGo.transform.localRotation = Quaternion.FromToRotation(Vector3.up, dir);
+            stemGo.transform.localPosition = new Vector3(0, 0.24f, 0) + dir * (length * 0.5f);
+            AddSphere($"Flower{i}", root.transform, i % 2 == 0 ? petalA : petalB,
+                new Vector3(0, 0.24f, 0) + dir * length, 0.03f);
+        }
+
+        AddCollider(root, 0.22f, 0.09f);
+        return root;
+    }
+
+    // ── Large floor vase (P38): about 0.9 m, tall and narrow-necked ─────
+    private static GameObject BuildLargeVase(string rootName, Material matVase, Material band)
+    {
+        var root = new GameObject(rootName);
+        AddCylinder("Foot", root.transform, matVase, new Vector3(0, 0.02f, 0), 0.10f, 0.02f);
+        AddCylinder("Body", root.transform, matVase, new Vector3(0, 0.30f, 0), 0.16f, 0.26f);
+        AddSphere("Shoulder", root.transform, matVase, new Vector3(0, 0.56f, 0), 0.16f);
+        AddCylinder("Band", root.transform, band, new Vector3(0, 0.40f, 0), 0.162f, 0.03f);
+        AddCylinder("Neck", root.transform, matVase, new Vector3(0, 0.76f, 0), 0.07f, 0.10f);
+        AddCylinder("Lip", root.transform, band, new Vector3(0, 0.87f, 0), 0.09f, 0.015f);
+
+        AddCollider(root, 0.45f, 0.17f);
         return root;
     }
 
