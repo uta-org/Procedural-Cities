@@ -1,28 +1,110 @@
 # Procedural-Cities
 
-This project aims to provide a framework and a solid implementation of different techniques for generating complete seamless procedural cities with interiors for all buildings.
+The low-poly model library of [uzProceduralCities](https://github.com/uta-org/), packaged for Unity.
 
-Small demo: https://www.youtube.com/watch?v=n1eZOV8r_g4
+![Every prefab of the package](images/prefabs-overview.png?raw=true "Every prefab of the package")
 
-This project was done as a master thesis at LTH, link to thesis is available here: http://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8929185&fileOId=8929189
+This repository started as a master thesis project in Unreal Engine (see
+[The original Unreal project](#the-original-unreal-project) below). Today it is a
+submodule of the Unity project, and what that project uses is the Unity package in
+`Import/`: the furniture, fixtures, street props and decoration a generated city is
+filled with. The Unreal sources are still here, untouched, for reference.
 
-The source code is available to everyone under the MIT licence and you're very welcome to clone or fork the reposity, but keep in mind that it is mostly a proof-of-concept and the code is hardly optimized or refined.
+## What is in the package
 
-Most parameters are accessible from the "Spawner" blueprint-class, one is spawned in the default map, so edit the values inside of that. Some parameters can be found in ProcMeshActorBP, PlotBuilderBP and HouseBuilderBP. The most interesting parameters to change might be length, maximum turn rate for roads and heatmap settings.
+`Import/` is a Unity package, `dev.z3nth10n.proceduralcities.import`. The Unity
+project mounts it with a local path in `Packages/manifest.json`:
 
-Starting the project generates the city, the defalt character can either walk (with collisions enabled) or fly (with collisions disabled), switch by pressing R. 
+```json
+"dev.z3nth10n.proceduralcities.import": "file:../../Packages/Procedural-Cities/Import"
+```
 
-Some pictures:
+| Folder | Contents |
+|---|---|
+| `Resources/Prefabs/AssetContents/` | The 181 prefabs the city places, one per placement name. |
+| `Models/LowPoly/` | Their combined meshes (`<Name>_Combined.asset`), the `LP_*` materials, the 23 painting images, and the 18 street prefabs `LowPoly_*` (trees, lampposts, benches, fences, fountain, traffic lights, bins, awning, fire hydrant). |
+| `Models/Living/`, `Models/Kitchen/`, `Models/Uncategorized/` | Materials of the older imported furniture. |
+| `Textures/` | The low-poly material textures (wood, fabric, metal, ceramic, plastic) and the litter atlas. |
+| `Resources/Textures/` | Textures loaded at runtime (grass, trees, imported props). |
+| `Shaders/` | `LowPolyPBR.shader`. |
+| `Editor/` | The C# generators that build most of the models (editor only). |
+| `Import-Scripts/` | Blender scripts that converted the original glTF models to FBX. |
 
-![Interior apartment](images/2.png?raw=true "Interior apartment")
-![Interior several apartments 1](images/6.png?raw=true "Interior several apartments 1")
-![Interior several apartments 2](images/8.png?raw=true "Interior several apartments 2")
-![Interior several apartments 3](images/9.png?raw=true "Interior several apartments 3")
-![City overview 1](images/city1.PNG?raw=true "City overview 1")
-![City overview 2](images/citySS3.PNG?raw=true "City overview 2")
-![City overview 3](images/prettypicture.PNG?raw=true "City overview 3")
-![City map 1](images/heatmap8_20_5.PNG?raw=true "City map 1")
-![City map 2](images/heatmap8_30_15.PNG?raw=true "City map 2")
-![City map 3](images/procedural_chaotic.PNG?raw=true "City map 3")
-![City map 4](images/procedural_grid.PNG?raw=true "City map 4")
-![Large city](images/largecity.PNG?raw=true "Large city")
+The prefabs cover, among others:
+
+- **Homes:** beds, wardrobes, sofas and L/U sectionals, tables and chairs,
+  shelves, lamps, paintings, plants and vases, kitchen modules, bathroom fixtures,
+  radiators and air conditioners.
+- **Small props:** rugs, cushions, books, candles, towels and toiletries, in the
+  per-room sets of P40.
+- **Offices and shops:** desks, bench desks, laptops, meeting tables, filing
+  cabinets, store and restaurant counters.
+- **Streets and parks:** trees, lampposts, traffic lights, benches, bins,
+  fences, fountains, planters, park plants and litter.
+
+## How the project uses it
+
+- The runtime spawner (`DecorationSpawner` in the Unity project) maps each
+  placement name, such as `sofa` or `bath_mat`, to a prefab name in
+  `AssetContents/`.
+- The prefabs are loaded through the **Remote** Addressables group of the Unity
+  project; a few exterior ones are also listed in the scene's
+  `CityManager._decorationPrefabs`.
+- Pieces drawn at a distance are GPU-instanced (`RenderMeshInstanced`): every
+  material an exterior prop uses must have GPU instancing on.
+
+## Generating the models
+
+Most models are built in code rather than modelled by hand: 139 of the 199
+prefabs. Each generator is an editor script with a menu entry under
+**Tools / Procedural Cities**; it builds its meshes from boxes (`LowPolyBoxMesh`),
+saves them to `Models/LowPoly/` and the prefabs to
+`Resources/Prefabs/AssetContents/`. A rebuild keeps the asset GUIDs, so nothing
+that references a prefab breaks.
+
+| Menu entry | Builds |
+|---|---|
+| Generate Kitchen Module Props, Generate Restaurant Kitchen Props | Kitchen modules |
+| Generate Lamp Props, Hollow Ceiling Pendant Shade, Add Lamp Bulbs, Add Lamp Focal Lights | Lamps and their bulbs |
+| Generate Painting Props | Paintings in 7 formats |
+| Generate Planter Props, Generate Park Props, Generate Suburb Props, Generate Litter Props | Plants, parks, suburbs, litter |
+| Generate Meeting Table Props, Generate Office Bench Props, Generate Filing Cabinet Prop | Office furniture |
+| Generate Store Counter Prop, Generate Counter Gate Props, Generate Console Table Prop | Counters and tables |
+| Generate Radiator Prop, Generate Air Conditioner Props | Heating and air conditioning |
+| Generate Living Room Props, Generate Bedroom Props, Generate Bathroom Props | The per-room small props |
+| Generate Double Traffic Light, Generate RubbishBin Prop, Generate Light Switch Prop | Single props (`LowPoly_TrafficLightDouble`, the rubbish bin, the light switch) |
+
+Conventions the generators follow:
+
+- **Pivot and orientation:** on the bottom face at the centre, front +Z.
+  Wall-hung pieces have their back face at Z = 0.
+- **Size:** real units (metres).
+- **Materials:** URP Lit materials named `LP_*`, with GPU instancing on.
+
+The generators are only needed to change or rebuild a model; the saved prefabs,
+meshes and materials are what the game loads.
+
+**60 prefabs have no generator;** their saved meshes are the only source:
+
+- **43 core furniture prefabs** (beds, the sofa and its sectional variants,
+  chairs, toilet, shower, sink, wardrobe, fridge, TVs, mirrors, office and
+  restaurant furniture). They come from the original imported models
+  (`Import-Scripts/`) and one-off mesh edits.
+- **17 of the `LowPoly_*` street prefabs** (all but the double traffic light).
+  Their old ProBuilder generator wrote outside the package and was removed.
+
+## The original Unreal project
+
+The root of the repository (`City.uproject`, `City.sln`, `Source/`, `Config/`,
+`images/`, `Scripts/`) is the original project: a framework for generating
+complete, seamless procedural cities with interiors for every building, written in
+Unreal Engine as a master thesis at LTH.
+
+- Thesis: http://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=8929185&fileOId=8929189
+- Demo: https://www.youtube.com/watch?v=n1eZOV8r_g4
+
+The Unity project does not use any of it: it ported the ideas, not the code.
+
+## Licence
+
+MIT, see [LICENCE.txt](LICENCE.txt).
