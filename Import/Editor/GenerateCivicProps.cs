@@ -54,6 +54,19 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_CarBlue", new Color(0.10f, 0.20f, 0.55f), 0.2f, 0.6f), black,
             LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f),
             LowPolyBoxMesh.GetMat("LP_CV_LightBlue", new Color(0.20f, 0.45f, 1.00f), 0f, 0.9f));
+
+        // The fire station's (P43.5).
+        var fireRed = LowPolyBoxMesh.GetMat("LP_CV_FireRed", new Color(0.78f, 0.08f, 0.06f), 0.3f, 0.6f);
+        var tan = LowPolyBoxMesh.GetMat("LP_CV_BunkerTan", new Color(0.62f, 0.52f, 0.30f), 0f, 0.2f);
+        var reflective = LowPolyBoxMesh.GetMat("LP_CV_Reflective", new Color(0.95f, 0.88f, 0.25f), 0f, 0.7f);
+        BuildFireEngine(fireRed, steel, black, LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f), reflective);
+        BuildHoseReel(fireRed, LowPolyBoxMesh.GetMat("LP_CV_Hose", new Color(0.85f, 0.82f, 0.70f), 0f, 0.2f));
+        BuildHelmetRack(dark, LowPolyBoxMesh.GetMat("LP_CV_HelmetYellow", new Color(0.95f, 0.78f, 0.10f), 0.1f, 0.6f), fireRed);
+        BuildFirePole(steel);
+        BuildToolBench(dark, steel, black);
+        BuildAirTanks(steel, LowPolyBoxMesh.GetMat("LP_CV_TankYellow", new Color(0.90f, 0.75f, 0.15f), 0.3f, 0.6f), black);
+        BuildBunkerBoots(black, tan, reflective);
+        BuildFireGarageDoor(fireRed, steel, LowPolyBoxMesh.GetMat("LP_CV_GarageGlass", new Color(0.55f, 0.65f, 0.72f), 0.2f, 0.9f));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -73,6 +86,17 @@ public static class GenerateCivicProps
     private static void Save(string name, string child, List<LowPolyBoxMesh.Part> parts)
     {
         var mesh = LowPolyBoxMesh.SaveMesh(LowPolyBoxMesh.Combine(name + "_Combined", parts, out var materials));
+        // The street pieces (patrol car, garage door) are drawn instanced beyond the near band,
+        // which needs instancing on their materials (P37 gotcha); harmless indoors.
+        foreach (var material in materials)
+        {
+            if (material != null && !material.enableInstancing)
+            {
+                material.enableInstancing = true;
+                EditorUtility.SetDirty(material);
+            }
+        }
+
         LowPolyBoxMesh.SavePrefab(name, child, mesh, materials, mesh.bounds.center, mesh.bounds.size);
     }
 
@@ -250,6 +274,125 @@ public static class GenerateCivicProps
         foreach (var (x, z) in new[] { (-0.80f, -1.35f), (0.80f, -1.35f), (-0.80f, 1.35f), (0.80f, 1.35f) })
             parts.Add(Box(black, x - 0.12f, 0f, z - 0.34f, x + 0.12f, 0.62f, z + 0.34f));
         Save("PoliceCar", "police_car", parts);
+    }
+
+    private static void BuildFireEngine(Material red, Material steel, Material black, Material glass, Material stripe)
+    {
+        // An engine 8.0 x 2.5 m along +Z: a cab at the front, a body with lockers, a ladder on the roof.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(red, -1.25f, 0.45f, 1.6f, 1.25f, 3.00f, 4.0f),
+            Box(glass, -1.20f, 2.00f, 3.98f, 1.20f, 2.85f, 4.02f),
+            Box(glass, -1.26f, 2.00f, 2.40f, 1.26f, 2.85f, 3.60f),
+            Box(red, -1.25f, 0.45f, -4.0f, 1.25f, 2.90f, 1.6f),
+            Box(stripe, -1.27f, 1.10f, -4.0f, 1.27f, 1.25f, 4.0f),
+            Box(steel, -1.27f, 0.50f, -3.8f, 1.27f, 0.95f, 1.4f),
+            Box(steel, -0.60f, 2.95f, -3.9f, -0.50f, 3.10f, 1.2f),
+            Box(steel, 0.50f, 2.95f, -3.9f, 0.60f, 3.10f, 1.2f),
+            Box(LowPolyBoxMesh.GetMat("LP_CV_LightBlue", new Color(0.20f, 0.45f, 1.00f), 0f, 0.9f), -0.90f, 3.00f, 3.4f, 0.90f, 3.15f, 3.7f),
+            Box(black, -1.20f, 0.30f, 3.98f, 1.20f, 0.55f, 4.05f),
+        };
+        for (var r = 0; r < 7; r++)
+            parts.Add(Box(steel, -0.55f, 3.00f, -3.6f + r * 0.7f, 0.55f, 3.06f, -3.55f + r * 0.7f));
+        foreach (var (x, z) in new[] { (-1.05f, 2.8f), (1.05f, 2.8f), (-1.05f, -1.4f), (1.05f, -1.4f), (-1.05f, -2.8f), (1.05f, -2.8f) })
+            parts.Add(Box(black, x - 0.18f, 0f, z - 0.50f, x + 0.18f, 1.00f, z + 0.50f));
+        Save("FireEngine", "fire_engine", parts);
+    }
+
+    private static void BuildHoseReel(Material red, Material hose)
+    {
+        // A wall-mounted reel 0.7 m across with the hose coiled on it, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part> { Box(red, -0.40f, 0f, 0f, 0.40f, 0.80f, 0.04f), Box(red, -0.05f, 0.35f, 0.04f, 0.05f, 0.45f, 0.20f) };
+        for (var i = 0; i < 6; i++)
+            parts.Add(new LowPolyBoxMesh.Part(hose, new Vector3(0f, 0.40f, 0.14f), new Vector3(0.70f, 0.12f, 0.16f), Quaternion.Euler(0f, 0f, i * 30f)));
+        Save("HoseReel", "hose_reel", parts);
+    }
+
+    private static void BuildHelmetRack(Material wood, Material helmet, Material red)
+    {
+        // A wall rail 1.2 m long with four helmets on pegs and a jacket below each, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part> { Box(wood, -0.60f, 1.00f, 0f, 0.60f, 1.10f, 0.04f) };
+        for (var i = 0; i < 4; i++)
+        {
+            var x = -0.45f + i * 0.30f;
+            parts.Add(Box(wood, x - 0.02f, 1.02f, 0.04f, x + 0.02f, 1.06f, 0.16f));
+            parts.Add(Box(helmet, x - 0.12f, 1.06f, 0.04f, x + 0.12f, 1.22f, 0.28f));
+            parts.Add(Box(red, x - 0.13f, 0.30f, 0.04f, x + 0.13f, 1.00f, 0.14f));
+        }
+
+        Save("HelmetRack", "helmet_rack", parts);
+    }
+
+    private static void BuildFirePole(Material steel)
+    {
+        // A pole 3.8 m high in a floor ring, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        Round(parts, steel, 0f, 0f, 0f, 0.08f, 3.80f);
+        Round(parts, steel, 0f, 0f, 0f, 0.60f, 0.03f);
+        Save("FirePole", "fire_pole", parts);
+    }
+
+    private static void BuildToolBench(Material wood, Material steel, Material black)
+    {
+        // A bench 1.6 x 0.6 m with a pegboard of tools behind, facing +Z.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -0.80f, 0.85f, -0.30f, 0.80f, 0.90f, 0.30f),
+            Box(steel, -0.78f, 0f, -0.28f, -0.72f, 0.85f, -0.22f),
+            Box(steel, 0.72f, 0f, -0.28f, 0.78f, 0.85f, -0.22f),
+            Box(steel, -0.78f, 0f, 0.22f, -0.72f, 0.85f, 0.28f),
+            Box(steel, 0.72f, 0f, 0.22f, 0.78f, 0.85f, 0.28f),
+            Box(wood, -0.80f, 0.90f, -0.30f, 0.80f, 1.80f, -0.27f),
+            Box(black, -0.60f, 1.20f, -0.27f, -0.45f, 1.55f, -0.24f),
+            Box(black, -0.20f, 1.10f, -0.27f, -0.05f, 1.60f, -0.24f),
+            Box(steel, 0.20f, 1.25f, -0.27f, 0.45f, 1.35f, -0.24f),
+            Box(black, 0.30f, 0.90f, -0.05f, 0.60f, 1.05f, 0.15f),
+        };
+        Save("ToolBench", "tool_bench", parts);
+    }
+
+    private static void BuildAirTanks(Material steel, Material tank, Material black)
+    {
+        // A rack 1.2 m long holding six breathing air cylinders upright, facing +Z.
+        var parts = new List<LowPolyBoxMesh.Part> { Box(steel, -0.60f, 0f, -0.15f, 0.60f, 0.05f, 0.15f), Box(steel, -0.60f, 0.70f, -0.17f, 0.60f, 0.74f, -0.13f) };
+        for (var i = 0; i < 6; i++)
+        {
+            var x = -0.50f + i * 0.20f;
+            Round(parts, tank, x, 0.05f, 0f, 0.17f, 0.70f);
+            Round(parts, black, x, 0.70f, 0f, 0.06f, 0.80f);
+        }
+
+        Save("AirTanks", "air_tanks", parts);
+    }
+
+    private static void BuildBunkerBoots(Material black, Material tan, Material stripe)
+    {
+        // A pair of boots with the bunker trousers rolled down over them, ready to step into.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        foreach (var x in new[] { -0.13f, 0.13f })
+        {
+            parts.Add(Box(black, x - 0.08f, 0f, -0.14f, x + 0.08f, 0.38f, 0.10f));
+            parts.Add(Box(black, x - 0.08f, 0f, 0.10f, x + 0.08f, 0.10f, 0.18f));
+            parts.Add(Box(tan, x - 0.12f, 0.20f, -0.16f, x + 0.12f, 0.48f, 0.12f));
+            parts.Add(Box(stripe, x - 0.125f, 0.30f, -0.165f, x + 0.125f, 0.34f, 0.125f));
+        }
+
+        Save("BunkerBoots", "bunker_boots", parts);
+    }
+
+    private static void BuildFireGarageDoor(Material red, Material steel, Material glass)
+    {
+        // A red sectional door 3.6 x 3.6 m with a window row, flush on a facade (back at Z = 0).
+        var parts = new List<LowPolyBoxMesh.Part> { Box(steel, -1.90f, 0f, 0f, 1.90f, 3.75f, 0.05f) };
+        for (var p = 0; p < 6; p++)
+        {
+            var y = p * 0.60f;
+            parts.Add(Box(red, -1.80f, y + 0.02f, 0.05f, 1.80f, y + 0.58f, 0.09f));
+        }
+
+        for (var w = 0; w < 4; w++)
+            parts.Add(Box(glass, -1.60f + w * 0.85f, 2.50f, 0.09f, -1.00f + w * 0.85f, 2.80f, 0.095f));
+        Save("FireGarageDoor", "fire_garage_door", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
