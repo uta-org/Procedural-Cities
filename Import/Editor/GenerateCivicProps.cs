@@ -105,6 +105,8 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
         });
         BuildSkeletonModel(chalk, steel);
+        // The university's (P43.11).
+        BuildLectureSeatRow(beech, steel, LowPolyBoxMesh.GetMat("LP_CV_LectureSeat", new Color(0.55f, 0.12f, 0.14f), 0f, 0.3f));
         BuildBookcase(beech, new[]
         {
             LowPolyBoxMesh.GetMat("LP_CV_FlagRed", new Color(0.72f, 0.12f, 0.12f), 0f, 0.2f),
@@ -1169,6 +1171,27 @@ public static class GenerateCivicProps
             Box(white, 0.30f, 0.60f, -0.25f, 0.40f, 0.75f, 0.10f),
         };
         Save("BloodPressureKiosk", "blood_pressure_kiosk", parts);
+    }
+
+    private static void BuildLectureSeatRow(Material wood, Material steel, Material seat)
+    {
+        // A lecture hall row 3.6 m wide: six upholstered seats (0.6 m apart) on a steel rail and
+        // the writing strip in front of them, the audience looking along +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -1.80f, 0.72f, 0.15f, 1.80f, 0.75f, 0.47f),
+            Box(wood, -1.80f, 0f, 0.42f, 1.80f, 0.72f, 0.45f),
+            Box(steel, -1.80f, 0f, -0.30f, 1.80f, 0.06f, -0.20f),
+        };
+        for (var i = 0; i < 6; i++)
+        {
+            var x = -1.50f + i * 0.60f;
+            parts.Add(Box(seat, x - 0.25f, 0.42f, -0.40f, x + 0.25f, 0.50f, 0.02f));
+            parts.Add(Box(seat, x - 0.25f, 0.50f, -0.47f, x + 0.25f, 0.95f, -0.40f));
+            parts.Add(Box(steel, x + 0.27f, 0.06f, -0.45f, x + 0.30f, 0.65f, 0f));
+        }
+
+        Save("LectureSeatRow", "lecture_seat_row", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
