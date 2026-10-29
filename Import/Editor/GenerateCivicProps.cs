@@ -215,6 +215,12 @@ public static class GenerateCivicProps
         BuildSpeakerStack(black, steel);
         BuildDiscoBall(LowPolyBoxMesh.GetMat("LP_CV_Mirror", new Color(0.85f, 0.88f, 0.92f), 1.0f, 0.95f), steel);
 
+        // The building entrances' (P45.3).
+        BuildEntranceSurround(LowPolyBoxMesh.GetMat("LP_CV_Stone", new Color(0.82f, 0.80f, 0.76f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f), brass, black);
+        BuildEntrancePortal(LowPolyBoxMesh.GetMat("LP_CV_Stone", new Color(0.82f, 0.80f, 0.76f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f), brass, black);
+
         // The petrol station's (P43.9).
         var brandGreen = LowPolyBoxMesh.GetMat("LP_CV_FuelGreen", new Color(0.05f, 0.45f, 0.25f), 0.2f, 0.5f);
         var brandYellow = LowPolyBoxMesh.GetMat("LP_CV_FuelYellow", new Color(0.98f, 0.80f, 0.10f), 0.2f, 0.5f);
@@ -1750,6 +1756,58 @@ public static class GenerateCivicProps
             Box(red, -0.55f, 1.55f, -0.35f, 0.55f, 1.70f, 0.35f),
         };
         Save("PopcornStand", "popcorn_stand", parts);
+    }
+
+    private static void BuildEntranceSurround(Material stone, Material glass, Material brass, Material black)
+    {
+        // A medium entrance's surround for the 1.5 x 2.5 m street door, its back on the facade
+        // (Z = 0), the door's bottom centre at the pivot: jambs, two glazed sidelights 0.45 m wide,
+        // a glazed transom 0.5 m high over the door, a lintel and the street number plaque.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(stone, -1.40f, 0f, 0f, -1.25f, 3.20f, 0.18f),
+            Box(stone, 1.25f, 0f, 0f, 1.40f, 3.20f, 0.18f),
+            Box(glass, -1.20f, 0.30f, 0f, -0.80f, 2.50f, 0.04f),
+            Box(glass, 0.80f, 0.30f, 0f, 1.20f, 2.50f, 0.04f),
+            Box(stone, -1.25f, 0f, 0f, -0.76f, 0.30f, 0.10f),
+            Box(stone, 0.76f, 0f, 0f, 1.25f, 0.30f, 0.10f),
+            Box(stone, -0.80f, 0f, 0f, -0.76f, 3.00f, 0.10f),
+            Box(stone, 0.76f, 0f, 0f, 0.80f, 3.00f, 0.10f),
+            Box(glass, -0.76f, 2.55f, 0f, 0.76f, 3.00f, 0.04f),
+            Box(stone, -0.80f, 2.50f, 0f, 0.80f, 2.55f, 0.10f),
+            Box(stone, -1.50f, 3.00f, 0f, 1.50f, 3.30f, 0.25f),
+            Box(brass, -0.15f, 3.05f, 0.25f, 0.15f, 3.25f, 0.27f),
+            Box(black, -0.08f, 3.10f, 0.27f, 0.08f, 3.20f, 0.28f),
+        };
+        Save("EntranceSurround", "entrance_surround", parts);
+    }
+
+    private static void BuildEntrancePortal(Material stone, Material glass, Material brass, Material black)
+    {
+        // A monumental entrance's portal for the 1.5 x 2.5 m street door, its back on the facade
+        // (Z = 0), the door's bottom centre at the pivot: two pilasters on plinths 3.6 m apart, an
+        // entablature, a glazed transom, a flat canopy 1.4 m deep on two brass tie rods and the
+        // building's name plate.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(stone, -2.10f, 0f, 0f, -1.60f, 0.40f, 0.40f),
+            Box(stone, 1.60f, 0f, 0f, 2.10f, 0.40f, 0.40f),
+            Box(stone, -2.00f, 0.40f, 0f, -1.70f, 3.80f, 0.30f),
+            Box(stone, 1.70f, 0.40f, 0f, 2.00f, 3.80f, 0.30f),
+            Box(stone, -2.10f, 3.80f, 0f, -1.60f, 4.00f, 0.40f),
+            Box(stone, 1.60f, 3.80f, 0f, 2.10f, 4.00f, 0.40f),
+            Box(stone, -2.20f, 4.00f, 0f, 2.20f, 4.50f, 0.45f),
+            Box(glass, -0.76f, 2.55f, 0f, 0.76f, 3.40f, 0.04f),
+            Box(stone, -0.85f, 0f, 0f, -0.76f, 3.45f, 0.12f),
+            Box(stone, 0.76f, 0f, 0f, 0.85f, 3.45f, 0.12f),
+            Box(stone, -0.85f, 3.40f, 0f, 0.85f, 3.50f, 0.12f),
+            Box(black, -1.60f, 3.55f, 0f, 1.60f, 3.65f, 1.40f),
+            Box(glass, -1.55f, 3.60f, 0.05f, 1.55f, 3.62f, 1.35f),
+            Box(brass, -1.45f, 3.65f, 1.30f, -1.40f, 4.40f, 1.35f),
+            Box(brass, 1.40f, 3.65f, 1.30f, 1.45f, 4.40f, 1.35f),
+            Box(brass, -0.60f, 4.10f, 0.45f, 0.60f, 4.40f, 0.47f),
+        };
+        Save("EntrancePortal", "entrance_portal", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
