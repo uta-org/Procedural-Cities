@@ -18,7 +18,7 @@ public static class GenerateTrafficLightDoubleProp
     private const string MatDir = ModelDir + "/Materials";
     private const string PrefabName = "LowPoly_TrafficLightDouble";
 
-    // The single model's measures (GenerateLowPolyModels.GenerateTrafficLight).
+    // The single model's measures (LowPoly_TrafficLight, whose generator was removed in P41.9).
     private const float PoleRadius = 0.06f;
     private const float HeadWidth = 0.30f;
     private const float HeadHeight = 0.85f;
