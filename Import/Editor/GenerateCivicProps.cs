@@ -162,6 +162,13 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
         });
 
+        // The bar's (P43.14).
+        var darkWood = LowPolyBoxMesh.GetMat("LP_CV_DarkWood", new Color(0.30f, 0.18f, 0.10f), 0f, 0.35f);
+        BuildBarHighTable(darkWood, black, steel);
+        BuildDartboard(black, LowPolyBoxMesh.GetMat("LP_CV_FlagRed", new Color(0.72f, 0.12f, 0.12f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_Poster", new Color(0.93f, 0.90f, 0.80f), 0f, 0.2f), darkWood);
+        BuildJukebox(darkWood, LowPolyBoxMesh.GetMat("LP_CV_JukeboxGlow", new Color(1.00f, 0.60f, 0.20f), 0f, 0.9f), glass, steel);
+
         // The petrol station's (P43.9).
         var brandGreen = LowPolyBoxMesh.GetMat("LP_CV_FuelGreen", new Color(0.05f, 0.45f, 0.25f), 0.2f, 0.5f);
         var brandYellow = LowPolyBoxMesh.GetMat("LP_CV_FuelYellow", new Color(0.98f, 0.80f, 0.10f), 0.2f, 0.5f);
@@ -1285,6 +1292,59 @@ public static class GenerateCivicProps
             parts.Add(new LowPolyBoxMesh.Part(bronze, new Vector3(0f, 1.62f, 0f) + Quaternion.Euler(0f, 0f, i * 45f) * new Vector3(0.12f, 0f, 0f),
                 new Vector3(0.03f, 0.10f, 0.03f), Quaternion.Euler(0f, 0f, i * 45f)));
         Save("SculpturePedestal", "sculpture_pedestal", parts);
+    }
+
+    private static void BuildBarHighTable(Material wood, Material black, Material steel)
+    {
+        // A round high table 0.6 m across, top at 1.05 m, with a stool on each side along X;
+        // 1.5 x 0.7 m in all, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        Round(parts, wood, 0f, 1.02f, 0f, 0.60f, 1.06f);
+        Round(parts, steel, 0f, 0f, 0f, 0.07f, 1.02f);
+        Round(parts, steel, 0f, 0f, 0f, 0.45f, 0.03f);
+        foreach (var x in new[] { -0.55f, 0.55f })
+        {
+            Round(parts, black, x, 0.72f, 0f, 0.36f, 0.78f);
+            Round(parts, steel, x, 0f, 0f, 0.05f, 0.72f);
+            Round(parts, steel, x, 0f, 0f, 0.32f, 0.03f);
+            Round(parts, steel, x, 0.30f, 0f, 0.30f, 0.32f);
+        }
+
+        Save("BarHighTable", "bar_high_table", parts);
+    }
+
+    private static void BuildDartboard(Material black, Material red, Material cream, Material wood)
+    {
+        // A dartboard 0.45 m across on a wooden backboard 0.6 x 0.8 m, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part> { Box(wood, -0.30f, 0f, 0f, 0.30f, 0.80f, 0.03f) };
+        var rings = new[] { (0.45f, black), (0.36f, cream), (0.26f, red), (0.16f, black), (0.05f, red) };
+        for (var r = 0; r < rings.Length; r++)
+        {
+            var (width, mat) = rings[r];
+            for (var i = 0; i < 6; i++)
+                parts.Add(new LowPolyBoxMesh.Part(mat, new Vector3(0f, 0.45f, 0.04f + r * 0.004f),
+                    new Vector3(width, width * Mathf.Tan(15f * Mathf.Deg2Rad), 0.02f), Quaternion.Euler(0f, 0f, i * 30f)));
+        }
+
+        Save("Dartboard", "dartboard", parts);
+    }
+
+    private static void BuildJukebox(Material wood, Material glow, Material glass, Material steel)
+    {
+        // A jukebox 0.9 x 0.7 m, 1.6 m high: a wooden cabinet, a glowing arch and the glass
+        // window over the record stack, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -0.45f, 0f, -0.35f, 0.45f, 1.20f, 0.30f),
+            Box(glow, -0.45f, 1.20f, -0.35f, 0.45f, 1.30f, 0.30f),
+            Box(glow, -0.40f, 1.30f, -0.30f, 0.40f, 1.45f, 0.25f),
+            Box(glow, -0.30f, 1.45f, -0.25f, 0.30f, 1.58f, 0.20f),
+            Box(glow, -0.45f, 0.10f, 0.30f, -0.38f, 1.20f, 0.34f),
+            Box(glow, 0.38f, 0.10f, 0.30f, 0.45f, 1.20f, 0.34f),
+            Box(glass, -0.32f, 0.70f, 0.30f, 0.32f, 1.10f, 0.32f),
+            Box(steel, -0.25f, 0.30f, 0.30f, 0.25f, 0.55f, 0.32f),
+        };
+        Save("Jukebox", "jukebox", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
