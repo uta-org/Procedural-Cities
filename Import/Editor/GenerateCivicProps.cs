@@ -104,6 +104,13 @@ public static class GenerateCivicProps
         BuildBasketballHoop(white, orange, steel);
         BuildGymMat(matBlue);
         BuildGymBench(beech, steel);
+        // The sports centre's (P43.18).
+        BuildCourtFloor(LowPolyBoxMesh.GetMat("LP_CV_CourtWood", new Color(0.78f, 0.56f, 0.32f), 0f, 0.5f),
+            LowPolyBoxMesh.GetMat("LP_CV_CourtLine", new Color(0.96f, 0.96f, 0.94f), 0f, 0.3f), orange);
+        BuildBleachers(LowPolyBoxMesh.GetMat("LP_CV_SeatBlue", new Color(0.15f, 0.30f, 0.65f), 0f, 0.3f), steel);
+        BuildHoopStand(white, orange, steel, LowPolyBoxMesh.GetMat("LP_CV_PadBlue", new Color(0.15f, 0.30f, 0.65f), 0f, 0.3f));
+        BuildScoreboard(black, LowPolyBoxMesh.GetMat("LP_CV_ScoreRed", new Color(1.00f, 0.20f, 0.15f), 0f, 0.9f),
+            LowPolyBoxMesh.GetMat("LP_CV_ScoreAmber", new Color(1.00f, 0.75f, 0.15f), 0f, 0.9f));
         // The secondary school's (P43.10).
         BuildFumeHood(white, glass, steel, LowPolyBoxMesh.GetMat("LP_CV_LabTop", new Color(0.18f, 0.19f, 0.20f), 0f, 0.6f));
         BuildPeriodicTable(white, new[]
@@ -1552,6 +1559,79 @@ public static class GenerateCivicProps
             Box(steel, 0.13f, 0.85f, -0.05f, 0.19f, 0.92f, 0.01f),
         };
         Save("Minibar", "minibar", parts);
+    }
+
+    private static void BuildCourtFloor(Material wood, Material line, Material key)
+    {
+        // A basketball court 7.5 x 14 m (long along Z): the wood, the boundary, the centre line
+        // and circle, both keys, 1 cm high, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -3.75f, 0f, -7.00f, 3.75f, 0.005f, 7.00f),
+            Box(line, -3.75f, 0.005f, -7.00f, -3.70f, 0.010f, 7.00f),
+            Box(line, 3.70f, 0.005f, -7.00f, 3.75f, 0.010f, 7.00f),
+            Box(line, -3.75f, 0.005f, -7.00f, 3.75f, 0.010f, -6.95f),
+            Box(line, -3.75f, 0.005f, 6.95f, 3.75f, 0.010f, 7.00f),
+            Box(line, -3.75f, 0.005f, -0.025f, 3.75f, 0.010f, 0.025f),
+        };
+        for (var i = 0; i < 12; i++)
+            parts.Add(new LowPolyBoxMesh.Part(line, new Vector3(0f, 0.0075f, 0f) + Quaternion.Euler(0f, i * 30f, 0f) * new Vector3(0f, 0f, 1.20f),
+                new Vector3(0.64f, 0.005f, 0.05f), Quaternion.Euler(0f, i * 30f, 0f)));
+        foreach (var side in new[] { -1f, 1f })
+        {
+            var z0 = side * 7.0f;
+            var z1 = side * 2.2f;
+            parts.Add(Box(key, -1.20f, 0.005f, Mathf.Min(z0, z1), 1.20f, 0.008f, Mathf.Max(z0, z1)));
+            parts.Add(Box(line, -1.25f, 0.008f, Mathf.Min(z1, z1 + side * 0.05f), 1.25f, 0.010f, Mathf.Max(z1, z1 + side * 0.05f)));
+        }
+
+        Save("CourtFloor", "court_floor", parts);
+    }
+
+    private static void BuildHoopStand(Material board, Material rim, Material steel, Material pad)
+    {
+        // A portable hoop: a padded base 1.2 x 1.0 m, a post rising to 3.0 m and the arm reaching
+        // forward (+Z) to the backboard over the court, the rim 3.05 m up; base centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(pad, -0.60f, 0f, -0.70f, 0.60f, 0.45f, 0.30f),
+            Box(steel, -0.08f, 0.45f, -0.45f, 0.08f, 3.00f, -0.30f),
+            Box(steel, -0.06f, 2.85f, -0.45f, 0.06f, 2.97f, 0.65f),
+            Box(board, -0.90f, 2.90f, 0.65f, 0.90f, 3.95f, 0.70f),
+            Box(rim, -0.30f, 3.05f, 0.70f, 0.30f, 3.40f, 0.71f),
+        };
+        for (var i = 0; i < 6; i++)
+            parts.Add(new LowPolyBoxMesh.Part(rim, new Vector3(0f, 3.05f, 0.93f), new Vector3(0.46f, 0.02f, 0.46f * Mathf.Tan(15f * Mathf.Deg2Rad)), Quaternion.Euler(0f, i * 30f, 0f)));
+        Save("HoopStand", "hoop_stand", parts);
+    }
+
+    private static void BuildBleachers(Material seat, Material steel)
+    {
+        // Three tiers of seats 4.0 m long on a steel frame, 1.5 m deep and 1.1 m high, rising
+        // towards the back (-Z, against the wall), facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var t = 0; t < 3; t++)
+        {
+            var z0 = 0.75f - (t + 1) * 0.50f;
+            var y = 0.35f + t * 0.35f;
+            parts.Add(Box(steel, -2.00f, 0f, z0, 2.00f, y - 0.05f, z0 + 0.50f));
+            parts.Add(Box(seat, -1.95f, y - 0.05f, z0 + 0.10f, 1.95f, y, z0 + 0.45f));
+        }
+
+        Save("Bleachers", "bleachers", parts);
+    }
+
+    private static void BuildScoreboard(Material black, Material red, Material amber)
+    {
+        // A scoreboard 1.8 x 0.9 m: two red scores and the amber clock, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(black, -0.90f, 0f, 0f, 0.90f, 0.90f, 0.15f),
+            Box(red, -0.80f, 0.15f, 0.15f, -0.35f, 0.55f, 0.16f),
+            Box(red, 0.35f, 0.15f, 0.15f, 0.80f, 0.55f, 0.16f),
+            Box(amber, -0.25f, 0.60f, 0.15f, 0.25f, 0.82f, 0.16f),
+        };
+        Save("Scoreboard", "scoreboard", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
