@@ -43,6 +43,17 @@ public static class GenerateCivicProps
         });
         BuildBust(stone, LowPolyBoxMesh.GetMat("LP_CV_Bronze", new Color(0.42f, 0.30f, 0.18f), 0.8f, 0.5f));
         BuildVitrine(dark, glass, brass);
+
+        // The police station's (P43.4).
+        var steel = LowPolyBoxMesh.GetMat("LP_CV_Steel", new Color(0.55f, 0.57f, 0.60f), 0.8f, 0.5f);
+        BuildCellBars(steel);
+        BuildWantedBoard(dark, LowPolyBoxMesh.GetMat("LP_CV_Cork", new Color(0.70f, 0.52f, 0.34f), 0f, 0.1f),
+            LowPolyBoxMesh.GetMat("LP_CV_Poster", new Color(0.93f, 0.90f, 0.80f), 0f, 0.2f), black);
+        BuildMetalDetector(LowPolyBoxMesh.GetMat("LP_CV_DetectorGrey", new Color(0.72f, 0.73f, 0.75f), 0.3f, 0.4f), black);
+        BuildPoliceCar(LowPolyBoxMesh.GetMat("LP_CV_CarWhite", new Color(0.95f, 0.95f, 0.95f), 0.2f, 0.6f),
+            LowPolyBoxMesh.GetMat("LP_CV_CarBlue", new Color(0.10f, 0.20f, 0.55f), 0.2f, 0.6f), black,
+            LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f),
+            LowPolyBoxMesh.GetMat("LP_CV_LightBlue", new Color(0.20f, 0.45f, 1.00f), 0f, 0.9f));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -169,6 +180,76 @@ public static class GenerateCivicProps
         Round(parts, bronze, 0f, 1.36f, 0.01f, 0.18f, 1.58f);
         Round(parts, bronze, 0f, 1.58f, 0.0f, 0.15f, 1.62f);
         Save("Bust", "bust", parts);
+    }
+
+    private static void BuildCellBars(Material steel)
+    {
+        // A cell front 2.4 x 2.5 m standing on the floor: top and bottom rails, bars every 0.15 m,
+        // a door frame in the middle third and its lock box, its back at Z = 0 (it stands off a wall).
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -1.20f, 0f, 0f, 1.20f, 0.06f, 0.06f),
+            Box(steel, -1.20f, 2.44f, 0f, 1.20f, 2.50f, 0.06f),
+            Box(steel, -1.20f, 1.10f, 0.005f, 1.20f, 1.15f, 0.055f),
+            Box(steel, -0.40f, 0.06f, 0f, -0.36f, 2.44f, 0.06f),
+            Box(steel, 0.36f, 0.06f, 0f, 0.40f, 2.44f, 0.06f),
+            Box(steel, 0.20f, 1.00f, 0.06f, 0.32f, 1.20f, 0.10f),
+        };
+        for (var x = -1.14f; x <= 1.15f; x += 0.15f)
+            parts.Add(Box(steel, x - 0.012f, 0.06f, 0.018f, x + 0.012f, 2.44f, 0.042f));
+        Save("CellBars", "cell_bars", parts);
+    }
+
+    private static void BuildWantedBoard(Material frame, Material cork, Material poster, Material ink)
+    {
+        // A cork board 1.0 x 0.7 m with six "wanted" posters, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(frame, -0.50f, 0f, 0f, 0.50f, 0.70f, 0.03f),
+            Box(cork, -0.46f, 0.04f, 0.03f, 0.46f, 0.66f, 0.035f),
+        };
+        for (var i = 0; i < 6; i++)
+        {
+            var x = -0.32f + (i % 3) * 0.32f;
+            var y = 0.10f + (i / 3) * 0.30f;
+            parts.Add(Box(poster, x - 0.12f, y, 0.035f, x + 0.12f, y + 0.24f, 0.038f));
+            parts.Add(Box(ink, x - 0.06f, y + 0.08f, 0.038f, x + 0.06f, y + 0.20f, 0.040f));
+            parts.Add(Box(ink, x - 0.09f, y + 0.02f, 0.038f, x + 0.09f, y + 0.05f, 0.040f));
+        }
+
+        Save("WantedBoard", "wanted_board", parts);
+    }
+
+    private static void BuildMetalDetector(Material body, Material black)
+    {
+        // A walk-through arch 0.9 m wide inside, 2.2 m high, pillars 0.12 m thick along Z 0.5 m.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(body, -0.57f, 0f, -0.25f, -0.45f, 2.10f, 0.25f),
+            Box(body, 0.45f, 0f, -0.25f, 0.57f, 2.10f, 0.25f),
+            Box(body, -0.57f, 2.10f, -0.25f, 0.57f, 2.25f, 0.25f),
+            Box(black, -0.20f, 2.12f, 0.25f, 0.20f, 2.22f, 0.26f),
+        };
+        Save("MetalDetector", "metal_detector", parts);
+    }
+
+    private static void BuildPoliceCar(Material white, Material blue, Material black, Material glass, Material light)
+    {
+        // A saloon 4.4 x 1.8 m along +Z, a blue stripe, a light bar on the roof and four wheels.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -0.90f, 0.30f, -2.20f, 0.90f, 0.95f, 2.20f),
+            Box(white, -0.80f, 0.95f, -1.10f, 0.80f, 1.40f, 0.90f),
+            Box(glass, -0.81f, 1.00f, -1.05f, 0.81f, 1.35f, 0.85f),
+            Box(blue, -0.91f, 0.55f, -2.10f, 0.91f, 0.70f, 2.10f),
+            Box(black, -0.55f, 1.40f, -0.20f, 0.55f, 1.44f, 0.20f),
+            Box(light, -0.55f, 1.44f, -0.15f, -0.05f, 1.54f, 0.15f),
+            Box(LowPolyBoxMesh.GetMat("LP_CV_LightRed", new Color(1.0f, 0.15f, 0.12f), 0f, 0.9f), 0.05f, 1.44f, -0.15f, 0.55f, 1.54f, 0.15f),
+            Box(black, -0.85f, 0.32f, 2.19f, 0.85f, 0.50f, 2.22f),
+        };
+        foreach (var (x, z) in new[] { (-0.80f, -1.35f), (0.80f, -1.35f), (-0.80f, 1.35f), (0.80f, 1.35f) })
+            parts.Add(Box(black, x - 0.12f, 0f, z - 0.34f, x + 0.12f, 0.62f, z + 0.34f));
+        Save("PoliceCar", "police_car", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
