@@ -126,6 +126,13 @@ public static class GenerateCivicProps
         BuildTrolleyRow(steel, basketRed);
         BuildBasketStack(basketRed, black);
 
+        // The bank's (P43.19).
+        var navy = LowPolyBoxMesh.GetMat("LP_CV_BankNavy", new Color(0.10f, 0.16f, 0.32f), 0.2f, 0.5f);
+        BuildBankCounter(navy, white, glass, black);
+        BuildAtm(steel, navy, black, LowPolyBoxMesh.GetMat("LP_CV_PumpScreen", new Color(0.10f, 0.20f, 0.18f), 0.3f, 0.9f));
+        BuildQueueStanchions(steel, LowPolyBoxMesh.GetMat("LP_CV_BeltRed", new Color(0.70f, 0.10f, 0.12f), 0f, 0.4f));
+        BuildBankSafe(LowPolyBoxMesh.GetMat("LP_CV_SafeGrey", new Color(0.35f, 0.37f, 0.40f), 0.7f, 0.5f), steel);
+
         // The petrol station's (P43.9).
         var brandGreen = LowPolyBoxMesh.GetMat("LP_CV_FuelGreen", new Color(0.05f, 0.45f, 0.25f), 0.2f, 0.5f);
         var brandYellow = LowPolyBoxMesh.GetMat("LP_CV_FuelYellow", new Color(0.98f, 0.80f, 0.10f), 0.2f, 0.5f);
@@ -1011,6 +1018,76 @@ public static class GenerateCivicProps
         }
 
         Save("Bookcase", "bookcase", parts);
+    }
+
+    private static void BuildBankCounter(Material body, Material top, Material glass, Material black)
+    {
+        // A teller's counter 2.4 x 1.6 m: the teller's floor and chair at the back (-Z, against the
+        // wall), the counter 0.7 m deep at the front (+Z) with a glass screen and a monitor per
+        // window (two windows), centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(body, -1.20f, 0f, 0.10f, 1.20f, 1.05f, 0.80f),
+            Box(top, -1.22f, 1.05f, 0.08f, 1.22f, 1.10f, 0.82f),
+            Box(glass, -1.20f, 1.10f, 0.40f, 1.20f, 1.90f, 0.42f),
+            Box(body, -0.02f, 1.10f, 0.10f, 0.02f, 1.90f, 0.80f),
+        };
+        foreach (var x in new[] { -0.60f, 0.60f })
+        {
+            parts.Add(Box(black, x - 0.22f, 1.10f, 0.15f, x + 0.22f, 1.45f, 0.20f));
+            parts.Add(Box(black, x - 0.22f, 0.45f, -0.55f, x + 0.22f, 0.52f, -0.15f));
+            parts.Add(Box(black, x - 0.22f, 0.52f, -0.58f, x + 0.22f, 1.00f, -0.53f));
+            parts.Add(Box(black, x - 0.03f, 0f, -0.38f, x + 0.03f, 0.45f, -0.32f));
+        }
+
+        Save("BankCounter", "bank_counter", parts);
+    }
+
+    private static void BuildAtm(Material steel, Material navy, Material black, Material screen)
+    {
+        // A free-standing cash machine 0.7 x 0.6 m, 1.8 m high against a wall, the fascia facing
+        // +Z: screen, keypad, card slot and the cash drawer, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(navy, -0.35f, 0f, -0.30f, 0.35f, 1.80f, 0.30f),
+            Box(steel, -0.30f, 0.95f, 0.30f, 0.30f, 1.10f, 0.40f),
+            Box(screen, -0.22f, 1.20f, 0.30f, 0.22f, 1.50f, 0.32f),
+            Box(black, -0.12f, 0.98f, 0.36f, 0.12f, 1.06f, 0.41f),
+            Box(black, -0.15f, 0.80f, 0.30f, 0.15f, 0.86f, 0.33f),
+            Box(steel, -0.35f, 1.62f, 0.30f, 0.35f, 1.80f, 0.34f),
+        };
+        Save("Atm", "atm", parts);
+    }
+
+    private static void BuildQueueStanchions(Material steel, Material belt)
+    {
+        // Four posts 2.4 m in a row along X with retractable belts between them: the queue's lane, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var i = 0; i < 4; i++)
+        {
+            var x = -1.20f + i * 0.80f;
+            Round(parts, steel, x, 0f, 0f, 0.30f, 0.02f);
+            Round(parts, steel, x, 0f, 0f, 0.06f, 0.95f);
+            if (i < 3)
+                parts.Add(Box(belt, x, 0.85f, -0.01f, x + 0.80f, 0.90f, 0.01f));
+        }
+
+        Save("QueueStanchions", "queue_stanchions", parts);
+    }
+
+    private static void BuildBankSafe(Material body, Material steel)
+    {
+        // A strongbox 0.9 x 0.8 m, 1.4 m high, its door with a wheel and hinges facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(body, -0.45f, 0f, -0.40f, 0.45f, 1.40f, 0.40f),
+            Box(body, -0.40f, 0.06f, 0.40f, 0.40f, 1.34f, 0.43f),
+            Box(steel, -0.42f, 0.25f, 0.40f, -0.36f, 0.40f, 0.45f),
+            Box(steel, -0.42f, 1.00f, 0.40f, -0.36f, 1.15f, 0.45f),
+        };
+        for (var i = 0; i < 6; i++)
+            parts.Add(new LowPolyBoxMesh.Part(steel, new Vector3(0.10f, 0.75f, 0.46f), new Vector3(0.30f, 0.03f, 0.03f), Quaternion.Euler(0f, 0f, i * 30f)));
+        Save("BankSafe", "bank_safe", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
