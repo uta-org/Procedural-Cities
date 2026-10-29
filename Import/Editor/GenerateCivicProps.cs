@@ -108,6 +108,17 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
         });
         BuildSkeletonModel(chalk, steel);
+        // The library's (P43.16).
+        var bookMats = new[]
+        {
+            LowPolyBoxMesh.GetMat("LP_CV_FlagRed", new Color(0.72f, 0.12f, 0.12f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_FlagBlue", new Color(0.14f, 0.24f, 0.58f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_LeafGreen", new Color(0.45f, 0.72f, 0.45f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_FlagYellow", new Color(0.92f, 0.76f, 0.15f), 0f, 0.2f),
+        };
+        BuildReadingTable(beech, steel, LowPolyBoxMesh.GetMat("LP_CV_LampGreen", new Color(0.10f, 0.45f, 0.25f), 0.2f, 0.7f),
+            LowPolyBoxMesh.GetMat("LP_CV_SeatGreen", new Color(0.22f, 0.50f, 0.34f), 0f, 0.3f));
+        BuildLibraryStack(steel, bookMats);
         // The university's (P43.11).
         BuildLectureSeatRow(beech, steel, LowPolyBoxMesh.GetMat("LP_CV_LectureSeat", new Color(0.55f, 0.12f, 0.14f), 0f, 0.3f));
         BuildBookcase(beech, new[]
@@ -1419,6 +1430,69 @@ public static class GenerateCivicProps
         }
 
         Save("DiscoBall", "disco_ball", parts);
+    }
+
+    private static void BuildReadingTable(Material wood, Material steel, Material lamp, Material seat)
+    {
+        // A reading table 1.8 x 0.9 m (top at 0.75 m) along X with two green banker's lamps and
+        // four chairs (two each side along Z), 2.0 x 1.9 m in all, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -0.90f, 0.72f, -0.45f, 0.90f, 0.76f, 0.45f),
+            Box(wood, -0.85f, 0f, -0.40f, -0.80f, 0.72f, -0.35f),
+            Box(wood, 0.80f, 0f, -0.40f, 0.85f, 0.72f, -0.35f),
+            Box(wood, -0.85f, 0f, 0.35f, -0.80f, 0.72f, 0.40f),
+            Box(wood, 0.80f, 0f, 0.35f, 0.85f, 0.72f, 0.40f),
+        };
+        foreach (var x in new[] { -0.45f, 0.45f })
+        {
+            parts.Add(Box(steel, x - 0.06f, 0.76f, -0.06f, x + 0.06f, 0.78f, 0.06f));
+            parts.Add(Box(steel, x - 0.01f, 0.78f, -0.01f, x + 0.01f, 1.00f, 0.01f));
+            parts.Add(Box(lamp, x - 0.18f, 1.00f, -0.08f, x + 0.18f, 1.08f, 0.08f));
+            foreach (var side in new[] { -1f, 1f })
+            {
+                var z = side * 0.70f;
+                parts.Add(Box(seat, x - 0.21f, 0.44f, z - 0.20f, x + 0.21f, 0.48f, z + 0.20f));
+                parts.Add(Box(seat, x - 0.21f, 0.48f, z + side * 0.17f, x + 0.21f, 0.90f, z + side * 0.21f));
+                parts.Add(Box(steel, x - 0.19f, 0f, z - 0.18f, x - 0.16f, 0.44f, z - 0.15f));
+                parts.Add(Box(steel, x + 0.16f, 0f, z - 0.18f, x + 0.19f, 0.44f, z - 0.15f));
+                parts.Add(Box(steel, x - 0.19f, 0f, z + 0.15f, x - 0.16f, 0.44f, z + 0.18f));
+                parts.Add(Box(steel, x + 0.16f, 0f, z + 0.15f, x + 0.19f, 0.44f, z + 0.18f));
+            }
+        }
+
+        Save("ReadingTable", "reading_table", parts);
+    }
+
+    private static void BuildLibraryStack(Material steel, Material[] books)
+    {
+        // A double-sided steel stack 2.0 x 0.6 m, 2.1 m high, six shelves of books on each face, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -1.00f, 0f, -0.30f, -0.97f, 2.10f, 0.30f),
+            Box(steel, 0.97f, 0f, -0.30f, 1.00f, 2.10f, 0.30f),
+            Box(steel, -1.00f, 0f, -0.02f, 1.00f, 2.10f, 0.02f),
+            Box(steel, -1.00f, 2.06f, -0.30f, 1.00f, 2.10f, 0.30f),
+        };
+        for (var shelf = 0; shelf < 6; shelf++)
+        {
+            var y = 0.05f + shelf * 0.34f;
+            parts.Add(Box(steel, -0.97f, y - 0.02f, -0.30f, 0.97f, y, 0.30f));
+            foreach (var side in new[] { -1f, 1f })
+            {
+                var x = -0.95f;
+                for (var i = 0; x < 0.90f; i++)
+                {
+                    var width = 0.04f + ((shelf * 7 + i * 3 + (side > 0 ? 1 : 0)) % 4) * 0.01f;
+                    var height = 0.22f + ((shelf + i * 5) % 3) * 0.03f;
+                    parts.Add(Box(books[(shelf + i + (side > 0 ? 2 : 0)) % books.Length], x, y,
+                        side > 0 ? 0.04f : -0.26f, x + width, y + height, side > 0 ? 0.26f : -0.04f));
+                    x += width + 0.005f;
+                }
+            }
+        }
+
+        Save("LibraryStack", "library_stack", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
