@@ -161,6 +161,13 @@ public static class GenerateCivicProps
         BuildQueueStanchions(steel, LowPolyBoxMesh.GetMat("LP_CV_BeltRed", new Color(0.70f, 0.10f, 0.12f), 0f, 0.4f));
         BuildBankSafe(LowPolyBoxMesh.GetMat("LP_CV_SafeGrey", new Color(0.35f, 0.37f, 0.40f), 0.7f, 0.5f), steel);
 
+        // The post office's (P43.21).
+        var postYellow = LowPolyBoxMesh.GetMat("LP_CV_PostYellow", new Color(0.98f, 0.80f, 0.05f), 0.2f, 0.5f);
+        var postBlue = LowPolyBoxMesh.GetMat("LP_CV_PostBlue", new Color(0.05f, 0.20f, 0.55f), 0.2f, 0.5f);
+        BuildParcelLockers(postYellow, steel, black);
+        BuildPostBox(postYellow, postBlue, black);
+        BuildParcelStack(LowPolyBoxMesh.GetMat("LP_CV_Cardboard", new Color(0.70f, 0.52f, 0.32f), 0f, 0.2f), postYellow);
+
         // The pharmacy's (P43.20).
         var crossGreen = LowPolyBoxMesh.GetMat("LP_CV_CrossGreen", new Color(0.10f, 0.85f, 0.30f), 0f, 0.9f);
         BuildPharmacyCounter(white, crossGreen, black);
@@ -1632,6 +1639,61 @@ public static class GenerateCivicProps
             Box(amber, -0.25f, 0.60f, 0.15f, 0.25f, 0.82f, 0.16f),
         };
         Save("Scoreboard", "scoreboard", parts);
+    }
+
+    private static void BuildParcelLockers(Material yellow, Material steel, Material black)
+    {
+        // A bank of parcel lockers 2.0 x 0.6 m, 2.0 m high: a yellow carcase, 4 x 5 doors with
+        // handles and a screen in the middle, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part> { Box(yellow, -1.00f, 0f, -0.30f, 1.00f, 2.00f, 0.28f) };
+        for (var c = 0; c < 4; c++)
+        {
+            for (var r = 0; r < 5; r++)
+            {
+                var x = -0.95f + c * 0.475f;
+                var y = 0.05f + r * 0.39f;
+                if (c == 1 && r == 2)
+                {
+                    parts.Add(Box(black, x + 0.05f, y + 0.05f, 0.28f, x + 0.42f, y + 0.34f, 0.30f));
+                    continue;
+                }
+
+                parts.Add(Box(steel, x, y, 0.28f, x + 0.465f, y + 0.38f, 0.29f));
+                parts.Add(Box(black, x + 0.38f, y + 0.16f, 0.29f, x + 0.42f, y + 0.22f, 0.31f));
+            }
+        }
+
+        Save("ParcelLockers", "parcel_lockers", parts);
+    }
+
+    private static void BuildPostBox(Material yellow, Material blue, Material black)
+    {
+        // A yellow post box on a post, 0.5 m square, 1.3 m high, the slot and a blue band at the
+        // front (+Z), centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(black, -0.08f, 0f, -0.08f, 0.08f, 0.60f, 0.08f),
+            Box(yellow, -0.25f, 0.60f, -0.25f, 0.25f, 1.25f, 0.25f),
+            Box(yellow, -0.27f, 1.25f, -0.27f, 0.27f, 1.30f, 0.27f),
+            Box(blue, -0.25f, 0.90f, 0.25f, 0.25f, 1.00f, 0.26f),
+            Box(black, -0.15f, 1.08f, 0.25f, 0.15f, 1.12f, 0.27f),
+        };
+        Save("PostBox", "post_box", parts);
+    }
+
+    private static void BuildParcelStack(Material cardboard, Material tape)
+    {
+        // Parcels stacked 0.8 x 0.6 m, 0.8 m high, a yellow label on each, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(cardboard, -0.40f, 0f, -0.30f, 0.40f, 0.35f, 0.30f),
+            Box(cardboard, -0.35f, 0.35f, -0.25f, 0.15f, 0.60f, 0.20f),
+            Box(cardboard, 0.05f, 0.35f, -0.28f, 0.38f, 0.55f, 0.05f),
+            Box(cardboard, -0.25f, 0.60f, -0.18f, 0.05f, 0.80f, 0.12f),
+            Box(tape, -0.10f, 0.20f, 0.30f, 0.15f, 0.30f, 0.31f),
+            Box(tape, -0.20f, 0.45f, 0.20f, 0.00f, 0.52f, 0.21f),
+        };
+        Save("ParcelStack", "parcel_stack", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
