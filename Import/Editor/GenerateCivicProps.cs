@@ -96,6 +96,19 @@ public static class GenerateCivicProps
         BuildBasketballHoop(white, orange, steel);
         BuildGymMat(matBlue);
         BuildGymBench(beech, steel);
+
+        // The supermarket's (P43.8).
+        var basketRed = LowPolyBoxMesh.GetMat("LP_CV_BasketRed", new Color(0.80f, 0.12f, 0.12f), 0.1f, 0.4f);
+        BuildCheckoutCounter(white, black, steel, LowPolyBoxMesh.GetMat("LP_CV_Belt", new Color(0.10f, 0.10f, 0.11f), 0f, 0.2f));
+        BuildFridgeCase(white, glass, steel, new[]
+        {
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsMilk", new Color(0.92f, 0.93f, 0.95f), 0f, 0.3f),
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsGreen", new Color(0.35f, 0.65f, 0.30f), 0f, 0.3f),
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsOrange", new Color(0.95f, 0.55f, 0.15f), 0f, 0.3f),
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsBlue", new Color(0.20f, 0.40f, 0.80f), 0f, 0.3f),
+        });
+        BuildTrolleyRow(steel, basketRed);
+        BuildBasketStack(basketRed, black);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -658,6 +671,90 @@ public static class GenerateCivicProps
             Box(wood, -1.20f, 0.20f, -0.03f, 1.20f, 0.24f, 0.03f),
         };
         Save("GymBench", "gym_bench", parts);
+    }
+
+    private static void BuildCheckoutCounter(Material body, Material black, Material steel, Material belt)
+    {
+        // A checkout 1.1 x 2.5 m: a cabinet with the belt along Z, the scanner and till at the +Z
+        // end, the bagging well beyond, the cashier's stool on the +X side; centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(body, -0.45f, 0f, -1.25f, 0.30f, 0.85f, 1.25f),
+            Box(belt, -0.40f, 0.85f, -1.20f, 0.25f, 0.88f, 0.40f),
+            Box(steel, -0.42f, 0.85f, 0.45f, 0.27f, 0.90f, 0.80f),
+            Box(black, 0.05f, 0.88f, 0.50f, 0.25f, 1.20f, 0.70f),
+            Box(black, 0.05f, 1.20f, 0.45f, 0.28f, 1.38f, 0.75f),
+            Box(steel, -0.45f, 0.70f, 0.85f, 0.30f, 0.74f, 1.25f),
+            Box(steel, -0.45f, 0.74f, 1.22f, 0.30f, 0.95f, 1.25f),
+            Box(steel, 0.35f, 0f, 0.35f, 0.39f, 0.60f, 0.39f),
+            Box(black, 0.30f, 0.60f, 0.30f, 0.55f, 0.66f, 0.55f),
+            Box(steel, -0.05f, 0.85f, -1.20f, -0.02f, 1.30f, -1.17f),
+            Box(black, -0.20f, 1.30f, -1.20f, 0.10f, 1.45f, -1.17f),
+        };
+        Save("CheckoutCounter", "checkout_counter", parts);
+    }
+
+    private static void BuildFridgeCase(Material body, Material glass, Material steel, Material[] goods)
+    {
+        // An upright fridge case 2.5 x 0.9 m, 2.0 m high, four glass doors with goods on four
+        // shelves behind them; back at -Z, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(body, -1.25f, 0f, -0.45f, 1.25f, 0.20f, 0.45f),
+            Box(body, -1.25f, 1.85f, -0.45f, 1.25f, 2.00f, 0.45f),
+            Box(body, -1.25f, 0.20f, -0.45f, 1.25f, 1.85f, -0.40f),
+            Box(body, -1.25f, 0.20f, -0.45f, -1.20f, 1.85f, 0.45f),
+            Box(body, 1.20f, 0.20f, -0.45f, 1.25f, 1.85f, 0.45f),
+            Box(glass, -1.20f, 0.20f, 0.40f, 1.20f, 1.85f, 0.42f),
+        };
+        for (var d = 1; d < 4; d++)
+            parts.Add(Box(steel, -1.20f + d * 0.60f - 0.015f, 0.20f, 0.40f, -1.20f + d * 0.60f + 0.015f, 1.85f, 0.43f));
+        for (var shelf = 0; shelf < 4; shelf++)
+        {
+            var y = 0.25f + shelf * 0.40f;
+            parts.Add(Box(steel, -1.20f, y, -0.40f, 1.20f, y + 0.02f, 0.35f));
+            for (var i = 0; i < 6; i++)
+            {
+                var x = -1.10f + i * 0.38f;
+                parts.Add(Box(goods[(shelf + i) % goods.Length], x, y + 0.02f, -0.30f, x + 0.30f, y + 0.28f, 0.30f));
+            }
+        }
+
+        Save("FridgeCase", "fridge_case", parts);
+    }
+
+    private static void BuildTrolleyRow(Material steel, Material handle)
+    {
+        // Three shopping trolleys nested in a row 1.9 m long along Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var i = 0; i < 3; i++)
+        {
+            var z = -0.95f + i * 0.35f;
+            parts.Add(Box(steel, -0.28f, 0.45f, z, 0.28f, 0.48f, z + 0.90f));
+            parts.Add(Box(steel, -0.28f, 0.48f, z, -0.26f, 0.95f, z + 0.90f));
+            parts.Add(Box(steel, 0.26f, 0.48f, z, 0.28f, 0.95f, z + 0.90f));
+            parts.Add(Box(steel, -0.28f, 0.48f, z + 0.88f, 0.28f, 0.95f, z + 0.90f));
+            parts.Add(Box(handle, -0.30f, 1.00f, z - 0.05f, 0.30f, 1.04f, z - 0.01f));
+            parts.Add(Box(steel, -0.25f, 0.05f, z, -0.22f, 0.45f, z + 0.03f));
+            parts.Add(Box(steel, 0.22f, 0.05f, z, 0.25f, 0.45f, z + 0.03f));
+        }
+
+        parts.Add(Box(steel, -0.26f, 0f, -0.95f, 0.26f, 0.05f, 0.95f));
+        Save("TrolleyRow", "trolley_row", parts);
+    }
+
+    private static void BuildBasketStack(Material red, Material black)
+    {
+        // Six red hand baskets stacked on a low stand, centred.
+        var parts = new List<LowPolyBoxMesh.Part> { Box(black, -0.25f, 0f, -0.18f, 0.25f, 0.06f, 0.18f) };
+        for (var i = 0; i < 6; i++)
+        {
+            var y = 0.06f + i * 0.08f;
+            parts.Add(Box(red, -0.23f, y, -0.16f, 0.23f, y + 0.07f, 0.16f));
+        }
+
+        parts.Add(Box(black, -0.20f, 0.53f, -0.01f, 0.20f, 0.58f, 0.01f));
+        Save("BasketStack", "basket_stack", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
