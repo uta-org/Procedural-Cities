@@ -133,6 +133,19 @@ public static class GenerateCivicProps
         BuildQueueStanchions(steel, LowPolyBoxMesh.GetMat("LP_CV_BeltRed", new Color(0.70f, 0.10f, 0.12f), 0f, 0.4f));
         BuildBankSafe(LowPolyBoxMesh.GetMat("LP_CV_SafeGrey", new Color(0.35f, 0.37f, 0.40f), 0.7f, 0.5f), steel);
 
+        // The pharmacy's (P43.20).
+        var crossGreen = LowPolyBoxMesh.GetMat("LP_CV_CrossGreen", new Color(0.10f, 0.85f, 0.30f), 0f, 0.9f);
+        BuildPharmacyCounter(white, crossGreen, black);
+        BuildPharmacyShelf(white, new[]
+        {
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsMilk", new Color(0.92f, 0.93f, 0.95f), 0f, 0.3f),
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsGreen", new Color(0.35f, 0.65f, 0.30f), 0f, 0.3f),
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsBlue", new Color(0.20f, 0.40f, 0.80f), 0f, 0.3f),
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsOrange", new Color(0.95f, 0.55f, 0.15f), 0f, 0.3f),
+        });
+        BuildPharmacyCross(crossGreen, black);
+        BuildBloodPressureKiosk(white, crossGreen, black);
+
         // The petrol station's (P43.9).
         var brandGreen = LowPolyBoxMesh.GetMat("LP_CV_FuelGreen", new Color(0.05f, 0.45f, 0.25f), 0.2f, 0.5f);
         var brandYellow = LowPolyBoxMesh.GetMat("LP_CV_FuelYellow", new Color(0.98f, 0.80f, 0.10f), 0.2f, 0.5f);
@@ -1088,6 +1101,74 @@ public static class GenerateCivicProps
         for (var i = 0; i < 6; i++)
             parts.Add(new LowPolyBoxMesh.Part(steel, new Vector3(0.10f, 0.75f, 0.46f), new Vector3(0.30f, 0.03f, 0.03f), Quaternion.Euler(0f, 0f, i * 30f)));
         Save("BankSafe", "bank_safe", parts);
+    }
+
+    private static void BuildPharmacyCounter(Material white, Material green, Material black)
+    {
+        // A dispensing counter 2.6 x 1.5 m: the counter 0.6 m deep at the front (+Z) with a green
+        // band and a till, the pharmacist's floor behind it (-Z, against the wall), centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -1.30f, 0f, 0.15f, 1.30f, 1.00f, 0.75f),
+            Box(white, -1.32f, 1.00f, 0.13f, 1.32f, 1.05f, 0.77f),
+            Box(green, -1.30f, 0.80f, 0.75f, 1.30f, 0.90f, 0.76f),
+            Box(black, 0.60f, 1.05f, 0.25f, 0.95f, 1.15f, 0.55f),
+            Box(black, 0.65f, 1.15f, 0.25f, 0.90f, 1.35f, 0.30f),
+        };
+        Save("PharmacyCounter", "pharmacy_counter", parts);
+    }
+
+    private static void BuildPharmacyShelf(Material white, Material[] boxes)
+    {
+        // A wall unit of medicine drawers and shelves 2.0 x 0.4 m, 2.2 m high, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -1.00f, 0f, -0.20f, 1.00f, 0.90f, 0.20f),
+            Box(white, -1.00f, 0.90f, -0.20f, 1.00f, 2.20f, -0.17f),
+            Box(white, -1.00f, 0.90f, -0.20f, -0.97f, 2.20f, 0.10f),
+            Box(white, 0.97f, 0.90f, -0.20f, 1.00f, 2.20f, 0.10f),
+        };
+        for (var d = 0; d < 4; d++)
+            parts.Add(Box(boxes[3], -0.95f + d * 0.48f, 0.42f, 0.20f, -0.55f + d * 0.48f, 0.46f, 0.21f));
+        for (var shelf = 0; shelf < 4; shelf++)
+        {
+            var y = 0.92f + shelf * 0.32f;
+            parts.Add(Box(white, -0.97f, y, -0.17f, 0.97f, y + 0.02f, 0.10f));
+            for (var i = 0; i < 10; i++)
+            {
+                var x = -0.94f + i * 0.19f;
+                parts.Add(Box(boxes[(shelf + i) % 3], x, y + 0.02f, -0.12f, x + 0.15f, y + 0.20f, 0.06f));
+            }
+        }
+
+        Save("PharmacyShelf", "pharmacy_shelf", parts);
+    }
+
+    private static void BuildPharmacyCross(Material green, Material black)
+    {
+        // The green cross sign 0.7 m across on a wall, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(black, -0.08f, 0.30f, 0f, 0.08f, 0.40f, 0.04f),
+            Box(green, -0.35f, 0.24f, 0.04f, 0.35f, 0.46f, 0.12f),
+            Box(green, -0.11f, 0f, 0.04f, 0.11f, 0.70f, 0.12f),
+        };
+        Save("PharmacyCross", "pharmacy_cross", parts);
+    }
+
+    private static void BuildBloodPressureKiosk(Material white, Material green, Material black)
+    {
+        // A blood pressure kiosk 0.8 x 0.9 m: a seat, the arm cuff unit and its screen, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -0.40f, 0f, -0.45f, 0.40f, 1.30f, -0.25f),
+            Box(green, -0.40f, 1.10f, -0.25f, 0.40f, 1.30f, -0.20f),
+            Box(black, -0.20f, 0.85f, -0.25f, 0.20f, 1.05f, -0.22f),
+            Box(white, -0.30f, 0.40f, -0.25f, 0.30f, 0.46f, 0.30f),
+            Box(white, -0.25f, 0f, 0.05f, 0.25f, 0.40f, 0.25f),
+            Box(white, 0.30f, 0.60f, -0.25f, 0.40f, 0.75f, 0.10f),
+        };
+        Save("BloodPressureKiosk", "blood_pressure_kiosk", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
