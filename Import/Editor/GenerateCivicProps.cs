@@ -169,6 +169,15 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_Poster", new Color(0.93f, 0.90f, 0.80f), 0f, 0.2f), darkWood);
         BuildJukebox(darkWood, LowPolyBoxMesh.GetMat("LP_CV_JukeboxGlow", new Color(1.00f, 0.60f, 0.20f), 0f, 0.9f), glass, steel);
 
+        // The nightclub's (P43.15).
+        var neonPink = LowPolyBoxMesh.GetMat("LP_CV_NeonPink", new Color(1.00f, 0.20f, 0.70f), 0f, 0.9f);
+        var neonCyan = LowPolyBoxMesh.GetMat("LP_CV_NeonCyan", new Color(0.20f, 0.90f, 1.00f), 0f, 0.9f);
+        var neonViolet = LowPolyBoxMesh.GetMat("LP_CV_NeonViolet", new Color(0.55f, 0.25f, 1.00f), 0f, 0.9f);
+        BuildDjBooth(black, neonPink, steel);
+        BuildDanceFloor(new[] { neonPink, neonCyan, neonViolet, black });
+        BuildSpeakerStack(black, steel);
+        BuildDiscoBall(LowPolyBoxMesh.GetMat("LP_CV_Mirror", new Color(0.85f, 0.88f, 0.92f), 1.0f, 0.95f), steel);
+
         // The petrol station's (P43.9).
         var brandGreen = LowPolyBoxMesh.GetMat("LP_CV_FuelGreen", new Color(0.05f, 0.45f, 0.25f), 0.2f, 0.5f);
         var brandYellow = LowPolyBoxMesh.GetMat("LP_CV_FuelYellow", new Color(0.98f, 0.80f, 0.10f), 0.2f, 0.5f);
@@ -1345,6 +1354,71 @@ public static class GenerateCivicProps
             Box(steel, -0.25f, 0.30f, 0.30f, 0.25f, 0.55f, 0.32f),
         };
         Save("Jukebox", "jukebox", parts);
+    }
+
+    private static void BuildDjBooth(Material black, Material neon, Material steel)
+    {
+        // A DJ booth 2.0 x 0.9 m, 1.1 m high with a neon band, two decks and a mixer on top and a
+        // laptop stand, the DJ's side at -Z (against the wall), facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(black, -1.00f, 0f, -0.10f, 1.00f, 1.05f, 0.45f),
+            Box(neon, -1.00f, 0.80f, 0.45f, 1.00f, 0.86f, 0.46f),
+            Box(neon, -1.00f, 0.10f, 0.45f, 1.00f, 0.14f, 0.46f),
+            Box(steel, -1.02f, 1.05f, -0.12f, 1.02f, 1.08f, 0.47f),
+            Box(black, -0.75f, 1.08f, 0f, -0.30f, 1.14f, 0.40f),
+            Box(black, 0.30f, 1.08f, 0f, 0.75f, 1.14f, 0.40f),
+            Box(steel, -0.20f, 1.08f, 0.05f, 0.20f, 1.16f, 0.35f),
+            Box(steel, 0.80f, 1.08f, 0.10f, 0.95f, 1.30f, 0.30f),
+        };
+        Save("DjBooth", "dj_booth", parts);
+    }
+
+    private static void BuildDanceFloor(Material[] tiles)
+    {
+        // A lit dance floor 3 x 3 m of 0.5 m tiles in the neon colours, 0.05 m high, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var i = 0; i < 6; i++)
+        {
+            for (var j = 0; j < 6; j++)
+            {
+                var x = -1.50f + i * 0.50f;
+                var z = -1.50f + j * 0.50f;
+                parts.Add(Box(tiles[(i * 3 + j * 5 + (i * j) % 3) % tiles.Length], x + 0.01f, 0f, z + 0.01f, x + 0.49f, 0.05f, z + 0.49f));
+            }
+        }
+
+        Save("DanceFloor", "dance_floor", parts);
+    }
+
+    private static void BuildSpeakerStack(Material black, Material steel)
+    {
+        // Two stacked PA cabinets 0.7 x 0.7 m, 1.8 m high, the cones facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(black, -0.35f, 0f, -0.35f, 0.35f, 0.90f, 0.35f),
+            Box(black, -0.33f, 0.90f, -0.33f, 0.33f, 1.80f, 0.33f),
+        };
+        foreach (var (y, w) in new[] { (0.40f, 0.44f), (1.20f, 0.30f), (1.60f, 0.14f) })
+        {
+            for (var i = 0; i < 6; i++)
+                parts.Add(new LowPolyBoxMesh.Part(steel, new Vector3(0f, y, 0.35f), new Vector3(w, w * Mathf.Tan(15f * Mathf.Deg2Rad), 0.02f), Quaternion.Euler(0f, 0f, i * 30f)));
+        }
+
+        Save("SpeakerStack", "speaker_stack", parts);
+    }
+
+    private static void BuildDiscoBall(Material mirror, Material steel)
+    {
+        // A mirror ball 0.4 m across hung 0.4 m below its ceiling mount; the pivot at the mount (Y = 0).
+        var parts = new List<LowPolyBoxMesh.Part> { Box(steel, -0.01f, -0.40f, -0.01f, 0.01f, 0f, 0.01f) };
+        for (var i = 0; i < 6; i++)
+        {
+            parts.Add(new LowPolyBoxMesh.Part(mirror, new Vector3(0f, -0.60f, 0f), new Vector3(0.40f, 0.40f * Mathf.Tan(15f * Mathf.Deg2Rad), 0.40f), Quaternion.Euler(0f, 0f, i * 30f)));
+            parts.Add(new LowPolyBoxMesh.Part(mirror, new Vector3(0f, -0.60f, 0f), new Vector3(0.40f * Mathf.Tan(15f * Mathf.Deg2Rad), 0.40f, 0.40f), Quaternion.Euler(i * 30f, 0f, 0f)));
+        }
+
+        Save("DiscoBall", "disco_ball", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
