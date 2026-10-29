@@ -109,6 +109,23 @@ public static class GenerateCivicProps
         });
         BuildTrolleyRow(steel, basketRed);
         BuildBasketStack(basketRed, black);
+
+        // The petrol station's (P43.9).
+        var brandGreen = LowPolyBoxMesh.GetMat("LP_CV_FuelGreen", new Color(0.05f, 0.45f, 0.25f), 0.2f, 0.5f);
+        var brandYellow = LowPolyBoxMesh.GetMat("LP_CV_FuelYellow", new Color(0.98f, 0.80f, 0.10f), 0.2f, 0.5f);
+        var screen = LowPolyBoxMesh.GetMat("LP_CV_PumpScreen", new Color(0.10f, 0.20f, 0.18f), 0.3f, 0.9f);
+        BuildPetrolCanopy(white, brandGreen, brandYellow, steel);
+        BuildFuelPump(white, brandGreen, black, screen);
+        BuildPriceTotem(brandGreen, brandYellow, white, black);
+        BuildAirPump(LowPolyBoxMesh.GetMat("LP_CV_AirRed", new Color(0.80f, 0.15f, 0.12f), 0.2f, 0.5f), black, steel);
+        BuildIceChest(white, LowPolyBoxMesh.GetMat("LP_CV_IceBlue", new Color(0.35f, 0.60f, 0.90f), 0f, 0.4f), glass);
+        BuildOilRack(steel, new[] { brandYellow, basketRed, black, LowPolyBoxMesh.GetMat("LP_CV_GoodsBlue", new Color(0.20f, 0.40f, 0.80f), 0f, 0.3f) });
+        BuildNewspaperStand(steel, new[]
+        {
+            LowPolyBoxMesh.GetMat("LP_CV_LeafWhite", new Color(0.95f, 0.95f, 0.93f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_LeafBlue", new Color(0.45f, 0.62f, 0.85f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
+        });
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -755,6 +772,140 @@ public static class GenerateCivicProps
 
         parts.Add(Box(black, -0.20f, 0.53f, -0.01f, 0.20f, 0.58f, 0.01f));
         Save("BasketStack", "basket_stack", parts);
+    }
+
+    private static void BuildPetrolCanopy(Material white, Material green, Material yellow, Material steel)
+    {
+        // A forecourt canopy 8.0 m wide and 4.5 m deep out from a facade, its back at Z = 0 (on the
+        // wall), the deck 4.5 m up with a green and yellow fascia, two columns at the outer edge and
+        // light panels under the deck.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -4.00f, 4.50f, 0f, 4.00f, 4.80f, 4.50f),
+            Box(green, -4.05f, 4.40f, 4.50f, 4.05f, 5.00f, 4.55f),
+            Box(green, -4.05f, 4.40f, 0f, -4.00f, 5.00f, 4.55f),
+            Box(green, 4.00f, 4.40f, 0f, 4.05f, 5.00f, 4.55f),
+            Box(yellow, -4.06f, 4.40f, 4.55f, 4.06f, 4.52f, 4.57f),
+            Box(steel, -3.20f, 0f, 3.70f, -2.90f, 4.50f, 4.00f),
+            Box(steel, 2.90f, 0f, 3.70f, 3.20f, 4.50f, 4.00f),
+            Box(steel, -3.30f, 0f, 3.60f, -2.80f, 0.30f, 4.10f),
+            Box(steel, 2.80f, 0f, 3.60f, 3.30f, 0.30f, 4.10f),
+        };
+        for (var i = 0; i < 3; i++)
+            parts.Add(Box(white, -2.80f + i * 2.30f, 4.48f, 1.50f, -1.60f + i * 2.30f, 4.50f, 3.00f));
+        Save("PetrolCanopy", "petrol_canopy", parts);
+    }
+
+    private static void BuildFuelPump(Material white, Material green, Material black, Material screen)
+    {
+        // A fuel dispenser 0.9 x 0.5 m, 1.9 m high, on a kerbed island 1.6 x 0.9 m, a display and
+        // nozzles on both long faces (+Z and -Z), centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -0.80f, 0f, -0.45f, 0.80f, 0.15f, 0.45f),
+            Box(white, -0.45f, 0.15f, -0.25f, 0.45f, 1.85f, 0.25f),
+            Box(green, -0.47f, 1.55f, -0.27f, 0.47f, 1.95f, 0.27f),
+            Box(screen, -0.30f, 1.15f, 0.25f, 0.10f, 1.45f, 0.26f),
+            Box(screen, -0.10f, 1.15f, -0.26f, 0.30f, 1.45f, -0.25f),
+        };
+        for (var i = 0; i < 3; i++)
+        {
+            var x = -0.30f + i * 0.30f;
+            parts.Add(Box(black, x - 0.04f, 0.75f, 0.25f, x + 0.04f, 0.95f, 0.33f));
+            parts.Add(Box(black, x - 0.04f, 0.75f, -0.33f, x + 0.04f, 0.95f, -0.25f));
+        }
+
+        Save("FuelPump", "fuel_pump", parts);
+    }
+
+    private static void BuildPriceTotem(Material green, Material yellow, Material white, Material black)
+    {
+        // A price sign 1.2 x 0.4 m, 4.0 m high: the brand panel on top and four price rows on both
+        // faces (+Z and -Z), centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(green, -0.60f, 0f, -0.20f, 0.60f, 4.00f, 0.20f),
+            Box(yellow, -0.55f, 3.20f, -0.21f, 0.55f, 3.90f, 0.21f),
+        };
+        for (var row = 0; row < 4; row++)
+        {
+            var y = 1.20f + row * 0.45f;
+            parts.Add(Box(white, -0.50f, y, -0.21f, 0.10f, y + 0.35f, 0.21f));
+            parts.Add(Box(black, 0.15f, y, -0.21f, 0.50f, y + 0.35f, 0.21f));
+        }
+
+        Save("PriceTotem", "price_totem", parts);
+    }
+
+    private static void BuildAirPump(Material red, Material black, Material steel)
+    {
+        // An air and water post 0.4 x 0.3 m, 1.3 m high, a hose coiled on its side, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -0.25f, 0f, -0.20f, 0.25f, 0.05f, 0.20f),
+            Box(red, -0.20f, 0.05f, -0.15f, 0.20f, 1.30f, 0.15f),
+            Box(black, -0.12f, 0.95f, 0.15f, 0.12f, 1.15f, 0.16f),
+        };
+        for (var i = 0; i < 6; i++)
+            parts.Add(new LowPolyBoxMesh.Part(black, new Vector3(0.22f, 0.60f, 0f), new Vector3(0.04f, 0.30f, 0.30f * Mathf.Tan(15f * Mathf.Deg2Rad)), Quaternion.Euler(i * 30f, 0f, 0f)));
+        Save("AirPump", "air_pump", parts);
+    }
+
+    private static void BuildIceChest(Material white, Material blue, Material glass)
+    {
+        // An ice merchandiser 1.2 x 0.7 m, 1.0 m high with a sliding glass lid, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -0.60f, 0f, -0.35f, 0.60f, 0.92f, 0.35f),
+            Box(blue, -0.61f, 0.30f, -0.36f, 0.61f, 0.70f, 0.36f),
+            Box(glass, -0.56f, 0.92f, -0.31f, 0.56f, 0.95f, 0.31f),
+            Box(white, -0.60f, 0.92f, -0.35f, 0.60f, 1.00f, -0.31f),
+            Box(white, -0.60f, 0.92f, 0.31f, 0.60f, 1.00f, 0.35f),
+        };
+        Save("IceChest", "ice_chest", parts);
+    }
+
+    private static void BuildOilRack(Material steel, Material[] cans)
+    {
+        // A rack of motor oil and screen wash 1.0 x 0.4 m, 1.5 m high, three shelves, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -0.50f, 0f, -0.20f, -0.47f, 1.50f, 0.20f),
+            Box(steel, 0.47f, 0f, -0.20f, 0.50f, 1.50f, 0.20f),
+            Box(steel, -0.50f, 0f, -0.20f, 0.50f, 1.50f, -0.18f),
+        };
+        for (var shelf = 0; shelf < 3; shelf++)
+        {
+            var y = 0.15f + shelf * 0.48f;
+            parts.Add(Box(steel, -0.47f, y, -0.18f, 0.47f, y + 0.02f, 0.20f));
+            for (var i = 0; i < 5; i++)
+            {
+                var x = -0.42f + i * 0.17f;
+                parts.Add(Box(cans[(shelf + i) % cans.Length], x, y + 0.02f, -0.10f, x + 0.13f, y + 0.28f, 0.12f));
+            }
+        }
+
+        Save("OilRack", "oil_rack", parts);
+    }
+
+    private static void BuildNewspaperStand(Material steel, Material[] papers)
+    {
+        // A tiered newspaper stand 0.8 x 0.5 m, 1.2 m high, three sloping tiers, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -0.40f, 0f, -0.25f, -0.37f, 1.20f, 0.25f),
+            Box(steel, 0.37f, 0f, -0.25f, 0.40f, 1.20f, 0.25f),
+        };
+        for (var tier = 0; tier < 3; tier++)
+        {
+            var y = 0.45f + tier * 0.30f;
+            var z = 0.15f - tier * 0.15f;
+            parts.Add(new LowPolyBoxMesh.Part(steel, new Vector3(0f, y, z), new Vector3(0.74f, 0.02f, 0.22f), Quaternion.Euler(-25f, 0f, 0f)));
+            for (var i = 0; i < 3; i++)
+                parts.Add(new LowPolyBoxMesh.Part(papers[(tier + i) % papers.Length], new Vector3(-0.24f + i * 0.24f, y + 0.02f, z), new Vector3(0.22f, 0.01f, 0.20f), Quaternion.Euler(-25f, 0f, 0f)));
+        }
+
+        Save("NewspaperStand", "newspaper_stand", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
