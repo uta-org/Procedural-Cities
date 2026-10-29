@@ -120,6 +120,13 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
         });
         BuildSkeletonModel(chalk, steel);
+        // The cinema's (P43.22).
+        var velvet = LowPolyBoxMesh.GetMat("LP_CV_Velvet", new Color(0.50f, 0.05f, 0.08f), 0f, 0.3f);
+        BuildCinemaScreen(LowPolyBoxMesh.GetMat("LP_CV_ScreenWhite", new Color(0.92f, 0.92f, 0.94f), 0f, 0.2f), black, velvet);
+        BuildCinemaSeatRow(velvet, black);
+        BuildPopcornStand(LowPolyBoxMesh.GetMat("LP_CV_FlagRed", new Color(0.72f, 0.12f, 0.12f), 0f, 0.2f), white, glass,
+            LowPolyBoxMesh.GetMat("LP_CV_Popcorn", new Color(0.98f, 0.92f, 0.65f), 0f, 0.2f));
+
         // The library's (P43.16).
         var bookMats = new[]
         {
@@ -1694,6 +1701,55 @@ public static class GenerateCivicProps
             Box(tape, -0.20f, 0.45f, 0.20f, 0.00f, 0.52f, 0.21f),
         };
         Save("ParcelStack", "parcel_stack", parts);
+    }
+
+    private static void BuildCinemaScreen(Material screen, Material black, Material velvet)
+    {
+        // A cinema screen 6.0 x 2.4 m in a black frame between two velvet curtains, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(black, -3.10f, 0f, 0f, 3.10f, 2.60f, 0.04f),
+            Box(screen, -3.00f, 0.10f, 0.04f, 3.00f, 2.50f, 0.05f),
+            Box(velvet, -3.10f, 0f, 0.05f, -2.70f, 2.60f, 0.15f),
+            Box(velvet, 2.70f, 0f, 0.05f, 3.10f, 2.60f, 0.15f),
+        };
+        Save("CinemaScreen", "cinema_screen", parts);
+    }
+
+    private static void BuildCinemaSeatRow(Material velvet, Material black)
+    {
+        // Six cinema seats 0.6 m apart with armrests, the audience looking along +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var i = 0; i < 6; i++)
+        {
+            var x = -1.50f + i * 0.60f;
+            parts.Add(Box(velvet, x - 0.26f, 0.40f, -0.25f, x + 0.26f, 0.50f, 0.25f));
+            parts.Add(Box(velvet, x - 0.26f, 0.40f, -0.40f, x + 0.26f, 1.00f, -0.28f));
+            parts.Add(Box(black, x - 0.20f, 0f, -0.30f, x + 0.20f, 0.40f, 0.10f));
+        }
+
+        for (var i = 0; i < 7; i++)
+        {
+            var x = -1.80f + i * 0.60f;
+            parts.Add(Box(black, x - 0.04f, 0f, -0.35f, x + 0.04f, 0.68f, 0.30f));
+        }
+
+        Save("CinemaSeatRow", "cinema_seat_row", parts);
+    }
+
+    private static void BuildPopcornStand(Material red, Material white, Material glass, Material popcorn)
+    {
+        // A popcorn cart 1.2 x 0.8 m: a red cabinet, the glass kettle case full of popcorn, a
+        // white roof, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(red, -0.60f, 0f, -0.40f, 0.60f, 0.90f, 0.40f),
+            Box(white, -0.62f, 0.90f, -0.42f, 0.62f, 0.94f, 0.42f),
+            Box(glass, -0.50f, 0.94f, -0.30f, 0.50f, 1.55f, 0.30f),
+            Box(popcorn, -0.48f, 0.94f, -0.28f, 0.48f, 1.20f, 0.28f),
+            Box(red, -0.55f, 1.55f, -0.35f, 0.55f, 1.70f, 0.35f),
+        };
+        Save("PopcornStand", "popcorn_stand", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
