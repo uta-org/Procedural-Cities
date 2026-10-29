@@ -44,6 +44,9 @@ public static class GenerateCivicProps
         BuildBust(stone, LowPolyBoxMesh.GetMat("LP_CV_Bronze", new Color(0.42f, 0.30f, 0.18f), 0.8f, 0.5f));
         BuildVitrine(dark, glass, brass);
 
+        // The museum's (P43.13).
+        BuildSculpturePedestal(stone, LowPolyBoxMesh.GetMat("LP_CV_Bronze", new Color(0.42f, 0.30f, 0.18f), 0.8f, 0.5f), brass);
+
         // The police station's (P43.4).
         var steel = LowPolyBoxMesh.GetMat("LP_CV_Steel", new Color(0.55f, 0.57f, 0.60f), 0.8f, 0.5f);
         BuildCellBars(steel);
@@ -1263,6 +1266,25 @@ public static class GenerateCivicProps
         }
 
         Save("DirectoryBoard", "directory_board", parts);
+    }
+
+    private static void BuildSculpturePedestal(Material stone, Material bronze, Material brass)
+    {
+        // A stone plinth 0.6 x 0.6 m, 1.0 m high, with an abstract bronze sculpture on it (three
+        // turned blocks and a ring) and a brass plaque on its front (+Z), centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(stone, -0.32f, 0f, -0.32f, 0.32f, 0.05f, 0.32f),
+            Box(stone, -0.28f, 0.05f, -0.28f, 0.28f, 1.00f, 0.28f),
+            Box(brass, -0.10f, 0.70f, 0.28f, 0.10f, 0.78f, 0.29f),
+            new LowPolyBoxMesh.Part(bronze, new Vector3(0f, 1.15f, 0f), new Vector3(0.22f, 0.30f, 0.18f), Quaternion.Euler(0f, 25f, 10f)),
+            new LowPolyBoxMesh.Part(bronze, new Vector3(0.05f, 1.40f, 0f), new Vector3(0.14f, 0.28f, 0.12f), Quaternion.Euler(0f, -30f, -20f)),
+            new LowPolyBoxMesh.Part(bronze, new Vector3(-0.04f, 1.60f, 0.02f), new Vector3(0.10f, 0.16f, 0.10f), Quaternion.Euler(15f, 45f, 0f)),
+        };
+        for (var i = 0; i < 8; i++)
+            parts.Add(new LowPolyBoxMesh.Part(bronze, new Vector3(0f, 1.62f, 0f) + Quaternion.Euler(0f, 0f, i * 45f) * new Vector3(0.12f, 0f, 0f),
+                new Vector3(0.03f, 0.10f, 0.03f), Quaternion.Euler(0f, 0f, i * 45f)));
+        Save("SculpturePedestal", "sculpture_pedestal", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
