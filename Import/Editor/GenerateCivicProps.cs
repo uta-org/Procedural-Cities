@@ -83,6 +83,19 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_AmbGreen", new Color(0.10f, 0.55f, 0.25f), 0.2f, 0.6f), black,
             LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f),
             LowPolyBoxMesh.GetMat("LP_CV_LightBlue", new Color(0.20f, 0.45f, 1.00f), 0f, 0.9f));
+
+        // The school's (P43.7).
+        var beech = LowPolyBoxMesh.GetMat("LP_CV_Beech", new Color(0.80f, 0.66f, 0.46f), 0f, 0.35f);
+        var slate = LowPolyBoxMesh.GetMat("LP_CV_Slate", new Color(0.14f, 0.26f, 0.20f), 0f, 0.15f);
+        var chalk = LowPolyBoxMesh.GetMat("LP_CV_Chalk", new Color(0.92f, 0.92f, 0.88f), 0f, 0.1f);
+        var orange = LowPolyBoxMesh.GetMat("LP_CV_HoopOrange", new Color(0.92f, 0.42f, 0.10f), 0.2f, 0.5f);
+        var matBlue = LowPolyBoxMesh.GetMat("LP_CV_GymMatBlue", new Color(0.16f, 0.36f, 0.72f), 0f, 0.3f);
+        BuildSchoolDesk(beech, steel, LowPolyBoxMesh.GetMat("LP_CV_SeatGreen", new Color(0.22f, 0.50f, 0.34f), 0f, 0.3f));
+        BuildBlackboard(beech, slate, chalk);
+        BuildLabBench(LowPolyBoxMesh.GetMat("LP_CV_LabTop", new Color(0.18f, 0.19f, 0.20f), 0f, 0.6f), white, steel);
+        BuildBasketballHoop(white, orange, steel);
+        BuildGymMat(matBlue);
+        BuildGymBench(beech, steel);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -550,6 +563,101 @@ public static class GenerateCivicProps
         foreach (var (x, z) in new[] { (-0.90f, 2.20f), (0.90f, 2.20f), (-0.90f, -2.10f), (0.90f, -2.10f) })
             parts.Add(Box(black, x - 0.16f, 0f, z - 0.38f, x + 0.16f, 0.76f, z + 0.38f));
         Save("Ambulance", "ambulance", parts);
+    }
+
+    private static void BuildSchoolDesk(Material wood, Material steel, Material seat)
+    {
+        // A pupil's desk 0.65 x 0.45 m (top at 0.72 m) and its chair behind it, the pupil looking
+        // along +Z: the desk at Z 0.05..0.50, the chair at Z -0.50..-0.08, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -0.325f, 0.70f, 0.05f, 0.325f, 0.73f, 0.50f),
+            Box(steel, -0.30f, 0f, 0.08f, -0.27f, 0.70f, 0.11f),
+            Box(steel, 0.27f, 0f, 0.08f, 0.30f, 0.70f, 0.11f),
+            Box(steel, -0.30f, 0f, 0.44f, -0.27f, 0.70f, 0.47f),
+            Box(steel, 0.27f, 0f, 0.44f, 0.30f, 0.70f, 0.47f),
+            Box(steel, -0.30f, 0.55f, 0.44f, 0.30f, 0.58f, 0.47f),
+            Box(wood, -0.20f, 0.42f, -0.45f, 0.20f, 0.45f, -0.08f),
+            Box(seat, -0.20f, 0.55f, -0.50f, 0.20f, 0.82f, -0.47f),
+            Box(steel, -0.18f, 0f, -0.44f, -0.16f, 0.42f, -0.42f),
+            Box(steel, 0.16f, 0f, -0.44f, 0.18f, 0.42f, -0.42f),
+            Box(steel, -0.18f, 0f, -0.11f, -0.16f, 0.42f, -0.09f),
+            Box(steel, 0.16f, 0f, -0.11f, 0.18f, 0.42f, -0.09f),
+            Box(steel, -0.18f, 0.42f, -0.50f, -0.16f, 0.82f, -0.47f),
+            Box(steel, 0.16f, 0.42f, -0.50f, 0.18f, 0.82f, -0.47f),
+        };
+        Save("SchoolDesk", "school_desk", parts);
+    }
+
+    private static void BuildBlackboard(Material wood, Material slate, Material chalk)
+    {
+        // A green board 2.4 x 1.2 m in a wooden frame with a chalk tray, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -1.25f, 0f, 0f, 1.25f, 1.26f, 0.03f),
+            Box(slate, -1.20f, 0.05f, 0.03f, 1.20f, 1.21f, 0.04f),
+            Box(wood, -1.25f, 0f, 0.03f, 1.25f, 0.03f, 0.09f),
+            Box(chalk, -1.10f, 0.03f, 0.04f, -1.02f, 0.05f, 0.06f),
+            Box(chalk, -0.90f, 0.03f, 0.05f, -0.84f, 0.05f, 0.07f),
+            Box(chalk, -0.80f, 0.55f, 0.04f, 0.40f, 0.57f, 0.045f),
+            Box(chalk, -0.80f, 0.80f, 0.04f, 0.10f, 0.82f, 0.045f),
+            Box(chalk, -0.80f, 0.30f, 0.04f, 0.70f, 0.32f, 0.045f),
+        };
+        Save("Blackboard", "blackboard", parts);
+    }
+
+    private static void BuildLabBench(Material top, Material body, Material steel)
+    {
+        // A laboratory bench 1.8 x 0.75 m (top at 0.90 m) on a cupboard base, a sink and a swan-neck
+        // tap at one end and a gas tap at the other, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(body, -0.88f, 0f, -0.35f, 0.88f, 0.86f, 0.35f),
+            Box(top, -0.90f, 0.86f, -0.375f, 0.90f, 0.90f, 0.375f),
+            Box(steel, 0.45f, 0.88f, -0.18f, 0.80f, 0.905f, 0.18f),
+            Box(steel, 0.60f, 0.90f, 0.22f, 0.64f, 1.20f, 0.26f),
+            Box(steel, 0.60f, 1.16f, 0.06f, 0.64f, 1.20f, 0.26f),
+            Box(steel, -0.70f, 0.90f, 0.28f, -0.66f, 1.00f, 0.32f),
+            Box(steel, -0.30f, 0.90f, 0.28f, -0.26f, 1.00f, 0.32f),
+        };
+        Save("LabBench", "lab_bench", parts);
+    }
+
+    private static void BuildBasketballHoop(Material board, Material rim, Material steel)
+    {
+        // A wall-mounted backboard 1.2 x 0.8 m on a bracket with the rim and a net, back at Z = 0.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -0.40f, 0.10f, 0f, 0.40f, 0.70f, 0.30f),
+            Box(board, -0.60f, 0f, 0.30f, 0.60f, 0.80f, 0.34f),
+            Box(rim, -0.25f, 0.18f, 0.34f, 0.25f, 0.42f, 0.345f),
+        };
+        for (var i = 0; i < 6; i++)
+            parts.Add(new LowPolyBoxMesh.Part(rim, new Vector3(0f, 0.15f, 0.57f), new Vector3(0.46f, 0.02f, 0.46f * Mathf.Tan(15f * Mathf.Deg2Rad)), Quaternion.Euler(0f, i * 30f, 0f)));
+        Round(parts, board, 0f, -0.25f, 0.57f, 0.30f, 0.14f);
+        Save("BasketballHoop", "basketball_hoop", parts);
+    }
+
+    private static void BuildGymMat(Material mat)
+    {
+        // A folded-edge gym mat 2.0 x 1.0 m, 0.08 m thick, centred.
+        var parts = new List<LowPolyBoxMesh.Part> { Box(mat, -0.50f, 0f, -1.00f, 0.50f, 0.08f, 1.00f) };
+        Save("GymMat", "gym_mat", parts);
+    }
+
+    private static void BuildGymBench(Material wood, Material steel)
+    {
+        // A gym bench 2.5 x 0.30 m, seat at 0.33 m, on two wooden legs with steel caps, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -1.25f, 0.29f, -0.15f, 1.25f, 0.33f, 0.15f),
+            Box(wood, -1.05f, 0.02f, -0.15f, -0.95f, 0.29f, 0.15f),
+            Box(wood, 0.95f, 0.02f, -0.15f, 1.05f, 0.29f, 0.15f),
+            Box(steel, -1.06f, 0f, -0.16f, -0.94f, 0.02f, 0.16f),
+            Box(steel, 0.94f, 0f, -0.16f, 1.06f, 0.02f, 0.16f),
+            Box(wood, -1.20f, 0.20f, -0.03f, 1.20f, 0.24f, 0.03f),
+        };
+        Save("GymBench", "gym_bench", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
