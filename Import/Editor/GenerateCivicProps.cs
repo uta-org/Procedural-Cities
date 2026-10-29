@@ -96,6 +96,22 @@ public static class GenerateCivicProps
         BuildBasketballHoop(white, orange, steel);
         BuildGymMat(matBlue);
         BuildGymBench(beech, steel);
+        // The secondary school's (P43.10).
+        BuildFumeHood(white, glass, steel, LowPolyBoxMesh.GetMat("LP_CV_LabTop", new Color(0.18f, 0.19f, 0.20f), 0f, 0.6f));
+        BuildPeriodicTable(white, new[]
+        {
+            LowPolyBoxMesh.GetMat("LP_CV_LeafBlue", new Color(0.45f, 0.62f, 0.85f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_LeafGreen", new Color(0.45f, 0.72f, 0.45f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
+        });
+        BuildSkeletonModel(chalk, steel);
+        BuildBookcase(beech, new[]
+        {
+            LowPolyBoxMesh.GetMat("LP_CV_FlagRed", new Color(0.72f, 0.12f, 0.12f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_FlagBlue", new Color(0.14f, 0.24f, 0.58f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_LeafGreen", new Color(0.45f, 0.72f, 0.45f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_FlagYellow", new Color(0.92f, 0.76f, 0.15f), 0f, 0.2f),
+        });
 
         // The supermarket's (P43.8).
         var basketRed = LowPolyBoxMesh.GetMat("LP_CV_BasketRed", new Color(0.80f, 0.12f, 0.12f), 0.1f, 0.4f);
@@ -906,6 +922,95 @@ public static class GenerateCivicProps
         }
 
         Save("NewspaperStand", "newspaper_stand", parts);
+    }
+
+    private static void BuildFumeHood(Material body, Material glass, Material steel, Material top)
+    {
+        // A fume cupboard 1.5 x 0.8 m, 2.3 m high: a cabinet base, a worktop, the glass sash and the
+        // duct box above, back at -Z, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(body, -0.75f, 0f, -0.40f, 0.75f, 0.86f, 0.40f),
+            Box(top, -0.75f, 0.86f, -0.40f, 0.75f, 0.90f, 0.40f),
+            Box(body, -0.75f, 0.90f, -0.40f, -0.70f, 2.30f, 0.40f),
+            Box(body, 0.70f, 0.90f, -0.40f, 0.75f, 2.30f, 0.40f),
+            Box(body, -0.75f, 0.90f, -0.40f, 0.75f, 2.30f, -0.36f),
+            Box(body, -0.75f, 1.90f, -0.40f, 0.75f, 2.30f, 0.40f),
+            Box(glass, -0.70f, 1.15f, 0.36f, 0.70f, 1.90f, 0.38f),
+            Box(steel, -0.70f, 1.13f, 0.36f, 0.70f, 1.16f, 0.40f),
+            Box(steel, -0.20f, 2.30f, -0.25f, 0.20f, 2.60f, 0.15f),
+        };
+        Save("FumeHood", "fume_hood", parts);
+    }
+
+    private static void BuildPeriodicTable(Material white, Material[] cells)
+    {
+        // A periodic table poster 1.4 x 0.8 m, back at Z = 0: 18 x 7 coloured cells with the two
+        // gaps of the real table.
+        var parts = new List<LowPolyBoxMesh.Part> { Box(white, -0.70f, 0f, 0f, 0.70f, 0.80f, 0.01f) };
+        for (var row = 0; row < 7; row++)
+        {
+            for (var col = 0; col < 18; col++)
+            {
+                if ((row == 0 && col > 0 && col < 17) || (row < 3 && col > 1 && col < 12))
+                    continue;
+                var x = -0.66f + col * 0.073f;
+                var y = 0.70f - row * 0.095f;
+                var cell = cells[col < 2 ? 0 : col < 12 ? 1 : 2];
+                parts.Add(Box(cell, x, y - 0.08f, 0.01f, x + 0.065f, y, 0.015f));
+            }
+        }
+
+        Save("PeriodicTable", "periodic_table", parts);
+    }
+
+    private static void BuildSkeletonModel(Material bone, Material steel)
+    {
+        // An anatomy skeleton 1.7 m tall hung from a stand on a five-legged base, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -0.02f, 0.05f, -0.15f, 0.02f, 1.85f, -0.11f),
+            Box(steel, -0.02f, 1.81f, -0.15f, 0.02f, 1.85f, 0f),
+            Box(bone, -0.10f, 1.55f, -0.08f, 0.10f, 1.78f, 0.10f),
+            Box(bone, -0.03f, 1.45f, -0.03f, 0.03f, 1.55f, 0.03f),
+            Box(bone, -0.18f, 1.10f, -0.08f, 0.18f, 1.45f, 0.08f),
+            Box(bone, -0.03f, 0.95f, -0.03f, 0.03f, 1.10f, 0.03f),
+            Box(bone, -0.16f, 0.85f, -0.06f, 0.16f, 0.98f, 0.06f),
+            Box(bone, -0.26f, 0.80f, -0.03f, -0.21f, 1.42f, 0.03f),
+            Box(bone, 0.21f, 0.80f, -0.03f, 0.26f, 1.42f, 0.03f),
+            Box(bone, -0.13f, 0.10f, -0.03f, -0.07f, 0.85f, 0.03f),
+            Box(bone, 0.07f, 0.10f, -0.03f, 0.13f, 0.85f, 0.03f),
+        };
+        for (var i = 0; i < 5; i++)
+            parts.Add(new LowPolyBoxMesh.Part(steel, new Vector3(0f, 0.03f, -0.13f), new Vector3(0.04f, 0.04f, 0.50f), Quaternion.Euler(0f, i * 72f, 0f)));
+        Save("SkeletonModel", "skeleton_model", parts);
+    }
+
+    private static void BuildBookcase(Material wood, Material[] books)
+    {
+        // A bookcase 1.0 x 0.35 m, 2.0 m high, five shelves of books, back at -Z, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -0.50f, 0f, -0.175f, -0.48f, 2.00f, 0.175f),
+            Box(wood, 0.48f, 0f, -0.175f, 0.50f, 2.00f, 0.175f),
+            Box(wood, -0.50f, 0f, -0.175f, 0.50f, 2.00f, -0.155f),
+            Box(wood, -0.50f, 1.98f, -0.175f, 0.50f, 2.00f, 0.175f),
+        };
+        for (var shelf = 0; shelf < 5; shelf++)
+        {
+            var y = 0.04f + shelf * 0.39f;
+            parts.Add(Box(wood, -0.48f, y - 0.02f, -0.155f, 0.48f, y, 0.175f));
+            var x = -0.46f;
+            for (var i = 0; x < 0.40f; i++)
+            {
+                var width = 0.04f + ((shelf * 7 + i * 3) % 4) * 0.01f;
+                var height = 0.24f + ((shelf + i * 5) % 3) * 0.03f;
+                parts.Add(Box(books[(shelf + i) % books.Length], x, y, -0.13f, x + width, y + height, 0.12f));
+                x += width + 0.005f;
+            }
+        }
+
+        Save("Bookcase", "bookcase", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
