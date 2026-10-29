@@ -148,6 +148,17 @@ public static class GenerateCivicProps
         BuildPharmacyCross(crossGreen, black);
         BuildBloodPressureKiosk(white, crossGreen, black);
 
+        // The shopping centre's (P43.12).
+        BuildMallBench(LowPolyBoxMesh.GetMat("LP_CV_Beech", new Color(0.80f, 0.66f, 0.46f), 0f, 0.35f), steel);
+        BuildMallKiosk(white, LowPolyBoxMesh.GetMat("LP_CV_KioskTeal", new Color(0.10f, 0.55f, 0.58f), 0.1f, 0.5f), glass,
+            LowPolyBoxMesh.GetMat("LP_CV_GoodsOrange", new Color(0.95f, 0.55f, 0.15f), 0f, 0.3f));
+        BuildDirectoryBoard(steel, LowPolyBoxMesh.GetMat("LP_CV_PumpScreen", new Color(0.10f, 0.20f, 0.18f), 0.3f, 0.9f), new[]
+        {
+            LowPolyBoxMesh.GetMat("LP_CV_LeafBlue", new Color(0.45f, 0.62f, 0.85f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_LeafGreen", new Color(0.45f, 0.72f, 0.45f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
+        });
+
         // The petrol station's (P43.9).
         var brandGreen = LowPolyBoxMesh.GetMat("LP_CV_FuelGreen", new Color(0.05f, 0.45f, 0.25f), 0.2f, 0.5f);
         var brandYellow = LowPolyBoxMesh.GetMat("LP_CV_FuelYellow", new Color(0.98f, 0.80f, 0.10f), 0.2f, 0.5f);
@@ -1192,6 +1203,66 @@ public static class GenerateCivicProps
         }
 
         Save("LectureSeatRow", "lecture_seat_row", parts);
+    }
+
+    private static void BuildMallBench(Material wood, Material steel)
+    {
+        // A backless mall bench 1.8 x 0.5 m, seat at 0.45 m, of wooden slats on two steel frames, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var i = 0; i < 5; i++)
+        {
+            var z = -0.24f + i * 0.10f;
+            parts.Add(Box(wood, -0.90f, 0.40f, z, 0.90f, 0.45f, z + 0.08f));
+        }
+
+        foreach (var x in new[] { -0.70f, 0.70f })
+        {
+            parts.Add(Box(steel, x - 0.03f, 0f, -0.22f, x + 0.03f, 0.40f, -0.16f));
+            parts.Add(Box(steel, x - 0.03f, 0f, 0.16f, x + 0.03f, 0.40f, 0.22f));
+            parts.Add(Box(steel, x - 0.03f, 0.36f, -0.22f, x + 0.03f, 0.40f, 0.22f));
+        }
+
+        Save("MallBench", "mall_bench", parts);
+    }
+
+    private static void BuildMallKiosk(Material white, Material teal, Material glass, Material goods)
+    {
+        // A kiosk cart 2.0 x 1.2 m: a counter with a glass display, four posts and a teal canopy at
+        // 2.5 m, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(teal, -1.00f, 0f, -0.60f, 1.00f, 0.95f, 0.60f),
+            Box(white, -1.02f, 0.95f, -0.62f, 1.02f, 1.00f, 0.62f),
+            Box(glass, -0.90f, 1.00f, -0.50f, 0.90f, 1.30f, 0.50f),
+            Box(goods, -0.80f, 1.00f, -0.40f, 0.80f, 1.10f, 0.40f),
+            Box(teal, -1.10f, 2.40f, -0.70f, 1.10f, 2.50f, 0.70f),
+        };
+        foreach (var x in new[] { -0.95f, 0.95f })
+        {
+            foreach (var z in new[] { -0.55f, 0.55f })
+                parts.Add(Box(white, x - 0.03f, 1.00f, z - 0.03f, x + 0.03f, 2.40f, z + 0.03f));
+        }
+
+        Save("MallKiosk", "mall_kiosk", parts);
+    }
+
+    private static void BuildDirectoryBoard(Material steel, Material screen, Material[] zones)
+    {
+        // A mall directory totem 1.0 x 0.3 m, 2.0 m high, a floor plan with coloured zones on both
+        // faces (+Z and -Z), centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -0.50f, 0f, -0.15f, 0.50f, 2.00f, 0.15f),
+            Box(screen, -0.42f, 0.70f, -0.16f, 0.42f, 1.85f, 0.16f),
+        };
+        for (var i = 0; i < 6; i++)
+        {
+            var x = -0.38f + (i % 3) * 0.26f;
+            var y = 0.80f + (i / 3) * 0.50f;
+            parts.Add(Box(zones[i % zones.Length], x, y, -0.17f, x + 0.22f, y + 0.40f, 0.17f));
+        }
+
+        Save("DirectoryBoard", "directory_board", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
