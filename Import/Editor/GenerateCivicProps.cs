@@ -47,6 +47,11 @@ public static class GenerateCivicProps
         // The museum's (P43.13).
         BuildSculpturePedestal(stone, LowPolyBoxMesh.GetMat("LP_CV_Bronze", new Color(0.42f, 0.30f, 0.18f), 0.8f, 0.5f), brass);
 
+        // The hotel's (P43.17).
+        BuildLuggageCart(brass, LowPolyBoxMesh.GetMat("LP_CV_CartRed", new Color(0.55f, 0.08f, 0.10f), 0f, 0.4f), black);
+        BuildLuggageRack(dark, black, LowPolyBoxMesh.GetMat("LP_CV_Suitcase", new Color(0.20f, 0.30f, 0.45f), 0.1f, 0.4f));
+        BuildMinibar(dark, black, LowPolyBoxMesh.GetMat("LP_CV_DetectorGrey", new Color(0.72f, 0.73f, 0.75f), 0.3f, 0.4f));
+
         // The police station's (P43.4).
         var steel = LowPolyBoxMesh.GetMat("LP_CV_Steel", new Color(0.55f, 0.57f, 0.60f), 0.8f, 0.5f);
         BuildCellBars(steel);
@@ -1493,6 +1498,60 @@ public static class GenerateCivicProps
         }
 
         Save("LibraryStack", "library_stack", parts);
+    }
+
+    private static void BuildLuggageCart(Material brass, Material carpet, Material black)
+    {
+        // A bellhop's cart 1.1 x 0.7 m, 1.9 m high: a carpeted deck, two brass uprights and the
+        // hanging bar, a suitcase on the deck, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(carpet, -0.55f, 0.15f, -0.35f, 0.55f, 0.22f, 0.35f),
+            Box(brass, -0.55f, 0.10f, -0.35f, 0.55f, 0.15f, 0.35f),
+            Box(brass, -0.53f, 0.22f, -0.03f, -0.49f, 1.90f, 0.03f),
+            Box(brass, 0.49f, 0.22f, -0.03f, 0.53f, 1.90f, 0.03f),
+            Box(brass, -0.53f, 1.84f, -0.03f, 0.53f, 1.90f, 0.03f),
+            Box(black, -0.35f, 0.22f, -0.25f, 0.25f, 0.70f, 0f),
+        };
+        foreach (var x in new[] { -0.45f, 0.45f })
+        {
+            foreach (var z in new[] { -0.28f, 0.28f })
+                parts.Add(Box(black, x - 0.04f, 0f, z - 0.04f, x + 0.04f, 0.10f, z + 0.04f));
+        }
+
+        Save("LuggageCart", "luggage_cart", parts);
+    }
+
+    private static void BuildLuggageRack(Material wood, Material black, Material suitcase)
+    {
+        // A folding luggage rack 0.7 x 0.45 m with webbing straps and a suitcase on it, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            new LowPolyBoxMesh.Part(wood, new Vector3(-0.30f, 0.25f, 0f), new Vector3(0.03f, 0.55f, 0.03f), Quaternion.Euler(30f, 0f, 0f)),
+            new LowPolyBoxMesh.Part(wood, new Vector3(-0.30f, 0.25f, 0f), new Vector3(0.03f, 0.55f, 0.03f), Quaternion.Euler(-30f, 0f, 0f)),
+            new LowPolyBoxMesh.Part(wood, new Vector3(0.30f, 0.25f, 0f), new Vector3(0.03f, 0.55f, 0.03f), Quaternion.Euler(30f, 0f, 0f)),
+            new LowPolyBoxMesh.Part(wood, new Vector3(0.30f, 0.25f, 0f), new Vector3(0.03f, 0.55f, 0.03f), Quaternion.Euler(-30f, 0f, 0f)),
+            Box(black, -0.32f, 0.47f, -0.18f, 0.32f, 0.49f, 0.18f),
+            Box(suitcase, -0.30f, 0.49f, -0.20f, 0.30f, 0.75f, 0.20f),
+            Box(black, -0.08f, 0.75f, -0.02f, 0.08f, 0.79f, 0.02f),
+        };
+        Save("LuggageRack", "luggage_rack", parts);
+    }
+
+    private static void BuildMinibar(Material wood, Material black, Material steel)
+    {
+        // A minibar cabinet 0.5 x 0.5 m, 0.9 m high: the fridge door below, a kettle and two cups
+        // on top, facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(wood, -0.25f, 0f, -0.25f, 0.25f, 0.85f, 0.25f),
+            Box(black, -0.22f, 0.05f, 0.25f, 0.22f, 0.55f, 0.26f),
+            Box(steel, 0.15f, 0.25f, 0.26f, 0.18f, 0.40f, 0.28f),
+            Box(steel, -0.18f, 0.85f, -0.10f, -0.04f, 1.02f, 0.04f),
+            Box(steel, 0.04f, 0.85f, -0.05f, 0.10f, 0.92f, 0.01f),
+            Box(steel, 0.13f, 0.85f, -0.05f, 0.19f, 0.92f, 0.01f),
+        };
+        Save("Minibar", "minibar", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
