@@ -67,6 +67,22 @@ public static class GenerateCivicProps
         BuildAirTanks(steel, LowPolyBoxMesh.GetMat("LP_CV_TankYellow", new Color(0.90f, 0.75f, 0.15f), 0.3f, 0.6f), black);
         BuildBunkerBoots(black, tan, reflective);
         BuildFireGarageDoor(fireRed, steel, LowPolyBoxMesh.GetMat("LP_CV_GarageGlass", new Color(0.55f, 0.65f, 0.72f), 0.2f, 0.9f));
+
+        // Healthcare's (P43.6).
+        var white = LowPolyBoxMesh.GetMat("LP_CV_MedWhite", new Color(0.94f, 0.95f, 0.96f), 0.1f, 0.5f);
+        var mint = LowPolyBoxMesh.GetMat("LP_CV_MedMint", new Color(0.62f, 0.82f, 0.78f), 0f, 0.4f);
+        var vinyl = LowPolyBoxMesh.GetMat("LP_CV_MedVinyl", new Color(0.30f, 0.45f, 0.62f), 0f, 0.4f);
+        BuildExamCouch(steel, vinyl, white);
+        BuildFoldingScreen(steel, mint);
+        BuildMedicalCart(steel, white, LowPolyBoxMesh.GetMat("LP_CV_MedBlue", new Color(0.35f, 0.55f, 0.85f), 0f, 0.4f));
+        BuildWheelchair(steel, black);
+        BuildIvStand(steel, LowPolyBoxMesh.GetMat("LP_CV_IvBag", new Color(0.85f, 0.92f, 0.95f), 0f, 0.95f));
+        BuildMedicalScale(steel, white, black);
+        BuildHospitalBed(steel, white, mint);
+        BuildAmbulance(white, LowPolyBoxMesh.GetMat("LP_CV_AmbYellow", new Color(0.95f, 0.85f, 0.15f), 0.2f, 0.6f),
+            LowPolyBoxMesh.GetMat("LP_CV_AmbGreen", new Color(0.10f, 0.55f, 0.25f), 0.2f, 0.6f), black,
+            LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f),
+            LowPolyBoxMesh.GetMat("LP_CV_LightBlue", new Color(0.20f, 0.45f, 1.00f), 0f, 0.9f));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -393,6 +409,147 @@ public static class GenerateCivicProps
         for (var w = 0; w < 4; w++)
             parts.Add(Box(glass, -1.60f + w * 0.85f, 2.50f, 0.09f, -1.00f + w * 0.85f, 2.80f, 0.095f));
         Save("FireGarageDoor", "fire_garage_door", parts);
+    }
+
+    private static void BuildExamCouch(Material steel, Material vinyl, Material paper)
+    {
+        // An examination couch 1.9 x 0.65 m, 0.75 m high, the head raised at +Z, a paper roll on it.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -0.30f, 0f, -0.90f, 0.30f, 0.60f, 0.90f),
+            Box(vinyl, -0.33f, 0.60f, -0.95f, 0.33f, 0.72f, 0.55f),
+            new(vinyl, new Vector3(0f, 0.80f, 0.74f), new Vector3(0.66f, 0.12f, 0.45f), Quaternion.Euler(-25f, 0f, 0f)),
+            Box(paper, -0.25f, 0.72f, -0.80f, 0.25f, 0.725f, 0.50f),
+        };
+        Save("ExamCouch", "exam_couch", parts);
+    }
+
+    private static void BuildFoldingScreen(Material steel, Material cloth)
+    {
+        // A folding screen of three panels 0.6 m wide, 1.7 m high, zigzagged.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var i = 0; i < 3; i++)
+        {
+            var x = (i - 1) * 0.56f;
+            var yaw = i == 1 ? 0f : (i == 0 ? 20f : -20f);
+            parts.Add(new LowPolyBoxMesh.Part(cloth, new Vector3(x, 0.95f, i == 1 ? 0f : 0.08f), new Vector3(0.56f, 1.40f, 0.02f), Quaternion.Euler(0f, yaw, 0f)));
+            parts.Add(new LowPolyBoxMesh.Part(steel, new Vector3(x, 0.85f, i == 1 ? 0f : 0.08f), new Vector3(0.60f, 1.70f, 0.012f), Quaternion.Euler(0f, yaw, 0f)));
+        }
+
+        Save("FoldingScreen", "folding_screen", parts);
+    }
+
+    private static void BuildMedicalCart(Material steel, Material white, Material blue)
+    {
+        // A dressing cart 0.6 x 0.45 m with two trays and boxes of supplies, on castors.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -0.30f, 0.10f, -0.22f, 0.30f, 0.14f, 0.22f),
+            Box(white, -0.30f, 0.86f, -0.22f, 0.30f, 0.90f, 0.22f),
+            Box(blue, -0.20f, 0.90f, -0.12f, -0.02f, 0.98f, 0.10f),
+            Box(white, 0.02f, 0.90f, -0.15f, 0.22f, 1.02f, 0.05f),
+            Box(blue, -0.25f, 0.14f, -0.15f, 0.20f, 0.30f, 0.15f),
+        };
+        foreach (var (x, z) in new[] { (-0.27f, -0.19f), (0.27f, -0.19f), (-0.27f, 0.19f), (0.27f, 0.19f) })
+        {
+            parts.Add(Box(steel, x - 0.015f, 0.06f, z - 0.015f, x + 0.015f, 0.90f, z + 0.015f));
+            parts.Add(Box(steel, x - 0.03f, 0f, z - 0.03f, x + 0.03f, 0.06f, z + 0.03f));
+        }
+
+        Save("MedicalCart", "medical_cart", parts);
+    }
+
+    private static void BuildWheelchair(Material steel, Material black)
+    {
+        // A wheelchair 0.65 x 0.9 m facing +Z: seat, back, two big wheels and footrests.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(black, -0.23f, 0.48f, -0.20f, 0.23f, 0.52f, 0.22f),
+            Box(black, -0.23f, 0.52f, -0.24f, 0.23f, 0.95f, -0.20f),
+            Box(steel, -0.20f, 0.10f, 0.25f, 0.20f, 0.13f, 0.40f),
+            Box(steel, -0.24f, 0.13f, 0.20f, -0.20f, 0.50f, 0.24f),
+            Box(steel, 0.20f, 0.13f, 0.20f, 0.24f, 0.50f, 0.24f),
+            Box(steel, -0.24f, 0.88f, -0.34f, 0.24f, 0.92f, -0.30f),
+        };
+        foreach (var x in new[] { -0.29f, 0.29f })
+        {
+            for (var i = 0; i < 3; i++)
+                parts.Add(new LowPolyBoxMesh.Part(black, new Vector3(x, 0.30f, -0.05f), new Vector3(0.03f, 0.60f, 0.16f), Quaternion.Euler(i * 60f, 0f, 0f)));
+            parts.Add(new LowPolyBoxMesh.Part(steel, new Vector3(x, 0.30f, -0.05f), new Vector3(0.035f, 0.08f, 0.08f), Quaternion.identity));
+        }
+
+        Save("Wheelchair", "wheelchair", parts);
+    }
+
+    private static void BuildIvStand(Material steel, Material bag)
+    {
+        // A drip stand 1.9 m high on a five-spoke base, a bag hanging from its hook.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var i = 0; i < 5; i++)
+            parts.Add(new LowPolyBoxMesh.Part(steel, new Vector3(0f, 0.04f, 0f), new Vector3(0.03f, 0.03f, 0.55f), Quaternion.Euler(0f, i * 36f, 0f)));
+        Round(parts, steel, 0f, 0.05f, 0f, 0.025f, 1.90f);
+        parts.Add(Box(steel, -0.18f, 1.86f, -0.01f, 0.18f, 1.88f, 0.01f));
+        parts.Add(Box(bag, 0.08f, 1.55f, -0.04f, 0.18f, 1.84f, 0.04f));
+        Save("IvStand", "iv_stand", parts);
+    }
+
+    private static void BuildMedicalScale(Material steel, Material white, Material black)
+    {
+        // A column scale: a platform 0.4 m square, a column 1.5 m high with its beam and height rod.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -0.20f, 0f, -0.20f, 0.20f, 0.08f, 0.20f),
+            Box(black, -0.18f, 0.08f, -0.18f, 0.18f, 0.085f, 0.18f),
+            Box(steel, -0.03f, 0.08f, -0.22f, 0.03f, 1.50f, -0.16f),
+            Box(white, -0.16f, 1.20f, -0.22f, 0.16f, 1.30f, -0.16f),
+            Box(steel, -0.01f, 1.50f, -0.20f, 0.01f, 2.00f, -0.18f),
+            Box(steel, -0.01f, 1.95f, -0.20f, 0.01f, 1.97f, 0.05f),
+        };
+        Save("MedicalScale", "medical_scale", parts);
+    }
+
+    private static void BuildHospitalBed(Material steel, Material white, Material sheet)
+    {
+        // A bed 2.1 x 0.95 m along +Z: frame with rails and castors, a raised head end.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(steel, -0.47f, 0.35f, -1.05f, 0.47f, 0.45f, 1.05f),
+            Box(sheet, -0.44f, 0.45f, -1.00f, 0.44f, 0.60f, 0.45f),
+            new(sheet, new Vector3(0f, 0.72f, 0.72f), new Vector3(0.88f, 0.15f, 0.60f), Quaternion.Euler(-30f, 0f, 0f)),
+            Box(white, -0.47f, 0.35f, 1.02f, 0.47f, 1.05f, 1.06f),
+            Box(white, -0.47f, 0.35f, -1.06f, 0.47f, 0.85f, -1.02f),
+            Box(steel, -0.49f, 0.60f, -0.40f, -0.47f, 0.78f, 0.60f),
+            Box(steel, 0.47f, 0.60f, -0.40f, 0.49f, 0.78f, 0.60f),
+        };
+        foreach (var (x, z) in new[] { (-0.40f, -0.98f), (0.40f, -0.98f), (-0.40f, 0.98f), (0.40f, 0.98f) })
+            parts.Add(Box(steel, x - 0.03f, 0f, z - 0.03f, x + 0.03f, 0.35f, z + 0.03f));
+        Save("HospitalBed", "hospital_bed", parts);
+    }
+
+    private static void BuildAmbulance(Material white, Material yellow, Material green, Material black, Material glass, Material light)
+    {
+        // A van 6.0 x 2.1 m along +Z: a cab, a box body in a chequered livery, a light bar.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(white, -1.05f, 0.40f, 1.60f, 1.05f, 1.80f, 3.00f),
+            Box(glass, -1.00f, 1.20f, 2.98f, 1.00f, 1.75f, 3.02f),
+            Box(yellow, -1.05f, 0.40f, -3.00f, 1.05f, 2.70f, 1.60f),
+            Box(white, -1.07f, 2.00f, -3.00f, 1.07f, 2.30f, 1.60f),
+            Box(black, -0.90f, 0.30f, 2.98f, 0.90f, 0.50f, 3.05f),
+            Box(light, -0.80f, 2.70f, 1.20f, 0.80f, 2.82f, 1.50f),
+        };
+        for (var i = 0; i < 9; i++)
+        {
+            var z = -2.90f + i * 0.50f;
+            if (i % 2 == 0)
+            {
+                parts.Add(Box(green, -1.07f, 1.00f, z, 1.07f, 1.35f, z + 0.50f));
+            }
+        }
+
+        foreach (var (x, z) in new[] { (-0.90f, 2.20f), (0.90f, 2.20f), (-0.90f, -2.10f), (0.90f, -2.10f) })
+            parts.Add(Box(black, x - 0.16f, 0f, z - 0.38f, x + 0.16f, 0.76f, z + 0.38f));
+        Save("Ambulance", "ambulance", parts);
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
