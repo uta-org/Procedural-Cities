@@ -220,6 +220,9 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f), brass, black);
         BuildEntrancePortal(LowPolyBoxMesh.GetMat("LP_CV_Stone", new Color(0.82f, 0.80f, 0.76f), 0f, 0.2f),
             LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f), brass, black);
+        // The recessed entrances' (P45.8): a frame round the niche's front, the door's frame on its back wall.
+        BuildEntranceRecessParts(LowPolyBoxMesh.GetMat("LP_CV_Stone", new Color(0.82f, 0.80f, 0.76f), 0f, 0.2f),
+            LowPolyBoxMesh.GetMat("LP_CV_CarGlass", new Color(0.20f, 0.26f, 0.32f), 0.3f, 0.9f), brass, black);
 
         // The petrol station's (P43.9).
         var brandGreen = LowPolyBoxMesh.GetMat("LP_CV_FuelGreen", new Color(0.05f, 0.45f, 0.25f), 0.2f, 0.5f);
@@ -1808,6 +1811,62 @@ public static class GenerateCivicProps
             Box(brass, -0.60f, 4.10f, 0.45f, 0.60f, 4.40f, 0.47f),
         };
         Save("EntrancePortal", "entrance_portal", parts);
+    }
+
+    private static void BuildEntranceRecessParts(Material stone, Material glass, Material brass, Material black)
+    {
+        // A medium entrance's niche (2.1 m wide, 3.3 m high, P45.8): on the facade, jambs on either
+        // side of its front, a lintel over it and the street number; on the niche's back wall round
+        // the 1.5 x 2.5 m door, its jambs, two narrow glazed sidelights and a glazed transom. Each
+        // has its back on its wall (Z = 0) and the opening's bottom centre at the pivot.
+        Save("EntranceSurroundFrame", "entrance_surround_frame", new List<LowPolyBoxMesh.Part>
+        {
+            Box(stone, -1.25f, 0f, 0f, -1.05f, 3.30f, 0.15f),
+            Box(stone, 1.05f, 0f, 0f, 1.25f, 3.30f, 0.15f),
+            Box(stone, -1.40f, 3.30f, 0f, 1.40f, 3.60f, 0.25f),
+            Box(brass, -0.15f, 3.35f, 0.25f, 0.15f, 3.55f, 0.27f),
+            Box(black, -0.08f, 3.40f, 0.27f, 0.08f, 3.50f, 0.28f),
+        });
+        Save("EntranceSurroundDoor", "entrance_surround_door", new List<LowPolyBoxMesh.Part>
+        {
+            Box(stone, -0.80f, 0f, 0f, -0.76f, 3.00f, 0.10f),
+            Box(stone, 0.76f, 0f, 0f, 0.80f, 3.00f, 0.10f),
+            Box(glass, -1.05f, 0.30f, 0f, -0.80f, 2.50f, 0.04f),
+            Box(glass, 0.80f, 0.30f, 0f, 1.05f, 2.50f, 0.04f),
+            Box(stone, -1.05f, 0f, 0f, -0.76f, 0.30f, 0.10f),
+            Box(stone, 0.76f, 0f, 0f, 1.05f, 0.30f, 0.10f),
+            Box(stone, -1.05f, 2.50f, 0f, -0.80f, 3.00f, 0.10f),
+            Box(stone, 0.80f, 2.50f, 0f, 1.05f, 3.00f, 0.10f),
+            Box(stone, -0.80f, 2.50f, 0f, 0.80f, 2.55f, 0.10f),
+            Box(glass, -0.76f, 2.55f, 0f, 0.76f, 3.00f, 0.04f),
+            Box(stone, -1.05f, 3.00f, 0f, 1.05f, 3.10f, 0.10f),
+        });
+
+        // A monumental entrance's niche (3.2 m wide, 3.8 m high): on the facade, the portal's
+        // pilasters on either side of its front, the entablature, the canopy over it on its tie rods
+        // and the name plate; on the back wall, the door's jambs, head and glazed transom.
+        Save("EntrancePortalFrame", "entrance_portal_frame", new List<LowPolyBoxMesh.Part>
+        {
+            Box(stone, -2.10f, 0f, 0f, -1.60f, 0.40f, 0.40f),
+            Box(stone, 1.60f, 0f, 0f, 2.10f, 0.40f, 0.40f),
+            Box(stone, -2.00f, 0.40f, 0f, -1.70f, 3.80f, 0.30f),
+            Box(stone, 1.70f, 0.40f, 0f, 2.00f, 3.80f, 0.30f),
+            Box(stone, -2.10f, 3.80f, 0f, -1.60f, 4.00f, 0.40f),
+            Box(stone, 1.60f, 3.80f, 0f, 2.10f, 4.00f, 0.40f),
+            Box(stone, -2.20f, 4.00f, 0f, 2.20f, 4.50f, 0.45f),
+            Box(black, -1.60f, 3.55f, 0f, 1.60f, 3.65f, 1.40f),
+            Box(glass, -1.55f, 3.60f, 0.05f, 1.55f, 3.62f, 1.35f),
+            Box(brass, -1.45f, 3.65f, 1.30f, -1.40f, 4.40f, 1.35f),
+            Box(brass, 1.40f, 3.65f, 1.30f, 1.45f, 4.40f, 1.35f),
+            Box(brass, -0.60f, 4.10f, 0.45f, 0.60f, 4.40f, 0.47f),
+        });
+        Save("EntrancePortalDoor", "entrance_portal_door", new List<LowPolyBoxMesh.Part>
+        {
+            Box(glass, -0.76f, 2.55f, 0f, 0.76f, 3.40f, 0.04f),
+            Box(stone, -0.85f, 0f, 0f, -0.76f, 3.45f, 0.12f),
+            Box(stone, 0.76f, 0f, 0f, 0.85f, 3.45f, 0.12f),
+            Box(stone, -0.85f, 3.40f, 0f, 0.85f, 3.50f, 0.12f),
+        });
     }
 
     private static void BuildVitrine(Material wood, Material glass, Material brass)
