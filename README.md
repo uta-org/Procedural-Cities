@@ -21,7 +21,7 @@ project mounts it with a local path in `Packages/manifest.json`:
 
 | Folder | Contents |
 |---|---|
-| `Resources/Prefabs/AssetContents/` | The 181 prefabs the city places, one per placement name. |
+| `Resources/Prefabs/AssetContents/` | The 378 prefabs the city places, one per placement name. |
 | `Models/LowPoly/` | Their combined meshes (`<Name>_Combined.asset`), the `LP_*` materials, the 23 painting images, and the 18 street prefabs `LowPoly_*` (trees, lampposts, benches, fences, fountain, traffic lights, bins, awning, fire hydrant). |
 | `Models/Living/`, `Models/Kitchen/`, `Models/Uncategorized/` | Materials of the older imported furniture. |
 | `Textures/` | The low-poly material textures (wood, fabric, metal, ceramic, plastic) and the litter atlas. |
@@ -39,6 +39,12 @@ The prefabs cover, among others:
   per-room sets of P40.
 - **Offices and shops:** desks, bench desks, laptops, meeting tables, filing
   cabinets, store and restaurant counters.
+- **Civic and commercial buildings:** the props of the civic and commercial
+  building types (town hall, police and fire stations, clinic, schools,
+  cinema, library, bank, post office, pharmacy, bars and more).
+- **Building fronts:** the entrances' surrounds and portals (whole, or split
+  into a facade frame and a door frame for a recessed entrance), the
+  restaurants' pergola and the tower crane.
 - **Streets and parks:** trees, lampposts, traffic lights, benches, bins,
   fences, fountains, planters, park plants and litter.
 
@@ -55,7 +61,7 @@ The prefabs cover, among others:
 
 ## Generating the models
 
-Most models are built in code rather than modelled by hand: 139 of the 199
+Most models are built in code rather than modelled by hand: 336 of the 396
 prefabs. Each generator is an editor script with a menu entry under
 **Tools / Procedural Cities**; it builds its meshes from boxes (`LowPolyBoxMesh`),
 saves them to `Models/LowPoly/` and the prefabs to
@@ -71,7 +77,9 @@ that references a prefab breaks.
 | Generate Meeting Table Props, Generate Office Bench Props, Generate Filing Cabinet Prop | Office furniture |
 | Generate Store Counter Prop, Generate Counter Gate Props, Generate Console Table Prop | Counters and tables |
 | Generate Radiator Prop, Generate Air Conditioner Props | Heating and air conditioning |
-| Generate Living Room Props, Generate Bedroom Props, Generate Bathroom Props | The per-room small props |
+| Generate Living Room Props, Generate Bedroom Props, Generate Bathroom Props, Generate Kitchen Props, Generate Dining Props, Generate Study Props, Generate Dressing Props, Generate Closet Props, Generate Corridor Props, Generate Office Props, Generate Meeting Props, Generate Restaurant Props, Generate Shop Props, Generate Stockroom Props, Generate Pantry Props, Generate Renovation Props | The per-room small props |
+| Generate Civic Props | The civic and commercial building props, and the entrance surrounds and portals |
+| Generate Pergola, Generate Tower Crane | The restaurants' beam pergola, the tower crane beside a building under works |
 | Generate Double Traffic Light, Generate RubbishBin Prop, Generate Light Switch Prop | Single props (`LowPoly_TrafficLightDouble`, the rubbish bin, the light switch) |
 
 Conventions the generators follow:
