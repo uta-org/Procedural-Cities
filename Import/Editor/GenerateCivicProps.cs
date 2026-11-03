@@ -240,6 +240,20 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_LeafBlue", new Color(0.45f, 0.62f, 0.85f), 0f, 0.2f),
             LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
         });
+
+        // The car park storage units' (P46.7, owner Q-20261103-1 D): what a garage trastero holds.
+        var rubber = LowPolyBoxMesh.GetMat("LP_CV_Rubber", new Color(0.08f, 0.08f, 0.09f), 0f, 0.25f);
+        var cardboard = LowPolyBoxMesh.GetMat("LP_CV_Cardboard", new Color(0.66f, 0.50f, 0.32f), 0f, 0.1f);
+        var red = LowPolyBoxMesh.GetMat("LP_CV_FlagRed", new Color(0.72f, 0.12f, 0.12f), 0f, 0.2f);
+        var blue = LowPolyBoxMesh.GetMat("LP_CV_FlagBlue", new Color(0.14f, 0.24f, 0.58f), 0f, 0.2f);
+        var whiteCloth = LowPolyBoxMesh.GetMat("LP_CV_FlagWhite", new Color(0.94f, 0.94f, 0.92f), 0f, 0.2f);
+        BuildStackedTyres(rubber, steel);
+        BuildSkis(red, black, steel);
+        BuildBeachChairs(steel, blue, whiteCloth, red);
+        BuildChristmasBox(cardboard, brandGreen, red);
+        BuildRolledRug(LowPolyBoxMesh.GetMat("LP_CV_RugRed", new Color(0.45f, 0.10f, 0.12f), 0f, 0.15f),
+            LowPolyBoxMesh.GetMat("LP_CV_RugBeige", new Color(0.85f, 0.78f, 0.62f), 0f, 0.15f));
+        BuildCoolBox(LowPolyBoxMesh.GetMat("LP_CV_IceBlue", new Color(0.35f, 0.60f, 0.90f), 0f, 0.4f), whiteCloth, steel);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -254,6 +268,21 @@ public static class GenerateCivicProps
         var size = new Vector3(width, y1 - y0, width * Mathf.Tan(15f * Mathf.Deg2Rad));
         for (var i = 0; i < 6; i++)
             parts.Add(new LowPolyBoxMesh.Part(mat, centre, size, Quaternion.Euler(0f, i * 30f, 0f)));
+    }
+
+    /// <summary>A 12-sided prism lying along X, <paramref name="width"/> across the flats, centred on <paramref name="centre"/>.</summary>
+    private static void RoundAlongX(List<LowPolyBoxMesh.Part> parts, Material mat, Vector3 centre, float length, float width)
+    {
+        var size = new Vector3(length, width, width * Mathf.Tan(15f * Mathf.Deg2Rad));
+        for (var i = 0; i < 6; i++)
+            parts.Add(new LowPolyBoxMesh.Part(mat, centre, size, Quaternion.Euler(i * 30f, 0f, 0f)));
+    }
+
+    /// <summary>A box <paramref name="size"/> standing on <paramref name="foot"/>, leaning back (towards -Z) by <paramref name="lean"/> degrees.</summary>
+    private static LowPolyBoxMesh.Part Leaning(Material mat, Vector3 foot, Vector3 size, float lean)
+    {
+        var rotation = Quaternion.Euler(-lean, 0f, 0f);
+        return new LowPolyBoxMesh.Part(mat, foot + rotation * new Vector3(0f, size.y * 0.5f, 0f), size, rotation);
     }
 
     private static void Save(string name, string child, List<LowPolyBoxMesh.Part> parts)
@@ -963,6 +992,105 @@ public static class GenerateCivicProps
         for (var i = 0; i < 6; i++)
             parts.Add(new LowPolyBoxMesh.Part(black, new Vector3(0.22f, 0.60f, 0f), new Vector3(0.04f, 0.30f, 0.30f * Mathf.Tan(15f * Mathf.Deg2Rad)), Quaternion.Euler(i * 30f, 0f, 0f)));
         Save("AirPump", "air_pump", parts);
+    }
+
+    private static void BuildStackedTyres(Material rubber, Material steel)
+    {
+        // Four car tyres 0.64 m across, 0.20 m wide, stacked 0.84 m high, the top one's rim showing, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var i = 0; i < 4; i++)
+            Round(parts, rubber, 0f, i * 0.21f, 0f, 0.64f, i * 0.21f + 0.20f);
+        Round(parts, steel, 0f, 0.83f, 0f, 0.40f, 0.845f);
+        Round(parts, rubber, 0f, 0.845f, 0f, 0.16f, 0.85f);
+        Save("StackedTyres", "stacked_tyres", parts);
+    }
+
+    private static void BuildSkis(Material red, Material black, Material steel)
+    {
+        // A pair of skis 1.70 m long and two poles leaning on the wall (back at -Z), 0.45 x 0.40 m, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Leaning(red, new Vector3(-0.10f, 0.01f, 0.12f), new Vector3(0.09f, 1.70f, 0.03f), 12f),
+            Leaning(red, new Vector3(0.01f, 0.01f, 0.12f), new Vector3(0.09f, 1.70f, 0.03f), 12f),
+            Leaning(black, new Vector3(-0.10f, 0.36f, 0.12f), new Vector3(0.095f, 0.10f, 0.05f), 12f),
+            Leaning(black, new Vector3(0.01f, 0.36f, 0.12f), new Vector3(0.095f, 0.10f, 0.05f), 12f),
+            Leaning(steel, new Vector3(0.14f, 0.01f, 0.17f), new Vector3(0.02f, 1.20f, 0.02f), 14f),
+            Leaning(steel, new Vector3(0.19f, 0.01f, 0.17f), new Vector3(0.02f, 1.20f, 0.02f), 14f),
+            Leaning(black, new Vector3(0.14f, 1.00f, 0.17f), new Vector3(0.035f, 0.18f, 0.035f), 14f),
+            Leaning(black, new Vector3(0.19f, 1.00f, 0.17f), new Vector3(0.035f, 0.18f, 0.035f), 14f),
+        };
+        Save("Skis", "skis", parts);
+    }
+
+    private static void BuildBeachChairs(Material steel, Material blue, Material white, Material red)
+    {
+        // Two folded beach chairs and a closed parasol leaning on the wall (back at -Z), 0.80 x 0.40 m, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        for (var c = 0; c < 2; c++)
+        {
+            var x = -0.36f + c * 0.06f;
+            var z = 0.10f + c * 0.07f;
+            parts.Add(Leaning(steel, new Vector3(x, 0.01f, z), new Vector3(0.02f, 0.95f, 0.025f), 15f));
+            parts.Add(Leaning(steel, new Vector3(x + 0.48f, 0.01f, z), new Vector3(0.02f, 0.95f, 0.025f), 15f));
+            parts.Add(Leaning(c == 0 ? blue : white, new Vector3(x + 0.24f, 0.15f, z), new Vector3(0.46f, 0.70f, 0.01f), 15f));
+            parts.Add(Leaning(steel, new Vector3(x + 0.24f, 0.12f, z), new Vector3(0.50f, 0.025f, 0.025f), 15f));
+        }
+
+        // The parasol: a pole and its furled canopy, tapering to the top.
+        parts.Add(Leaning(steel, new Vector3(0.30f, 0.01f, 0.12f), new Vector3(0.03f, 1.80f, 0.03f), 8f));
+        var lean = Quaternion.Euler(-8f, 0f, 0f);
+        var foot = new Vector3(0.30f, 0.01f, 0.12f);
+        var widths = new[] { 0.13f, 0.11f, 0.08f, 0.05f };
+        for (var i = 0; i < widths.Length; i++)
+        {
+            var centre = foot + lean * new Vector3(0f, 0.95f + i * 0.20f, 0f);
+            var size = new Vector3(widths[i], 0.20f, widths[i] * Mathf.Tan(15f * Mathf.Deg2Rad));
+            for (var k = 0; k < 6; k++)
+                parts.Add(new LowPolyBoxMesh.Part(i % 2 == 0 ? red : white, centre, size, lean * Quaternion.Euler(0f, k * 30f, 0f)));
+        }
+
+        Save("BeachChairs", "beach_chairs", parts);
+    }
+
+    private static void BuildChristmasBox(Material cardboard, Material green, Material red)
+    {
+        // The artificial tree's long cardboard box 0.95 x 0.32 m, 0.32 m high, lying, its print facing +Z, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(cardboard, -0.475f, 0f, -0.16f, 0.475f, 0.32f, 0.16f),
+            Box(green, -0.30f, 0.05f, 0.16f, -0.10f, 0.27f, 0.165f),
+            Box(green, -0.27f, 0.10f, 0.16f, -0.13f, 0.30f, 0.166f),
+            Box(red, -0.02f, 0.10f, 0.16f, 0.40f, 0.22f, 0.165f),
+            Box(red, -0.475f, 0.14f, -0.162f, 0.475f, 0.18f, 0.162f),
+        };
+        Save("ChristmasBox", "christmas_box", parts);
+    }
+
+    private static void BuildRolledRug(Material rug, Material fringe)
+    {
+        // A rug rolled up 1.60 m long, 0.24 m across, lying along X on the floor, centred.
+        var parts = new List<LowPolyBoxMesh.Part>();
+        RoundAlongX(parts, rug, new Vector3(0f, 0.12f, 0f), 1.50f, 0.24f);
+        RoundAlongX(parts, fringe, new Vector3(-0.77f, 0.12f, 0f), 0.06f, 0.22f);
+        RoundAlongX(parts, fringe, new Vector3(0.77f, 0.12f, 0f), 0.06f, 0.22f);
+        RoundAlongX(parts, fringe, new Vector3(-0.30f, 0.12f, 0f), 0.04f, 0.245f);
+        RoundAlongX(parts, fringe, new Vector3(0.30f, 0.12f, 0f), 0.04f, 0.245f);
+        Save("RolledRug", "rolled_rug", parts);
+    }
+
+    private static void BuildCoolBox(Material body, Material lid, Material steel)
+    {
+        // A portable cool box 0.55 x 0.36 m, 0.36 m high, its handle over the lid, centred.
+        var parts = new List<LowPolyBoxMesh.Part>
+        {
+            Box(body, -0.275f, 0f, -0.18f, 0.275f, 0.29f, 0.18f),
+            Box(lid, -0.285f, 0.29f, -0.19f, 0.285f, 0.36f, 0.19f),
+            Box(steel, -0.25f, 0.36f, -0.02f, -0.23f, 0.43f, 0.02f),
+            Box(steel, 0.23f, 0.36f, -0.02f, 0.25f, 0.43f, 0.02f),
+            Box(steel, -0.25f, 0.41f, -0.02f, 0.25f, 0.43f, 0.02f),
+            Box(lid, -0.10f, 0.12f, 0.18f, 0.10f, 0.19f, 0.19f),
+        };
+        Save("CoolBox", "cool_box", parts);
     }
 
     private static void BuildIceChest(Material white, Material blue, Material glass)
