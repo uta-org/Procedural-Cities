@@ -103,17 +103,23 @@ public static class GeneratePaintingProps
         }
 
         var matPath = $"{MatDir}/{texFile}_Mat.mat";
+        // Lit, not Unlit: an unlit canvas kept its full colour in a dark room and took no
+        // shadow (procedural-cities P59.9). Matte, like paint.
+        var lit = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         var matPicture = AssetDatabase.LoadAssetAtPath<Material>(matPath);
         if (matPicture == null)
         {
-            matPicture = new Material(
-                Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Texture"))
-            {
-                name = texFile + "_Mat",
-            };
+            matPicture = new Material(lit) { name = texFile + "_Mat" };
             AssetDatabase.CreateAsset(matPicture, matPath);
         }
+        else if (matPicture.shader != lit)
+        {
+            matPicture.shader = lit;
+        }
+
         matPicture.mainTexture = tex;
+        matPicture.SetFloat("_Smoothness", 0.15f);
+        matPicture.SetFloat("_Metallic", 0f);
         EditorUtility.SetDirty(matPicture);
 
         var frame = new Vector2(UnitFrameSize * width, UnitFrameSize * height);
