@@ -189,7 +189,9 @@ public static class GenerateKitchenModuleProps
         AssetDatabase.Refresh();
     }
 
-    [MenuItem("Tools/Procedural Cities/Generate Restaurant Kitchen Props")]
+    // Its own entry: "Generate Restaurant Kitchen Props" is GenerateRestaurantKitchenProps (P40.14),
+    // and two menu items with one name made Unity drop this one with a warning.
+    [MenuItem("Tools/Procedural Cities/Generate Restaurant Kitchen Modules")]
     public static void GenerateRestaurant()
     {
         var p = new Palette
