@@ -221,7 +221,7 @@ public static class GenerateBarProps
         Save("BeerKeg", "beer_keg", new List<LowPolyBoxMesh.Part>(keg));
 
         // The keg coupled to a tap: a black coupler with its lever, a red gas line down the back and the
-        // clear beer line rising 0.25 m, then running +Z 0.24 m into the counter that the tap stands on.
+        // clear beer line rising 0.25 m, then running +Z 0.30 m into the counter that the tap stands on.
         keg.Add(Box(black, -0.045f, 0.61f, -0.045f, 0.045f, 0.68f, 0.045f));
         keg.Add(Box(black, -0.012f, 0.66f, -0.16f, 0.012f, 0.675f, -0.04f));
         keg.Add(Box(red, -0.010f, 0.62f, -0.205f, 0.010f, 0.64f, -0.045f));
@@ -229,7 +229,7 @@ public static class GenerateBarProps
         keg.Add(Box(LowPolyBoxMesh.GetMat("LP_BAR_BeerLine", new Color(0.85f, 0.80f, 0.55f), 0f, 0.8f),
             -0.011f, 0.68f, -0.011f, 0.011f, 0.93f, 0.011f));
         keg.Add(Box(LowPolyBoxMesh.GetMat("LP_BAR_BeerLine", new Color(0.85f, 0.80f, 0.55f), 0f, 0.8f),
-            -0.011f, 0.908f, 0f, 0.011f, 0.93f, 0.24f));
+            -0.011f, 0.908f, 0f, 0.011f, 0.93f, 0.30f));
         Save("BeerKegTapped", "beer_keg_tapped", keg);
 
         // A hooped wooden barrel standing on end, 0.46 m across at the belly and 0.62 m tall.
