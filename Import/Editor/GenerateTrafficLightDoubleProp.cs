@@ -4,10 +4,15 @@ using UnityEngine;
 
 /// <summary>
 /// Builds LowPoly_TrafficLightDouble: the low-poly traffic light's double version, two
-/// signal heads side by side on one pole ("hay una variable del semáforo que es doble",
-/// seen in the original project). Same 5.00 m height as LowPoly_TrafficLight (the city
-/// scales both from that height), same materials: the pole up to a Y bracket whose two
-/// arms carry a head each, three lights on the front (+Z) of each head.
+/// signal heads on one pole ("hay una variable del semáforo que es doble", seen in the
+/// original project). Same 5.00 m height as LowPoly_TrafficLight (the city scales both
+/// from that height), same materials. The main head is the single model's, on top, its
+/// three lights on the front (+Z); the second head hangs from the pole at mid height,
+/// turned 90 degrees (its two lights, red over green, on +X), and shows the opposite of
+/// the main head: green while it is red, red otherwise (owner checkpoint "Semaforo doble
+/// mal", 2026-11-12: "la otra cabeza debe ir a media altura ... giradas 90 grados y en
+/// iluminaria contrapuestos"). Its lenses are LP_Light_Red_Cross and LP_Light_Green_Cross,
+/// copies of the lens materials made here, so Rendering.TrafficLights can light them apart.
 /// Output: Models/LowPoly/TrafficLightDouble_Combined.asset (one submesh per material)
 /// and Models/LowPoly/LowPoly_TrafficLightDouble.prefab, rewritten in place so their
 /// GUIDs stay. Menu: Tools / Procedural Cities / Generate Double Traffic Light
@@ -27,11 +32,17 @@ public static class GenerateTrafficLightDoubleProp
     private const float LightRadius = 0.08f;
     private const float LightSpacing = 0.25f;
 
-    // The bracket: the pole stops at its fork, each arm reaches a head's centre line.
-    private const float ForkY = 3.80f;
-    private const float HeadOffsetX = 0.24f;
-    private const float ArmTopY = HeadCentreY - HeadHeight * 0.5f;
-    private const float ArmThickness = 0.06f;
+    // The second head: two lights, at mid height on the +X side of the pole, facing +X.
+    private const float CrossCentreY = 2.9f;
+    private const float CrossHeadHeight = 0.6f;
+    private const float CrossBracketGap = 0.04f;
+
+    /// <summary>The second head's lens materials, made from these lens materials.</summary>
+    internal static readonly (string Name, string Source)[] CrossLenses =
+    {
+        ("LP_Light_Red_Cross", "LP_Light_Red"),
+        ("LP_Light_Green_Cross", "LP_Light_Green"),
+    };
 
     private sealed class MeshBuilder
     {
@@ -148,32 +159,62 @@ public static class GenerateTrafficLightDoubleProp
             return;
         }
 
-        var mb = new MeshBuilder();
-        // Pole up to the fork.
-        mb.Cylinder(pole, PoleRadius, ForkY, 8, Matrix4x4.Translate(new Vector3(0f, ForkY * 0.5f, 0f)));
-        foreach (var side in new[] { -1f, 1f })
-        {
-            // Arm from the fork to under its head, leaning out.
-            var from = new Vector3(0f, ForkY, 0f);
-            var to = new Vector3(side * HeadOffsetX, ArmTopY, 0f);
-            var along = to - from;
-            var arm = Matrix4x4.TRS((from + to) * 0.5f, Quaternion.FromToRotation(Vector3.up, along.normalized), Vector3.one);
-            mb.Cylinder(pole, ArmThickness * 0.5f, along.magnitude + ArmThickness, 8, arm);
+        var redCross = CrossLens(CrossLenses[0].Name, red);
+        var greenCross = CrossLens(CrossLenses[1].Name, green);
 
-            // Head and its three lights on the front.
-            var head = new Vector3(side * HeadOffsetX, HeadCentreY, 0f);
-            mb.Box(body, new Vector3(HeadWidth, HeadHeight, HeadDepth), Matrix4x4.Translate(head));
-            Material[] lights = { red, yellow, green };
-            for (var i = 0; i < 3; i++)
-            {
-                var centre = new Vector3(head.x, 4.8f - i * LightSpacing, HeadDepth * 0.5f + 0.01f);
-                mb.Cylinder(lights[i], LightRadius, 0.02f, 8, Matrix4x4.TRS(centre, Quaternion.Euler(90f, 0f, 0f), Vector3.one));
-            }
+        var mb = new MeshBuilder();
+        // Pole up to the main head, as the single model.
+        var poleTop = HeadCentreY - HeadHeight * 0.5f;
+        mb.Cylinder(pole, PoleRadius, poleTop, 8, Matrix4x4.Translate(new Vector3(0f, poleTop * 0.5f, 0f)));
+
+        // Main head and its three lights on the front (+Z).
+        mb.Box(body, new Vector3(HeadWidth, HeadHeight, HeadDepth), Matrix4x4.Translate(new Vector3(0f, HeadCentreY, 0f)));
+        Material[] lights = { red, yellow, green };
+        for (var i = 0; i < 3; i++)
+        {
+            var centre = new Vector3(0f, 4.8f - i * LightSpacing, HeadDepth * 0.5f + 0.01f);
+            mb.Cylinder(lights[i], LightRadius, 0.02f, 8, Matrix4x4.TRS(centre, Quaternion.Euler(90f, 0f, 0f), Vector3.one));
+        }
+
+        // Second head at mid height, turned 90 degrees: its back on a short bracket from the
+        // pole, its two lights on +X.
+        var crossX = PoleRadius + CrossBracketGap + HeadDepth * 0.5f;
+        mb.Box(pole, new Vector3(CrossBracketGap + PoleRadius, 0.06f, 0.06f),
+            Matrix4x4.Translate(new Vector3((PoleRadius + CrossBracketGap) * 0.5f, CrossCentreY, 0f)));
+        mb.Box(body, new Vector3(HeadDepth, CrossHeadHeight, HeadWidth), Matrix4x4.Translate(new Vector3(crossX, CrossCentreY, 0f)));
+        Material[] crossLights = { redCross, greenCross };
+        for (var i = 0; i < 2; i++)
+        {
+            var centre = new Vector3(crossX + HeadDepth * 0.5f + 0.01f, CrossCentreY + (0.5f - i) * LightSpacing, 0f);
+            mb.Cylinder(crossLights[i], LightRadius, 0.02f, 8, Matrix4x4.TRS(centre, Quaternion.Euler(0f, 0f, 90f), Vector3.one));
         }
 
         Save(mb);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+    }
+
+    /// <summary>
+    /// The second head's lens <paramref name="name"/>: a copy of <paramref name="source"/>
+    /// (made once, then kept so its GUID stays), unlit until the day-night cycle lights it.
+    /// </summary>
+    private static Material CrossLens(string name, Material source)
+    {
+        var path = $"{MatDir}/{name}.mat";
+        var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+        var create = material == null;
+        if (create)
+            material = new Material(source) { name = name };
+        else
+            material.CopyPropertiesFromMaterial(source);
+        material.EnableKeyword("_EMISSION");
+        material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+        material.SetColor("_EmissionColor", source.GetColor("_BaseColor") * 0.04f);
+        if (create)
+            AssetDatabase.CreateAsset(material, path);
+        else
+            EditorUtility.SetDirty(material);
+        return material;
     }
 
     private static void Save(MeshBuilder builder)
