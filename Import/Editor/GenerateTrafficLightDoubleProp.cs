@@ -3,22 +3,24 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds LowPoly_TrafficLightDouble: the low-poly traffic light's double version, two
-/// signal heads on one pole, a variant the original project already had. Same 5.00 m height as LowPoly_TrafficLight (the city scales both
-/// from that height), same materials. The main head is the single model's, on top, its
-/// three lights on the front (+Z); the second head hangs from the pole at mid height,
-/// turned 90 degrees (its two lights, red over green, on +X), and shows the opposite of
-/// the main head: green while it is red, red otherwise, so the two heads always show
-/// opposite colours to the crossing streets. Its lenses are LP_Light_Red_Cross and LP_Light_Green_Cross,
-/// copies of the lens materials made here, so Rendering.TrafficLights can light them apart.
+/// Builds LowPoly_TrafficLightDouble, the low traffic light of the secondary roads (P112): two
+/// signal heads at 90 degrees on top of one pole and a small repeater lower down, as a street
+/// traffic light. Same 5.00 m height as LowPoly_TrafficLight (the city scales both from that
+/// height), same materials. The main head is the single model's, on top, its three lights on
+/// the front (+Z, towards the oncoming cars); the second head stands beside it on the +X side
+/// (towards the road), turned 90 degrees, red over a dark middle over green, and shows the
+/// opposite of the main head: green while it is red, red otherwise. The repeater, at a driver's
+/// eye height, repeats the main head with its lenses. The second head's lenses are
+/// LP_Light_Red_Cross and LP_Light_Green_Cross, copies of the lens materials made here, so
+/// Rendering.TrafficLights can light them apart.
 /// Output: Models/LowPoly/TrafficLightDouble_Combined.asset (one submesh per material)
 /// and Models/LowPoly/LowPoly_TrafficLightDouble.prefab, rewritten in place so their
 /// GUIDs stay. Menu: Tools / Procedural Cities / Generate Double Traffic Light
 /// </summary>
 public static class GenerateTrafficLightDoubleProp
 {
-    private const string ModelDir = "Packages/dev.z3nth10n.proceduralcities.import/Models/LowPoly";
-    private const string MatDir = ModelDir + "/Materials";
+    internal const string ModelDir = "Packages/dev.z3nth10n.proceduralcities.import/Models/LowPoly";
+    internal const string MatDir = ModelDir + "/Materials";
     private const string PrefabName = "LowPoly_TrafficLightDouble";
 
     // The single model's measures (LowPoly_TrafficLight, whose generator was removed in P41.9).
@@ -30,10 +32,16 @@ public static class GenerateTrafficLightDoubleProp
     private const float LightRadius = 0.08f;
     private const float LightSpacing = 0.25f;
 
-    // The second head: two lights, at mid height on the +X side of the pole, facing +X.
-    private const float CrossCentreY = 2.9f;
-    private const float CrossHeadHeight = 0.6f;
+    // The second head: beside the main one on the +X side of the pole, facing +X.
     private const float CrossBracketGap = 0.04f;
+
+    // The repeater: a small head on the front of the pole, at a driver's eye height once scaled.
+    internal const float RepeaterCentreY = 2.5f;
+    internal const float RepeaterWidth = 0.22f;
+    internal const float RepeaterHeight = 0.5f;
+    internal const float RepeaterDepth = 0.16f;
+    internal const float RepeaterLightRadius = 0.05f;
+    internal const float RepeaterLightSpacing = 0.14f;
 
     /// <summary>The second head's lens materials, made from these lens materials.</summary>
     internal static readonly (string Name, string Source)[] CrossLenses =
@@ -42,7 +50,8 @@ public static class GenerateTrafficLightDoubleProp
         ("LP_Light_Green_Cross", "LP_Light_Green"),
     };
 
-    private sealed class MeshBuilder
+    /// <summary>Builds a mesh of boxes and prisms, one submesh per material (shared by the traffic light generators).</summary>
+    internal sealed class MeshBuilder
     {
         private readonly List<Vector3> _verts = new();
         private readonly List<Vector3> _norms = new();
@@ -141,7 +150,7 @@ public static class GenerateTrafficLightDoubleProp
         }
     }
 
-    private static Material Load(string name) => AssetDatabase.LoadAssetAtPath<Material>($"{MatDir}/{name}.mat");
+    internal static Material Load(string name) => AssetDatabase.LoadAssetAtPath<Material>($"{MatDir}/{name}.mat");
 
     [MenuItem("Tools/Procedural Cities/Generate Double Traffic Light")]
     public static void Generate()
@@ -174,29 +183,48 @@ public static class GenerateTrafficLightDoubleProp
             mb.Cylinder(lights[i], LightRadius, 0.02f, 8, Matrix4x4.TRS(centre, Quaternion.Euler(90f, 0f, 0f), Vector3.one));
         }
 
-        // Second head at mid height, turned 90 degrees: its back on a short bracket from the
-        // pole, its two lights on +X.
-        var crossX = PoleRadius + CrossBracketGap + HeadDepth * 0.5f;
-        mb.Box(pole, new Vector3(CrossBracketGap + PoleRadius, 0.06f, 0.06f),
-            Matrix4x4.Translate(new Vector3((PoleRadius + CrossBracketGap) * 0.5f, CrossCentreY, 0f)));
-        mb.Box(body, new Vector3(HeadDepth, CrossHeadHeight, HeadWidth), Matrix4x4.Translate(new Vector3(crossX, CrossCentreY, 0f)));
-        Material[] crossLights = { redCross, greenCross };
-        for (var i = 0; i < 2; i++)
+        // Second head beside the main one, turned 90 degrees: its back on a short bracket from
+        // the main head's side, red over a dark middle over green on +X.
+        var crossX = HeadWidth * 0.5f + CrossBracketGap + HeadDepth * 0.5f;
+        mb.Box(pole, new Vector3(CrossBracketGap, 0.06f, 0.06f),
+            Matrix4x4.Translate(new Vector3(HeadWidth * 0.5f + CrossBracketGap * 0.5f, HeadCentreY, 0f)));
+        mb.Box(body, new Vector3(HeadDepth, HeadHeight, HeadWidth), Matrix4x4.Translate(new Vector3(crossX, HeadCentreY, 0f)));
+        Material[] crossLights = { redCross, body, greenCross };
+        for (var i = 0; i < 3; i++)
         {
-            var centre = new Vector3(crossX + HeadDepth * 0.5f + 0.01f, CrossCentreY + (0.5f - i) * LightSpacing, 0f);
+            var centre = new Vector3(crossX + HeadDepth * 0.5f + 0.01f, 4.8f - i * LightSpacing, 0f);
             mb.Cylinder(crossLights[i], LightRadius, 0.02f, 8, Matrix4x4.TRS(centre, Quaternion.Euler(0f, 0f, 90f), Vector3.one));
         }
 
-        Save(mb);
+        // The repeater on the front of the pole, its lenses the main head's.
+        AddRepeater(mb, body, lights, PoleRadius, 0f, RepeaterCentreY);
+
+        Save(mb, "TrafficLightDouble_Combined", PrefabName, "trafficlight_double");
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+    }
+
+    /// <summary>
+    /// A repeater (a small three-light head) on the front (+Z) of a pole of radius
+    /// <paramref name="poleRadius"/> standing at x = <paramref name="x"/>, centred at height
+    /// <paramref name="centreY"/>; <paramref name="lights"/> red, amber, green from the top.
+    /// </summary>
+    internal static void AddRepeater(MeshBuilder mb, Material body, Material[] lights, float poleRadius, float x, float centreY)
+    {
+        var z = poleRadius + 0.005f + RepeaterDepth * 0.5f;
+        mb.Box(body, new Vector3(RepeaterWidth, RepeaterHeight, RepeaterDepth), Matrix4x4.Translate(new Vector3(x, centreY, z)));
+        for (var i = 0; i < 3; i++)
+        {
+            var centre = new Vector3(x, centreY + (1 - i) * RepeaterLightSpacing, z + RepeaterDepth * 0.5f + 0.01f);
+            mb.Cylinder(lights[i], RepeaterLightRadius, 0.02f, 8, Matrix4x4.TRS(centre, Quaternion.Euler(90f, 0f, 0f), Vector3.one));
+        }
     }
 
     /// <summary>
     /// The second head's lens <paramref name="name"/>: a copy of <paramref name="source"/>
     /// (made once, then kept so its GUID stays), unlit until the day-night cycle lights it.
     /// </summary>
-    private static Material CrossLens(string name, Material source)
+    internal static Material CrossLens(string name, Material source)
     {
         var path = $"{MatDir}/{name}.mat";
         var material = AssetDatabase.LoadAssetAtPath<Material>(path);
@@ -215,10 +243,15 @@ public static class GenerateTrafficLightDoubleProp
         return material;
     }
 
-    private static void Save(MeshBuilder builder)
+    /// <summary>
+    /// Saves <paramref name="builder"/>'s mesh as Models/LowPoly/<paramref name="meshName"/>.asset and a
+    /// prefab <paramref name="prefabName"/> with one child <paramref name="childName"/> (renderer and
+    /// convex collider), both rewritten in place so their GUIDs stay.
+    /// </summary>
+    internal static void Save(MeshBuilder builder, string meshName, string prefabName, string childName)
     {
-        var mesh = builder.ToMesh("TrafficLightDouble_Combined", out var materials);
-        var meshPath = $"{ModelDir}/TrafficLightDouble_Combined.asset";
+        var mesh = builder.ToMesh(meshName, out var materials);
+        var meshPath = $"{ModelDir}/{meshName}.asset";
         var existingMesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
         if (existingMesh != null)
         {
@@ -233,23 +266,23 @@ public static class GenerateTrafficLightDoubleProp
             AssetDatabase.CreateAsset(mesh, meshPath);
         }
 
-        var root = new GameObject(PrefabName);
+        var root = new GameObject(prefabName);
         try
         {
-            var child = new GameObject("trafficlight_double");
+            var child = new GameObject(childName);
             child.transform.SetParent(root.transform, false);
             child.AddComponent<MeshFilter>().sharedMesh = mesh;
             child.AddComponent<MeshRenderer>().sharedMaterials = materials;
             var collider = child.AddComponent<MeshCollider>();
             collider.sharedMesh = mesh;
             collider.convex = true;
-            PrefabUtility.SaveAsPrefabAsset(root, $"{ModelDir}/{PrefabName}.prefab");
+            PrefabUtility.SaveAsPrefabAsset(root, $"{ModelDir}/{prefabName}.prefab");
         }
         finally
         {
             Object.DestroyImmediate(root);
         }
 
-        Debug.Log($"[GenerateTrafficLightDoubleProp] Saved {PrefabName} ({mesh.vertexCount} verts, bounds {mesh.bounds.size}).");
+        Debug.Log($"[GenerateTrafficLightDoubleProp] Saved {prefabName} ({mesh.vertexCount} verts, bounds {mesh.bounds.size}).");
     }
 }
