@@ -4,8 +4,8 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Phase 1 of the "make lamp light look like it comes from the lamp" fix
-/// (reported live: "las luces no parecen salir de la lampara en si").
+/// Phase 1 of the "make lamp light look like it comes from the lamp" fix:
+/// the lights did not seem to come out of the lamps themselves.
 /// Adds a small bulb to each of <see cref="TargetPrefabs"/> — two
 /// overlapping spheres, "BulbOn" (white, lightly emissive) and "BulbOff"
 /// (dark grey), toggled by <c>LampFocalLight.SetOn</c> instead of swapping
@@ -38,9 +38,8 @@ public static class AddLampBulbs
     /// CeilingPanel) — unlike the hanging CeilingPendant, there's no
     /// hollow/shade for a bulb to sit inside, so one was never going to
     /// read as anything but a stray sphere glued to the fixture's face.
-    /// Reported live: "de las lamparas de techo que no cuelgan las
-    /// cuadradas y redondas creo que tienen la bombilla, quitalas de ahi,
-    /// esas no necesitan bombilla". Their on/off feedback instead comes
+    /// The square and round non-hanging ceiling lamps had a bulb that did
+    /// not belong there, so these fixtures get none. Their on/off feedback instead comes
     /// from the diffuser's own colour swap — see AddLampBulbs' sibling
     /// change to the Diffuser material.
     /// </summary>
@@ -56,11 +55,11 @@ public static class AddLampBulbs
     /// sits at the combined canopy+cord+shade bounds centre (y=-0.26,
     /// biased upward by the cord's long vertical run — see
     /// GenerateLampProps.cs BuildCeilingPendant), which lands the bulb
-    /// next to the cord instead of inside the shade. Reported live: "las
-    /// bombillas no estan ubicadas exactamente debajo de la lampara en si".
+    /// next to the cord instead of inside the shade, so the bulb did not
+    /// sit right under the lamp itself.
     /// The shade itself is centred at y=-0.45 — HollowCeilingPendantShade.cs
     /// later rebuilds it as an open tube specifically so a bulb anchored
-    /// there ("dentro del hueco del cilindro") is actually visible instead
+    /// there, inside the hollow of the cylinder, is actually visible instead
     /// of hidden inside solid geometry.
     /// </summary>
     private static readonly Dictionary<string, Vector3> AnchorPositionOverride = new()
@@ -112,11 +111,9 @@ public static class AddLampBulbs
     /// LP_Lamp_ShadeWarm material) and "DiffuserOn" (a much lighter,
     /// lightly emissive material), toggled together by
     /// <c>LampFocalLight.SetOn</c> the same way BulbOn/BulbOff already are.
-    /// Reported live: the diffuser's current warm tone reads as a dull dark
-    /// orange under typical room ambient light and gives no visible "lit"
-    /// feedback — "necesito que esas lamparas cambien el color de la parte
-    /// anaranjada oscura por un color mucho mas claro cuando esten
-    /// encendidas".
+    /// The diffuser's current warm tone reads as a dull dark orange under
+    /// typical room ambient light and gives no visible "lit" feedback, so a
+    /// lit lamp swaps that dark orange part for a much lighter colour.
     /// </summary>
     private static bool AddDiffuserOnOffVariant(string prefabName, Material matOn)
     {

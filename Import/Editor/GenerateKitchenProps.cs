@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the kitchen props (P40.5, owner-approved list Q-20261028-9): ChoppingBoard (leaning
+/// Builds the kitchen props (P40.5): ChoppingBoard (leaning
 /// on the wall), Kettle, KitchenToaster (the Toaster prefab is the microwave), CoffeeMaker, FruitBowl, UtensilPot, SpiceRack (wall-hung),
 /// KitchenRoll, FryingPan and TeaTowel. Worktop pieces have their pivot on the bottom face at
 /// the centre, front +Z; SpiceRack has its back face at Z = 0, like Mirror; FryingPan's pivot is

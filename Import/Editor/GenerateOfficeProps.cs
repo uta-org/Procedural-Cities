@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the office props (P40.11, owner-approved list Q-20261028-9): PaperTray (three stacked
+/// Builds the office props (P40.11): PaperTray (three stacked
 /// letter trays), DeskPhone, Photocopier, RingBinders (a row of four) and LaptopClosed. The
 /// printer, mug, headphones, cork board and desk lamp reuse the study's and the desk set's
 /// models. Every piece has its pivot on the bottom face at the centre, front +Z. Output:

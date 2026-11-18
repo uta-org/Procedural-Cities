@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the civic building props (P43, owner Q-20261029-3 A); the town hall's first (P43.3):
+/// Builds the civic building props (P43); the town hall's first (P43.3):
 /// CivicFlags (three flags on poles in a base), CoatOfArms (a wall-hung shield), Lectern,
 /// WaitingChairs (a row of three seats on a beam), LeafletRack (a floor stand of leaflets), Bust
 /// (on a pedestal) and CivicVitrine (a glass case on a plinth). The service counter, the rug,
@@ -241,7 +241,7 @@ public static class GenerateCivicProps
             LowPolyBoxMesh.GetMat("LP_CV_LeafOrange", new Color(0.95f, 0.62f, 0.28f), 0f, 0.2f),
         });
 
-        // The car park storage units' (P46.7, owner Q-20261103-1 D): what a garage trastero holds.
+        // The car park storage units' (P46.7): what a garage storage unit holds.
         var rubber = LowPolyBoxMesh.GetMat("LP_CV_Rubber", new Color(0.08f, 0.08f, 0.09f), 0f, 0.25f);
         var cardboard = LowPolyBoxMesh.GetMat("LP_CV_Cardboard", new Color(0.66f, 0.50f, 0.32f), 0f, 0.1f);
         var red = LowPolyBoxMesh.GetMat("LP_CV_FlagRed", new Color(0.72f, 0.12f, 0.12f), 0f, 0.2f);

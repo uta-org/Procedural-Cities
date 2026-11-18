@@ -3,9 +3,9 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the tower crane that stands beside a building under works (P40.23, owner Q-20261029-7 B:
-/// "a big crane that covers the building"), in three pieces the city stacks (owner: "modules as
-/// high as each floor, always ending one or two modules above the floors"):
+/// Builds the tower crane that stands beside a building under works (P40.23), a big crane that
+/// covers the building, in three pieces the city stacks (mast modules as high as each floor, always
+/// ending one or two modules above the floors):
 /// <list type="bullet">
 /// <item><c>TowerCraneBase</c>: the concrete footing, 4 x 4 x 1 m.</item>
 /// <item><c>TowerCraneMast</c>: one lattice mast module, <see cref="ModuleHeight"/> high (the

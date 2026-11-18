@@ -2,9 +2,9 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Commits 5-6 of the pendant-lamp bulb work. Commit 5: "la parte
-/// cilindrica la hagas hueca, y dentro del hueco del cilindro metras la
-/// esfera del bulbo de la bombilla" — the hanging ceiling lamp's shade was
+/// Commits 5-6 of the pendant-lamp bulb work. Commit 5 hollows the
+/// cylindrical part and puts the bulb's sphere inside the hollow: the
+/// hanging ceiling lamp's shade was
 /// a solid capped cylinder (see GenerateLampProps.cs BuildCeilingPendant),
 /// so the bulb AddLampBulbs.cs adds inside it (commit 1: y=-0.53, just past
 /// the underside) was always going to be fully hidden or, at best, only
@@ -13,8 +13,8 @@ using UnityEngine;
 /// as a genuinely hollow shade, and moves the bulb anchor back inside it
 /// (y=-0.45, the shade's own centre) now that the interior is actually
 /// visible instead of solid.
-/// Commit 6: "a la lampara que cuelga le faltaria la tapa de arriba del
-/// cilindro para terminar" — an open tube alone has no top, so looking up
+/// Commit 6 adds the missing top cap that finishes the hanging lamp's
+/// cylinder: an open tube alone has no top, so looking up
 /// from directly underneath shows straight through into the cord/canopy
 /// instead of a finished shade interior. Adds "ShadeTopCap", a flat
 /// annulus (a ring, not a solid disc — it needs a hole for the Cord to

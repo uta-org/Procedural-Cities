@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the home storeroom (pantry) props (P40.17, owner-approved list Q-20261028-9): PantryJars,
+/// Builds the home storeroom (pantry) props (P40.17): PantryJars,
 /// WaterJugs (two 5-litre jugs), Sacks, FruitBasket, Bicycle (on its side along the wall) and
 /// Toolbox. The boxes, suitcase, bucket and mop and the ladder reuse CardboardBoxes, Suitcase,
 /// BroomAndMop and Stepladder. Every piece has its pivot on the bottom face at the centre, front +Z.

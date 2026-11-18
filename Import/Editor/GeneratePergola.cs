@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the beam pergola over a restaurant's storefronts (P42.3, owner Q-20261029-4 A): a beam
+/// Builds the beam pergola over a restaurant's storefronts (P42.3): a beam
 /// (<c>PergolaBeam</c>, 0.08 x 0.16 m, 1 m long along +Z from the wall, its pivot on its bottom
 /// face at the wall end; the city stretches it to the pergola's depth) and a header
 /// (<c>PergolaHeader</c>, 0.10 x 0.20 m, 1 m long along X, its pivot on its bottom face at the

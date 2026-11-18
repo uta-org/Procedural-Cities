@@ -4,14 +4,12 @@ using UnityEngine;
 
 /// <summary>
 /// Builds LowPoly_TrafficLightDouble: the low-poly traffic light's double version, two
-/// signal heads on one pole ("hay una variable del semáforo que es doble", seen in the
-/// original project). Same 5.00 m height as LowPoly_TrafficLight (the city scales both
+/// signal heads on one pole, a variant the original project already had. Same 5.00 m height as LowPoly_TrafficLight (the city scales both
 /// from that height), same materials. The main head is the single model's, on top, its
 /// three lights on the front (+Z); the second head hangs from the pole at mid height,
 /// turned 90 degrees (its two lights, red over green, on +X), and shows the opposite of
-/// the main head: green while it is red, red otherwise (owner checkpoint "Semaforo doble
-/// mal", 2026-11-12: "la otra cabeza debe ir a media altura ... giradas 90 grados y en
-/// iluminaria contrapuestos"). Its lenses are LP_Light_Red_Cross and LP_Light_Green_Cross,
+/// the main head: green while it is red, red otherwise, so the two heads always show
+/// opposite colours to the crossing streets. Its lenses are LP_Light_Red_Cross and LP_Light_Green_Cross,
 /// copies of the lens materials made here, so Rendering.TrafficLights can light them apart.
 /// Output: Models/LowPoly/TrafficLightDouble_Combined.asset (one submesh per material)
 /// and Models/LowPoly/LowPoly_TrafficLightDouble.prefab, rewritten in place so their

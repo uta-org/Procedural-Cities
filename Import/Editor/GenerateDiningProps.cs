@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the dining room props (P40.6, owner-approved list Q-20261028-9): TableRunner,
+/// Builds the dining room props (P40.6): TableRunner,
 /// PlaceSetting (plate, fork and knife), CandleCentrepiece, WineSet (bottle and two glasses),
 /// NapkinHolder, Trivet, Sideboard, DisplayCabinet, DiningRug (2.40 x 1.80 m) and DiningRugSmall
 /// (2.00 x 1.40 m, for a room the large one does not fit). The fruit bowl reuses

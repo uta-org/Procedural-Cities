@@ -3,12 +3,11 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the back-bar props of the restaurants (P88.1, owner request 2026-11-11):
+/// Builds the back-bar props of the restaurants (P88.1):
 /// <list type="bullet">
 /// <item>Six bottles of different shapes for the back-bar shelves: BarBottleWine, BarBottleWhisky (square),
 /// BarBottleBeer, BarBottleGin (squat), BarBottleVodka (tall and thin) and BarBottleLiqueur (a flat flask).</item>
-/// <item>Four glasses: BarGlassHighball (tubo), BarGlassWine (copa), BarGlassBalloon (balón) and
-/// BarGlassTumbler (vaso normal).</item>
+/// <item>Four glasses: BarGlassHighball, BarGlassWine, BarGlassBalloon and BarGlassTumbler.</item>
 /// <item>BeerTap: a chrome beer tower for the bar top, its faucet and drip tray towards -Z (the staff
 /// side when it takes a bar module's rotation) and the brand medallion towards +Z.</item>
 /// <item>Barrels: BeerKeg (steel), BeerKegTapped (the keg with its coupler and a beer line that runs
@@ -155,25 +154,25 @@ public static class GenerateBarProps
 
     private static void BuildGlasses(Material glass)
     {
-        // Tubo (highball): a tall straight glass on a thick base. 0.15 m.
+        // Highball: a tall straight glass on a thick base. 0.15 m.
         var parts = new List<LowPolyBoxMesh.Part>();
         Lathe(parts, glass, 0f, 0f, new Vector2(0f, 0.066f), new Vector2(0.015f, 0.064f), new Vector2(0.15f, 0f));
         Save("BarGlassHighball", "bar_glass_highball", parts);
 
-        // Copa (wine glass): a foot, a thin stem and a tulip bowl. 0.19 m.
+        // Wine glass: a foot, a thin stem and a tulip bowl. 0.19 m.
         parts = new List<LowPolyBoxMesh.Part>();
         Lathe(parts, glass, 0f, 0f, new Vector2(0f, 0.068f), new Vector2(0.005f, 0.010f), new Vector2(0.085f, 0.045f),
             new Vector2(0.10f, 0.072f), new Vector2(0.15f, 0.078f), new Vector2(0.19f, 0f));
         Save("BarGlassWine", "bar_glass_wine", parts);
 
-        // Balón (balloon glass): a wide foot, a short stem and a big round bowl. 0.20 m.
+        // Balloon glass: a wide foot, a short stem and a big round bowl. 0.20 m.
         parts = new List<LowPolyBoxMesh.Part>();
         Lathe(parts, glass, 0f, 0f, new Vector2(0f, 0.078f), new Vector2(0.005f, 0.011f), new Vector2(0.065f, 0.060f),
             new Vector2(0.080f, 0.095f), new Vector2(0.095f, 0.112f), new Vector2(0.15f, 0.100f), new Vector2(0.175f, 0.088f),
             new Vector2(0.20f, 0f));
         Save("BarGlassBalloon", "bar_glass_balloon", parts);
 
-        // Vaso normal (tumbler): short and wide on a thick base. 0.095 m.
+        // Tumbler: short and wide on a thick base. 0.095 m.
         parts = new List<LowPolyBoxMesh.Part>();
         Lathe(parts, glass, 0f, 0f, new Vector2(0f, 0.078f), new Vector2(0.018f, 0.080f), new Vector2(0.095f, 0f));
         Save("BarGlassTumbler", "bar_glass_tumbler", parts);

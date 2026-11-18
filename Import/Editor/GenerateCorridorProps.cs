@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the corridor props (P40.10, owner-approved list Q-20261028-9): FireExtinguisher,
+/// Builds the corridor props (P40.10): FireExtinguisher,
 /// ExitSign, EvacuationPlan, GelDispenser and Mailboxes (wall-hung, back face at Z = 0, like
 /// Mirror), CorridorBench, UmbrellaStand, Doormat and RunnerRug (on the floor, pivot on the
 /// bottom face at the centre, front +Z). The bin reuses PedalBin. Output:

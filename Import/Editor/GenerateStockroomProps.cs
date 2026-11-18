@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the stock room props (P40.16, owner-approved list Q-20261028-9), for StoreBack and Storage:
+/// Builds the stock room props (P40.16), for StoreBack and Storage:
 /// CardboardBoxes (a stack), Pallet (with a load of boxes), HandTruck, Stepladder (folded, leaning on
 /// the wall), PalletJack, PlasticCrates, PackingTape, Trolley (platform trolley) and StretchFilmRoll.
 /// The extinguisher reuses FireExtinguisher. Every piece has its pivot on the bottom face at the

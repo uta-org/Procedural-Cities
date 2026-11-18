@@ -171,7 +171,7 @@ public static class GeneratePaintingProps
         // convention), so it also needs the 180° yaw below — without it,
         // the quad ends up sandwiched behind the frame's solid Cube AND
         // facing away from the viewer, making the artwork invisible from
-        // every angle in the room. Reported live: paintings placed and
+        // every angle in the room. Symptom: paintings placed and
         // correctly textured (confirmed via reflection) but rendering as a
         // flat, featureless dark rectangle — the frame occluding a
         // backwards, backward-facing canvas.

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the living room props (P40.2, owner-approved list Q-20261028-9): LivingRug
+/// Builds the living room props (P40.2): LivingRug
 /// (2.0 x 1.4 m), SofaCushion and SofaCushionB (0.40 m square), FoldedThrow (laid over a sofa
 /// arm), MagazineRack, StackedBooks, Figurine, PhotoFrame, Candles (on a tray), TvRemote,
 /// GameConsole (with a controller) and Pouf (0.48 m square). Every pivot is on the bottom

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the restaurant kitchen props (P40.14, owner-approved list Q-20261028-9): StockPot,
+/// Builds the restaurant kitchen props (P40.14): StockPot,
 /// HangingPans, MagneticKnifeBar and TicketRail (wall-hung, back face at Z = 0), KitchenBinLarge,
 /// VegetableCrates, OilCans and StackedTrays. The chopping board and the extinguisher reuse
 /// ChoppingBoard and FireExtinguisher. Counter and floor pieces have their pivot on the bottom face

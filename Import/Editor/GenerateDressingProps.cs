@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the dressing room props (P40.8, owner-approved list Q-20261028-9), shared with the
+/// Builds the dressing room props (P40.8), shared with the
 /// closets (P40.9): ShoeBoxes (a stack of three), ClothesRail (a rail on two feet with clothes on
 /// hangers), ShoeRack (two shelves of shoes), Suitcase (upright, a handle on top) and HatBox. The
 /// pouf, floor mirror, jewellery box, basket and rug reuse Pouf, FloorMirror, JewelleryBox,

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the shop props (P40.15, owner-approved list Q-20261028-9): ShopBaskets (a stack of
+/// Builds the shop props (P40.15): ShopBaskets (a stack of
 /// shopping baskets), Mannequin, SaleSign (wall-hung, back face at Z = 0), SpinnerRack (a rotating
 /// display), CardTerminal, SecurityGate (one anti-theft post; a pair flanks the door) and EntranceMat.
 /// The till, the clothes rail and the bags reuse CashRegister, ClothesRail and ShoppingBags. Every

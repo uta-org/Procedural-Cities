@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the closet props (P40.9, owner-approved list Q-20261028-9): StorageBoxes (two lidded
+/// Builds the closet props (P40.9): StorageBoxes (two lidded
 /// plastic boxes), VacuumCleaner (upright), BroomAndMop (leaning on the wall, a bucket at their
 /// foot), ShoppingBags and IroningBoard (folded, leaning on the wall). The shoe boxes, clothes on
 /// hangers, suitcase, shoe rack and laundry basket reuse ShoeBoxes, ClothesRail, Suitcase,

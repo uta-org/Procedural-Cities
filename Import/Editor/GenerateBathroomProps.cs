@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the bathroom props (P40.4, owner-approved list Q-20261028-9): BathMat (0.6 x 0.4 m),
+/// Builds the bathroom props (P40.4): BathMat (0.6 x 0.4 m),
 /// TowelRail (wall-hung, a towel over its bar), FoldedTowels, ToiletRollHolder (wall-hung),
 /// SinkToiletries (soap dish and a cup of toothbrushes), ToiletBrush, BathroomScale,
 /// ShowerBottles and PedalBin. The laundry basket reuses LaundryBasket. Floor and counter

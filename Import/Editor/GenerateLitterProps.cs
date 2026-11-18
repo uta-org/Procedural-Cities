@@ -4,17 +4,17 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// Builds the litter props (P23, owner 2026-10-27: "add a bit of pollution: newspapers on the ground,
-/// crushed cans, cardboard boxes, cups... think of 10 other props"; the owner chose six small ones and
-/// four bigger pieces of junk): newspaper, crushed can, cardboard box, cup, plastic bottle, glass
-/// bottle, paper ball, plastic bag, drink carton, cigarette butts, old tyre, traffic cone, broken
-/// chair and a mattress. Low-poly and flat-shaded like the park and suburb props, but textured: every
-/// prop maps into one atlas (Textures/Litter/LitterAtlas.png, built by build_litter_atlas.py from
-/// ambientCG CC0 textures and public-domain newspaper pages, see CREDITS.txt) and shares one material,
-/// so the game draws a whole region of litter as one mesh. A prop's colour variants sit side by side
-/// in the atlas: the game shifts U by the prop's variant step (the runtime LitterCatalog mirrors the
-/// names, variants and steps below). Pivot on the ground at the prop's centre; no shadows; the four
-/// big ones get a box collider.
+/// Builds the litter props (P23), a bit of pollution on the ground: newspapers, crushed cans,
+/// cardboard boxes and cups, six more small props and four bigger pieces of junk: newspaper, crushed
+/// can, cardboard box, cup, plastic bottle, glass bottle, paper ball, plastic bag, drink carton,
+/// cigarette butts, old tyre, traffic cone, broken chair and a mattress. Low-poly and flat-shaded like
+/// the park and suburb props, but textured: every prop maps into one atlas
+/// (Textures/Litter/LitterAtlas.png, built by build_litter_atlas.py from ambientCG CC0 textures and
+/// public-domain newspaper pages, see CREDITS.txt) and shares one material, so the game draws a whole
+/// region of litter as one mesh. A prop's colour variants sit side by side in the atlas: the game
+/// shifts U by the prop's variant step (the runtime LitterCatalog mirrors the names, variants and
+/// steps below). Pivot on the ground at the prop's centre; no shadows; the four big ones get a box
+/// collider.
 /// Menu: Tools / Procedural Cities / Generate Litter Props
 /// </summary>
 public static class GenerateLitterProps

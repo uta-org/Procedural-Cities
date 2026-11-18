@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the empty room (under renovation) props (P40.18, owner-approved list Q-20261028-9):
+/// Builds the empty room (under renovation) props (P40.18):
 /// PaintCans, PaintRoller (in its tray), DustSheet, WorkLight (on a tripod), CementBags and Rubble.
 /// The moving boxes, the painter's ladder, the pallet and the toolbox reuse CardboardBoxes,
 /// Stepladder, Pallet and Toolbox. Every piece has its pivot on the bottom face at the centre,

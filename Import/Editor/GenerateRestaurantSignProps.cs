@@ -3,17 +3,16 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the restaurants' illuminated signs (P88.6, P88.7, owner request 2026-11-11):
+/// Builds the restaurants' illuminated signs (P88.6, P88.7):
 /// <list type="bullet">
 /// <item>RestaurantPylonSign: a tall sign on a pole for the one-storey restaurant buildings, seen from
-/// afar ("podrían ser altos para que se vean desde lejos"): a 7.2 m pole on a base, a lit box
+/// afar, tall enough to be seen from a distance: a 7.2 m pole on a base, a lit box
 /// 2.4 x 1.3 m with a plate and a knife and fork on both faces. Pivot at the foot of the pole, faces +Z
 /// and -Z.</item>
-/// <item>RestaurantNeonSign: a flat neon sign for over a restaurant's door ("como si fuera un neon"):
+/// <item>RestaurantNeonSign: a flat neon sign for over a restaurant's door:
 /// a dark board 1.6 x 0.45 m with a tube frame, a cup and three tube strokes. Pivot on the bottom of
 /// its back face (Z = 0, against the wall or standing on a pergola), front +Z.</item>
-/// <item>RestaurantBladeSign: a round sign perpendicular to the wall ("de estas redondas que van en
-/// perpendicular a la pared"): a wall plate, an arm 0.85 m out and a 0.6 m disc hanging from it with
+/// <item>RestaurantBladeSign: a round blade sign perpendicular to the wall: a wall plate, an arm 0.85 m out and a 0.6 m disc hanging from it with
 /// a lit ring and a mug on both faces. Pivot on the bottom of the wall plate, the arm along +Z.</item>
 /// </list>
 /// The glowing parts use emissive URP Lit materials (LP_SIGN_*Glow, instanced, emission always on), so

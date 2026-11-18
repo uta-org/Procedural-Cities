@@ -3,9 +3,8 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the low-poly props of the suburbs on the concrete plots (P22, owner 2026-10-26: "a patio
-/// must have a wood fence, which you must create, at least 1.8 metres high"; "create new low-poly
-/// trash bins and containers to stand around"): a 2 m panel of wooden fence 1.8 m high, a wheelie
+/// Builds the low-poly props of the suburbs on the concrete plots (P22: a patio is closed by a wood
+/// fence at least 1.8 metres high, and low-poly trash bins and containers stand around): a 2 m panel of wooden fence 1.8 m high, a wheelie
 /// bin, and a street waste container in four colours, Spanish style (grey with an orange lid for the
 /// rest, yellow for packaging, blue for paper, green for glass). Built as the park props are
 /// (<see cref="GenerateParkProps"/>: flat-shaded boxes and prisms, a submesh per material), the meshes
@@ -20,7 +19,7 @@ public static class GenerateSuburbProps
     /// <summary>Length (m) of a fence panel; placements stretch it along X to the run they cover.</summary>
     public const float FenceLength = 2f;
 
-    /// <summary>Height (m) of the fence (owner: "at least 1.8 metres").</summary>
+    /// <summary>Height (m) of the fence: at least 1.8 metres, so a patio stays private.</summary>
     public const float FenceHeight = 1.8f;
 
     [MenuItem("Tools/Procedural Cities/Generate Suburb Props")]

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the restaurant props (P40.13, owner-approved list Q-20261028-9): RestaurantMenu, SaltPepper,
+/// Builds the restaurant props (P40.13): RestaurantMenu, SaltPepper,
 /// TableCandle, BarBottles, CashRegister, GlassRack (hung from the ceiling, pivot on its ceiling
 /// plate), MenuChalkboard (wall-hung, back face at Z = 0) and HighChair. The napkin holders and the
 /// coat stand reuse NapkinHolder and Hanger. Table, bar and floor pieces have their pivot on the

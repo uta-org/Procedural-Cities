@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the bedroom props (P40.3, owner-approved list Q-20261028-9): BedsideRug (1.2 x 0.7 m),
+/// Builds the bedroom props (P40.3): BedsideRug (1.2 x 0.7 m),
 /// TeddyBear, AlarmClock, BedsideBook, Slippers (a pair), LaundryBasket, FloorMirror (0.5 x 1.6 m)
 /// and JewelleryBox. The cushions, photo frame and coat stand reuse SofaCushion, PhotoFrame and
 /// Hanger. Every pivot is on the bottom face at the centre, front +Z. Output:

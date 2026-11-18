@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the meeting room props (P40.12, owner-approved list Q-20261028-9): CeilingProjector
+/// Builds the meeting room props (P40.12): CeilingProjector
 /// (pivot on its ceiling plate, hanging down), ProjectorScreen (wall-hung, back face at Z = 0),
 /// WaterBottleGlass, NotepadPen (front +Z to the person sitting at it), ConferenceSpeaker,
 /// FlipChart and WaterJug. The laptops, remote, coat stand and bin reuse Laptop, TvRemote, Hanger

@@ -4,13 +4,12 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// Builds the low-poly props of the parks on green plots (owner, 2026-10-22: "weeds, bushes
-/// and flowers of three kinds each, low-poly models first"; "a wrought-iron fence about
-/// 0.4 m high"; "a playground: benches, a swing, a slide, bins and five more models"):
+/// Builds the low-poly props of the parks on green plots (weeds, bushes and flowers of three
+/// kinds each; a wrought-iron fence about 0.4 m high; a playground of benches, a swing, a slide,
+/// bins and five more models):
 /// three weeds, three bushes, three flowers, the fence, a park litter bin, a swing, a slide,
 /// a seesaw, a spring rider, a sandbox, a climbing frame and a merry-go-round; and the
-/// fountain at the centre of a cross park's plaza ("a circle with a fountain in the middle"),
-/// and the stone edge of a pond ("water with a stone edge").
+/// fountain in the middle of a cross park's round plaza, and the stone edge of a pond.
 /// Each prop is one mesh with a submesh per material, built from its own flat-shaded boxes,
 /// prisms and low spheres (Unity's sphere primitive has 515 vertices, too many for props
 /// placed by the thousand), saved under Models/LowPoly/Park, with its prefab in

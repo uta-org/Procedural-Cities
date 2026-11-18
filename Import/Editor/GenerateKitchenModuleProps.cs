@@ -6,8 +6,7 @@ using UnityEngine;
 /// Builds the kitchen counter modules, one family with one footprint: every
 /// floor module is 1.00 m wide, 0.65 m deep and 0.90 m to the worktop, with
 /// flat sides and a worktop that overhangs the front only, so any of them
-/// side by side read as one counter ("deberian tener todos los modulos la
-/// misma anchura").
+/// side by side read as one counter (every module has the same width).
 ///  - Kitchen1: base cabinet, two doors.
 ///  - KitchenSink: the same cabinet with a 0.20 m deep basin and a faucet.
 ///  - KitchenOven: cooker, an oven under a four-burner hob.
@@ -500,7 +499,7 @@ public static class GenerateKitchenModuleProps
         // inner face of a facade is 0.25 m from the room edge, the counter is
         // placed for the 0.125 m of a partition) and a closed window's sash
         // sits on that face: a faucet nearer the back went into the wall or
-        // behind the window ("Se va un poco por detrás de la ventana").
+        // behind the window (the faucet poked out a little behind the window).
         const float faucetBackClearance = 0.13f;
 
         var basinBottom = CounterTopY - basinDepth;

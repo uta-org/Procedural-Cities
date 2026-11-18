@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Builds the study props (P40.7, owner-approved list Q-20261028-9), shared with the offices
+/// Builds the study props (P40.7), shared with the offices
 /// (P40.11): Globe, PenPot, WasteBasket, CorkBoard (wall-hung), Printer, Mug and
 /// Headphones, and FilingCabinetSmall (two drawers, 0.66 m: FilingCabinet is the office's 1.32 m
 /// one). The stacked books reuse the living room's StackedBooks (P40.2), the bookcase Shelf. Desk
