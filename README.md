@@ -63,7 +63,7 @@ The prefabs cover, among others:
 
 Most models are built in code rather than modelled by hand: 336 of the 396
 prefabs. Each generator is an editor script with a menu entry under
-**Tools / Procedural Cities**; it builds its meshes from boxes (`LowPolyBoxMesh`),
+**Tools / uzProceduralCities**; it builds its meshes from boxes (`LowPolyBoxMesh`),
 saves them to `Models/LowPoly/` and the prefabs to
 `Resources/Prefabs/AssetContents/`. A rebuild keeps the asset GUIDs, so nothing
 that references a prefab breaks.
@@ -92,14 +92,22 @@ Conventions the generators follow:
 The generators are only needed to change or rebuild a model; the saved prefabs,
 meshes and materials are what the game loads.
 
-**60 prefabs have no generator;** their saved meshes are the only source:
+**60 prefabs have no generator any more;** their saved meshes are the only source.
+All of them are this project's own procedural work (audited in P128, 2026-11-19):
 
 - **43 core furniture prefabs** (beds, the sofa and its sectional variants,
   chairs, toilet, shower, sink, wardrobe, fridge, TVs, mirrors, office and
-  restaurant furniture). They come from the original imported models
-  (`Import-Scripts/`) and one-off mesh edits.
-- **17 of the `LowPoly_*` street prefabs** (all but the double traffic light).
-  Their old ProBuilder generator wrote outside the package and was removed.
+  restaurant furniture) and **17 of the `LowPoly_*` street prefabs** (all but
+  the double traffic light) were built by `GenerateLowPolyModels.cs`, a
+  ProBuilder generator of 72 models from boxes, cylinders and cones (commit
+  `4ab084e`, removed in `4490c68`, P41.9), then combined per material into the
+  `*_Combined` meshes (`2ad7f25`, `29c060b`, `1039e39`) and adjusted by later
+  one-off mesh edits. A few use Unity's built-in cube.
+- The trees are the procedural variants that replaced the 3DS trees
+  (`9c70317` and later).
+- The imported FBX, 3DS and OBJ models they replaced were deleted (`808c00e`);
+  `Import-Scripts/` (glTF to FBX with Blender) is a leftover of that era and
+  feeds nothing that ships.
 
 ## The original Unreal project
 
