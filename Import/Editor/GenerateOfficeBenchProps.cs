@@ -19,7 +19,7 @@ public static class GenerateOfficeBenchProps
     private const float TopThickness = 0.03f;
     private const float LegSide = 0.05f;
 
-    [MenuItem("Tools/Procedural Cities/Generate Office Bench Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Office Bench Props")]
     public static void Generate()
     {
         var white = LowPolyBoxMesh.GetMat("LP_Desk_White", new Color(0.92f, 0.92f, 0.90f), 0f, 0.35f);

@@ -15,7 +15,7 @@ public static class GenerateConsoleTableProp
     private const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
     private const string MatDir = PkgRoot + "/Models/LowPoly/Materials";
 
-    [MenuItem("Tools/Procedural Cities/Generate Console Table Prop")]
+    [MenuItem("Tools/uzProceduralCities/Generate Console Table Prop")]
     public static void Generate()
     {
         EnsureMatFolder();

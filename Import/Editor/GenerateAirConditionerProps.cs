@@ -16,7 +16,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateAirConditionerProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Air Conditioner Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Air Conditioner Props")]
     public static void Generate()
     {
         var white = LowPolyBoxMesh.GetMat("LP_AirCon_White", new Color(0.95f, 0.95f, 0.94f), 0f, 0.5f);

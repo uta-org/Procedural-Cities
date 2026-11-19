@@ -14,7 +14,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateStockroomProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Stockroom Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Stockroom Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

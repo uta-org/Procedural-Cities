@@ -20,7 +20,7 @@ public static class GenerateRadiatorProp
     private const int Columns = 20;
     private const float HeaderHeight = 0.05f;
 
-    [MenuItem("Tools/Procedural Cities/Generate Radiator Prop")]
+    [MenuItem("Tools/uzProceduralCities/Generate Radiator Prop")]
     public static void Generate()
     {
         var enamel = LowPolyBoxMesh.GetMat("LP_Radiator_White", new Color(0.93f, 0.93f, 0.91f), 0.1f, 0.55f);

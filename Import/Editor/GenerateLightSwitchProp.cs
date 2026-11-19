@@ -22,7 +22,7 @@ public static class GenerateLightSwitchProp
     /// <summary>Tilt of the lever pivot, degrees about local X: positive points the lever down (off).</summary>
     private const float LeverRestTilt = 30f;
 
-    [MenuItem("Tools/Procedural Cities/Generate Light Switch Prop")]
+    [MenuItem("Tools/uzProceduralCities/Generate Light Switch Prop")]
     public static void Generate()
     {
         EnsureMatFolder();

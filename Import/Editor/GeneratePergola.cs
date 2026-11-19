@@ -14,7 +14,7 @@ using UnityEngine;
 /// </summary>
 public static class GeneratePergola
 {
-    [MenuItem("Tools/Procedural Cities/Generate Pergola")]
+    [MenuItem("Tools/uzProceduralCities/Generate Pergola")]
     public static void Generate()
     {
         var wood = LowPolyBoxMesh.GetMat("LP_PG_Wood", new Color(0.45f, 0.30f, 0.18f), 0f, 0.25f);

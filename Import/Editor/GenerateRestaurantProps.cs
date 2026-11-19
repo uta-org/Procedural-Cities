@@ -13,7 +13,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateRestaurantProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Restaurant Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Restaurant Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

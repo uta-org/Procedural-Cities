@@ -39,7 +39,7 @@ public static class GenerateTowerCrane
     /// <summary>Counter-jib length from the mast's centre, metres.</summary>
     private const float CounterJibLength = 14f;
 
-    [MenuItem("Tools/Procedural Cities/Generate Tower Crane")]
+    [MenuItem("Tools/uzProceduralCities/Generate Tower Crane")]
     public static void Generate()
     {
         var yellow = LowPolyBoxMesh.GetMat("LP_TC_Yellow", new Color(0.95f, 0.72f, 0.08f), 0.3f, 0.45f);

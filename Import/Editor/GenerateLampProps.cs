@@ -16,7 +16,7 @@ public static class GenerateLampProps
     private const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
     private const string MatDir = PkgRoot + "/Models/LowPoly/Materials";
 
-    [MenuItem("Tools/Procedural Cities/Generate Lamp Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Lamp Props")]
     public static void Generate()
     {
         EnsureMatFolder();

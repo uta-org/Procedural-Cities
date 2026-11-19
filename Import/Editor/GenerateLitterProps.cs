@@ -30,7 +30,7 @@ public static class GenerateLitterProps
     /// <summary>Pixels kept clear inside a cell's edge, so mipmaps do not bleed the neighbour in.</summary>
     private const float InsetPx = 3f;
 
-    [MenuItem("Tools/Procedural Cities/Generate Litter Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Litter Props")]
     public static void Generate()
     {
         GenerateParkProps.EnsureFolder(GenerateParkProps.PkgRoot + "/Models/LowPoly", "Materials");

@@ -14,7 +14,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateDressingProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Dressing Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Dressing Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

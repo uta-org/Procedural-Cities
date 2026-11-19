@@ -37,7 +37,7 @@ public static class HollowCeilingPendantShade
     private const float CordHoleRadius = 0.012f;
     private static readonly Vector3 ShadeTopCapLocalPos = new(0f, -0.45f + ShadeHeight * 0.5f, 0f);
 
-    [MenuItem("Tools/Procedural Cities/Hollow Ceiling Pendant Shade")]
+    [MenuItem("Tools/uzProceduralCities/Hollow Ceiling Pendant Shade")]
     public static void Generate()
     {
         var path = FindPrefabPath("CeilingPendant");

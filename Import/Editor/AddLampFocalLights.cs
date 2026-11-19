@@ -32,7 +32,7 @@ public static class AddLampFocalLights
         ("CeilingPanel", 2.2f, 6f, false),
     };
 
-    [MenuItem("Tools/Procedural Cities/Add Lamp Focal Lights")]
+    [MenuItem("Tools/uzProceduralCities/Add Lamp Focal Lights")]
     public static void Generate()
     {
         var touched = 0;

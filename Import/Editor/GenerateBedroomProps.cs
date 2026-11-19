@@ -13,7 +13,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateBedroomProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Bedroom Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Bedroom Props")]
     public static void Generate()
     {
         var wood = LowPolyBoxMesh.GetMat("LP_LR_Wood", new Color(0.52f, 0.36f, 0.22f), 0f, 0.35f);

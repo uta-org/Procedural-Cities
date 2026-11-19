@@ -67,7 +67,7 @@ public static class AddLampBulbs
         { "CeilingPendant", new Vector3(0f, -0.45f, 0f) },
     };
 
-    [MenuItem("Tools/Procedural Cities/Add Lamp Bulbs")]
+    [MenuItem("Tools/uzProceduralCities/Add Lamp Bulbs")]
     public static void Generate()
     {
         EnsureMatFolder();

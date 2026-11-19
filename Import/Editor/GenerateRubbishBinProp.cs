@@ -21,7 +21,7 @@ public static class GenerateRubbishBinProp
     private const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
     private const string MatDir = PkgRoot + "/Models/LowPoly/Materials";
 
-    [MenuItem("Tools/Procedural Cities/Generate RubbishBin Prop")]
+    [MenuItem("Tools/uzProceduralCities/Generate RubbishBin Prop")]
     public static void Generate()
     {
         EnsureMatFolder();

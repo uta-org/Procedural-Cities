@@ -135,7 +135,7 @@ public static class GenerateCounterGateProps
         }
     }
 
-    [MenuItem("Tools/Procedural Cities/Generate Counter Gate Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Counter Gate Props")]
     public static void Generate()
     {
         foreach (var spec in Specs)

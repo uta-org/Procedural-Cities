@@ -22,7 +22,7 @@ public static class GenerateSuburbProps
     /// <summary>Height (m) of the fence: at least 1.8 metres, so a patio stays private.</summary>
     public const float FenceHeight = 1.8f;
 
-    [MenuItem("Tools/Procedural Cities/Generate Suburb Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Suburb Props")]
     public static void Generate() => Generate(null);
 
     /// <summary>Builds the suburb props, saving only those named in <paramref name="only"/> when it is given.</summary>

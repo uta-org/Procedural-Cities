@@ -15,7 +15,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateCivicProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Civic Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Civic Props")]
     public static void Generate()
     {
         var brass = LowPolyBoxMesh.GetMat("LP_CV_Brass", new Color(0.78f, 0.62f, 0.28f), 0.8f, 0.6f);

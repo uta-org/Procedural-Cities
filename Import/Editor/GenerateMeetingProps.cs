@@ -14,7 +14,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateMeetingProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Meeting Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Meeting Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

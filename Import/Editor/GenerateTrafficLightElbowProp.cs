@@ -42,7 +42,7 @@ public static class GenerateTrafficLightElbowProp
     // The repeater on the pole.
     private const float RepeaterCentreY = 2.4f;
 
-    [MenuItem("Tools/Procedural Cities/Generate Elbow Traffic Light")]
+    [MenuItem("Tools/uzProceduralCities/Generate Elbow Traffic Light")]
     public static void Generate()
     {
         var pole = GenerateTrafficLightDoubleProp.Load("LP_Metal_Lamppost");

@@ -90,7 +90,7 @@ public static class GenerateStoreCounterProp
         }
     }
 
-    [MenuItem("Tools/Procedural Cities/Generate Store Counter Prop")]
+    [MenuItem("Tools/uzProceduralCities/Generate Store Counter Prop")]
     public static void Generate()
     {
         var matBody = AssetDatabase.LoadAssetAtPath<Material>($"{MatDir}/LP_Wood_Bench.mat");

@@ -152,7 +152,7 @@ public static class GenerateTrafficLightDoubleProp
 
     internal static Material Load(string name) => AssetDatabase.LoadAssetAtPath<Material>($"{MatDir}/{name}.mat");
 
-    [MenuItem("Tools/Procedural Cities/Generate Double Traffic Light")]
+    [MenuItem("Tools/uzProceduralCities/Generate Double Traffic Light")]
     public static void Generate()
     {
         var pole = Load("LP_Metal_Lamppost");

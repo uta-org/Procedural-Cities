@@ -20,7 +20,7 @@ public static class GeneratePlanterProps
     private const string PrefabDir = PkgRoot + "/Resources/Prefabs/AssetContents";
     private const string MatDir = PkgRoot + "/Models/LowPoly/Materials";
 
-    [MenuItem("Tools/Procedural Cities/Generate Planter Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Planter Props")]
     public static void Generate()
     {
         EnsureMatFolder();

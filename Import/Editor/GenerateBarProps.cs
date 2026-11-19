@@ -22,7 +22,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateBarProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Bar Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Bar Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

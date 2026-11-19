@@ -75,7 +75,7 @@ public static class GeneratePaintingProps
         ("Painting23", "painting23_moran_grand_canyon_yellowstone", 4, 2),
     };
 
-    [MenuItem("Tools/Procedural Cities/Generate Painting Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Painting Props")]
     public static void Generate()
     {
         RemoveStaleProceduralAssets();

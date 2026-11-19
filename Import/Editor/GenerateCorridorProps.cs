@@ -13,7 +13,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateCorridorProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Corridor Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Corridor Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

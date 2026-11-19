@@ -25,7 +25,7 @@ public static class GenerateParkProps
     private const string MatDir = PkgRoot + "/Models/LowPoly/Materials";
     private const string MeshDir = PkgRoot + "/Models/LowPoly/Park";
 
-    [MenuItem("Tools/Procedural Cities/Generate Park Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Park Props")]
     public static void Generate() => Generate(null);
 
     /// <summary>

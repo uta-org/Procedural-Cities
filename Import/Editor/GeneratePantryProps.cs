@@ -13,7 +13,7 @@ using UnityEngine;
 /// </summary>
 public static class GeneratePantryProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Pantry Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Pantry Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

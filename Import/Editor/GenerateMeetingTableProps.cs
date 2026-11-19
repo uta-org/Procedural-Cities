@@ -26,7 +26,7 @@ public static class GenerateMeetingTableProps
     /// <summary>Side of the leg's square section (m).</summary>
     public const float LegSide = 0.07f;
 
-    [MenuItem("Tools/Procedural Cities/Generate Meeting Table Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Meeting Table Props")]
     public static void Generate()
     {
         var wood = AssetDatabase.LoadAssetAtPath<Material>($"{MatDir}/LP_Wood_Table.mat");

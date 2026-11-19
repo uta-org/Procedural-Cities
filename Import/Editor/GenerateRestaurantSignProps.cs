@@ -22,7 +22,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateRestaurantSignProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Restaurant Sign Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Restaurant Sign Props")]
     public static void Generate()
     {
         var metal = LowPolyBoxMesh.GetMat("LP_SIGN_Metal", new Color(0.20f, 0.21f, 0.23f), 0.7f, 0.5f);

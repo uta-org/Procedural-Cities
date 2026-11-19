@@ -13,7 +13,7 @@ using UnityEngine;
 /// </summary>
 public static class GenerateRenovationProps
 {
-    [MenuItem("Tools/Procedural Cities/Generate Renovation Props")]
+    [MenuItem("Tools/uzProceduralCities/Generate Renovation Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");
