@@ -135,7 +135,8 @@ public static class GenerateCounterGateProps
         }
     }
 
-    [MenuItem("Tools/uzProceduralCities/Generate Counter Gate Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Counter Gate Props")]
     public static void Generate()
     {
         foreach (var spec in Specs)

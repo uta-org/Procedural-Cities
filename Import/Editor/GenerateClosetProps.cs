@@ -15,7 +15,8 @@ using UnityEngine;
 /// </summary>
 public static class GenerateClosetProps
 {
-    [MenuItem("Tools/uzProceduralCities/Generate Closet Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Closet Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

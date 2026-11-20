@@ -13,7 +13,8 @@ using UnityEngine;
 /// </summary>
 public static class GenerateLivingRoomProps
 {
-    [MenuItem("Tools/uzProceduralCities/Generate Living Room Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Living Room Props")]
     public static void Generate()
     {
         var wood = LowPolyBoxMesh.GetMat("LP_LR_Wood", new Color(0.52f, 0.36f, 0.22f), 0f, 0.35f);

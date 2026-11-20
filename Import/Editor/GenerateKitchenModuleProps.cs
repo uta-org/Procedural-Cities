@@ -156,7 +156,8 @@ public static class GenerateKitchenModuleProps
 
     private static Material Load(string name) => AssetDatabase.LoadAssetAtPath<Material>($"{MatDir}/{name}.mat");
 
-    [MenuItem("Tools/uzProceduralCities/Generate Kitchen Module Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Kitchen Module Props")]
     public static void Generate()
     {
         var p = new Palette
@@ -190,7 +191,8 @@ public static class GenerateKitchenModuleProps
 
     // Its own entry: "Generate Restaurant Kitchen Props" is GenerateRestaurantKitchenProps (P40.14),
     // and two menu items with one name made Unity drop this one with a warning.
-    [MenuItem("Tools/uzProceduralCities/Generate Restaurant Kitchen Modules")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Restaurant Kitchen Modules")]
     public static void GenerateRestaurant()
     {
         var p = new Palette

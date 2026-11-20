@@ -21,7 +21,8 @@ public static class GenerateFilingCabinetProp
     private const float DrawerGap = 0.012f;
     private const float DrawerRelief = 0.012f;
 
-    [MenuItem("Tools/uzProceduralCities/Generate Filing Cabinet Prop")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Filing Cabinet Prop")]
     public static void Generate()
     {
         var steel = LowPolyBoxMesh.GetMat("LP_FilingCabinet_Steel", new Color(0.66f, 0.68f, 0.70f), 0.35f, 0.45f);

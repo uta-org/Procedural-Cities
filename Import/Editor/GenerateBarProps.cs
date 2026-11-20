@@ -22,7 +22,8 @@ using UnityEngine;
 /// </summary>
 public static class GenerateBarProps
 {
-    [MenuItem("Tools/uzProceduralCities/Generate Bar Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Bar Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

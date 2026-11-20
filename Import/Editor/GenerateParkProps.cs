@@ -25,7 +25,8 @@ public static class GenerateParkProps
     private const string MatDir = PkgRoot + "/Models/LowPoly/Materials";
     private const string MeshDir = PkgRoot + "/Models/LowPoly/Park";
 
-    [MenuItem("Tools/uzProceduralCities/Generate Park Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Park Props")]
     public static void Generate() => Generate(null);
 
     /// <summary>

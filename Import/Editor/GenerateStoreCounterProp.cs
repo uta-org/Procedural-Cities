@@ -90,7 +90,8 @@ public static class GenerateStoreCounterProp
         }
     }
 
-    [MenuItem("Tools/uzProceduralCities/Generate Store Counter Prop")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Store Counter Prop")]
     public static void Generate()
     {
         var matBody = AssetDatabase.LoadAssetAtPath<Material>($"{MatDir}/LP_Wood_Bench.mat");

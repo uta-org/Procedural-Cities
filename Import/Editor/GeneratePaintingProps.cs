@@ -75,7 +75,8 @@ public static class GeneratePaintingProps
         ("Painting23", "painting23_moran_grand_canyon_yellowstone", 4, 2),
     };
 
-    [MenuItem("Tools/uzProceduralCities/Generate Painting Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Painting Props")]
     public static void Generate()
     {
         RemoveStaleProceduralAssets();

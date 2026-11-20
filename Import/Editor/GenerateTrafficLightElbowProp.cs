@@ -42,7 +42,8 @@ public static class GenerateTrafficLightElbowProp
     // The repeater on the pole.
     private const float RepeaterCentreY = 2.4f;
 
-    [MenuItem("Tools/uzProceduralCities/Generate Elbow Traffic Light")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Elbow Traffic Light")]
     public static void Generate()
     {
         var pole = GenerateTrafficLightDoubleProp.Load("LP_Metal_Lamppost");

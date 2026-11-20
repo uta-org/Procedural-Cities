@@ -16,7 +16,8 @@ using UnityEngine;
 /// </summary>
 public static class GenerateAirConditionerProps
 {
-    [MenuItem("Tools/uzProceduralCities/Generate Air Conditioner Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Air Conditioner Props")]
     public static void Generate()
     {
         var white = LowPolyBoxMesh.GetMat("LP_AirCon_White", new Color(0.95f, 0.95f, 0.94f), 0f, 0.5f);

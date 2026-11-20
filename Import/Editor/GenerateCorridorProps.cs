@@ -13,7 +13,8 @@ using UnityEngine;
 /// </summary>
 public static class GenerateCorridorProps
 {
-    [MenuItem("Tools/uzProceduralCities/Generate Corridor Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Corridor Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");

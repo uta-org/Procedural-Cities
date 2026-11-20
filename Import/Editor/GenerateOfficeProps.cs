@@ -13,7 +13,8 @@ using UnityEngine;
 /// </summary>
 public static class GenerateOfficeProps
 {
-    [MenuItem("Tools/uzProceduralCities/Generate Office Props")]
+    // Menu entry off at the owner's request (P144): call the method from code to regenerate the asset.
+    // [MenuItem("Tools/uzProceduralCities/Generate Office Props")]
     public static void Generate()
     {
         var chrome = LowPolyBoxMesh.LoadMat("LP_Chrome");
